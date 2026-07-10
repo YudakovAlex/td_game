@@ -224,6 +224,7 @@ Assets :: struct {
 Game :: struct {
 	mode: Game_Mode,
 	restart_confirmation: bool,
+	quit_requested: bool,
 	levels: [MAX_LEVELS]Level_Def,
 	level_count: int,
 	current_level: int,
@@ -581,12 +582,16 @@ handle_pause_input :: proc(g: ^Game) {
 		return
 	}
 
-	if rl.IsKeyPressed(.ESCAPE) || (click && point_in_rect(mouse, 520, 340, 240, 46)) {
+	if rl.IsKeyPressed(.ESCAPE) || (click && point_in_rect(mouse, 520, 320, 240, 46)) {
 		g.mode = .Playing
 		return
 	}
-	if rl.IsKeyPressed(.R) || (click && point_in_rect(mouse, 520, 400, 240, 46)) {
+	if rl.IsKeyPressed(.R) || (click && point_in_rect(mouse, 520, 380, 240, 46)) {
 		g.restart_confirmation = true
+		return
+	}
+	if rl.IsKeyPressed(.Q) || (click && point_in_rect(mouse, 520, 440, 240, 46)) {
+		g.quit_requested = true
 	}
 }
 
@@ -672,37 +677,42 @@ handle_map_click :: proc(g: ^Game, mouse: Vec2) {
 }
 
 handle_ui_click :: proc(g: ^Game, mouse: Vec2) {
-	if point_in_rect(mouse, UI_X+20, 110, 220, 42) {
+	if point_in_rect(mouse, UI_X+174, 78, 66, 34) {
+		g.mode = .Paused
+		g.restart_confirmation = false
+		return
+	}
+	if point_in_rect(mouse, UI_X+20, 126, 220, 42) {
 		g.selected_tower_type = .Arrow
 		g.selected_tower_index = -1
 	}
-	if point_in_rect(mouse, UI_X+20, 160, 220, 42) {
+	if point_in_rect(mouse, UI_X+20, 176, 220, 42) {
 		g.selected_tower_type = .Cannon
 		g.selected_tower_index = -1
 	}
-	if point_in_rect(mouse, UI_X+20, 210, 220, 42) {
+	if point_in_rect(mouse, UI_X+20, 226, 220, 42) {
 		g.selected_tower_type = .Frost
 		g.selected_tower_index = -1
 	}
-	if point_in_rect(mouse, UI_X+20, 260, 220, 42) {
+	if point_in_rect(mouse, UI_X+20, 276, 220, 42) {
 		g.selected_tower_type = .Flame
 		g.selected_tower_index = -1
 	}
-	if point_in_rect(mouse, UI_X+20, 320, 220, 42) {
+	if point_in_rect(mouse, UI_X+20, 326, 220, 42) {
 		try_start_wave(g)
 	}
-	if point_in_rect(mouse, UI_X+154, 368, 38, 32) {
+	if point_in_rect(mouse, UI_X+154, 374, 38, 32) {
 		change_game_speed(g, -1)
 	}
-	if point_in_rect(mouse, UI_X+202, 368, 38, 32) {
+	if point_in_rect(mouse, UI_X+202, 374, 38, 32) {
 		change_game_speed(g, 1)
 	}
 
 	if g.selected_tower_index >= 0 {
-	if point_in_rect(mouse, UI_X+20, 466, 108, 38) {
+	if point_in_rect(mouse, UI_X+20, 472, 108, 38) {
 			upgrade_tower(g, g.selected_tower_index)
 		}
-		if point_in_rect(mouse, UI_X+136, 466, 104, 38) {
+		if point_in_rect(mouse, UI_X+136, 472, 104, 38) {
 			sell_tower(g, g.selected_tower_index)
 		}
 	}

@@ -66,31 +66,30 @@ draw_ui :: proc(g: ^Game) {
 	rl.DrawRectangle(i32(UI_X), 0, 5, SCREEN_HEIGHT, rl.Color{126, 95, 52, 255})
 
 	x := UI_X + 20
-	y := 20
+	y := 14
 
 	draw_text(fmt.tprintf("%d/%d  %s",g.current_level+1,g.level_count,g.levels[g.current_level].name), x, y, 22, rl.Color{235,218,174,255})
-	y += 42
 
+	y = 44
 	draw_icon_or_glyph(g, .Icon_Gold, vec2(f32(x+10),f32(y+10)), rl.GOLD)
-	draw_text(fmt.tprintf("Gold: %d", g.gold), x+28, y, 22, rl.GOLD)
-	y += 28
+	draw_text(fmt.tprintf("Gold: %d", g.gold), x+28, y, 20, rl.GOLD)
 
-	draw_icon_or_glyph(g, .Icon_Lives, vec2(f32(x+10),f32(y+10)), rl.RED)
-	draw_text(fmt.tprintf("Lives: %d", g.lives), x+28, y, 22, rl.RED)
-	y += 28
+	draw_icon_or_glyph(g, .Icon_Lives, vec2(f32(x+140),f32(y+10)), rl.RED)
+	draw_text(fmt.tprintf("Lives: %d", g.lives), x+158, y, 20, rl.RED)
 
+	y = 78
 	draw_icon_or_glyph(g, .Icon_Wave, vec2(f32(x+10),f32(y+10)), rl.RAYWHITE)
-	draw_text(fmt.tprintf("Wave: %d / %d", displayed_wave(g), g.wave_count), x+28, y, 22, rl.RAYWHITE)
+	draw_text(fmt.tprintf("Wave %d / %d", displayed_wave(g), g.wave_count), x+28, y, 20, rl.RAYWHITE)
 	remaining := waves_remaining(g)
 	remaining_label := "waves left"
 	if remaining == 1 { remaining_label = "wave left" }
-	draw_text(fmt.tprintf("%d %s", remaining, remaining_label), x+28, y+23, 15, rl.LIGHTGRAY)
-	y += 42
+	draw_text(fmt.tprintf("%d %s", remaining, remaining_label), x+28, y+21, 14, rl.LIGHTGRAY)
+	draw_button(x+154, 78, 66, 34, "Menu", false)
 
-	draw_tower_button(g, x, 110, .Arrow, "1  Arrow", g.selected_tower_type == .Arrow)
-	draw_tower_button(g, x, 160, .Cannon, "2  Cannon", g.selected_tower_type == .Cannon)
-	draw_tower_button(g, x, 210, .Frost, "3  Frost", g.selected_tower_type == .Frost)
-	draw_tower_button(g, x, 260, .Flame, "4  Flame", g.selected_tower_type == .Flame)
+	draw_tower_button(g, x, 126, .Arrow, "1  Arrow", g.selected_tower_type == .Arrow)
+	draw_tower_button(g, x, 176, .Cannon, "2  Cannon", g.selected_tower_type == .Cannon)
+	draw_tower_button(g, x, 226, .Frost, "3  Frost", g.selected_tower_type == .Frost)
+	draw_tower_button(g, x, 276, .Flame, "4  Flame", g.selected_tower_type == .Flame)
 
 	wave_button_label := "Space - Start Wave"
 	wave_button_disabled := g.wave_state != .Waiting || g.mode != .Playing
@@ -98,28 +97,28 @@ draw_ui :: proc(g: ^Game) {
 	if g.wave_state == .Clearing { wave_button_label = "Enemies Remaining" }
 	if g.wave_state == .Finished { wave_button_label = "All Waves Cleared" }
 	if g.mode == .Paused { wave_button_label = "Game Paused" }
-	draw_button_disabled(x, 320, 220, 42, wave_button_label, false, wave_button_disabled)
+	draw_button_disabled(x, 326, 220, 42, wave_button_label, false, wave_button_disabled)
 
-	draw_text(fmt.tprintf("Speed: %.0fx", g.game_speed), x, 374, 20, rl.RAYWHITE)
-	draw_button_disabled(x+134,368,38,32,"-",false,g.game_speed <= 1)
-	draw_button_disabled(x+182,368,38,32,"+",false,g.game_speed >= 3)
+	draw_text(fmt.tprintf("Speed: %.0fx", g.game_speed), x, 380, 20, rl.RAYWHITE)
+	draw_button_disabled(x+134,374,38,32,"-",false,g.game_speed <= 1)
+	draw_button_disabled(x+182,374,38,32,"+",false,g.game_speed >= 3)
 
 	if g.selected_tower_index >= 0 && g.selected_tower_index < g.tower_count {
 		t := &g.towers[g.selected_tower_index]
 		def := get_tower_def(t.kind)
 
-		draw_text("Selected Tower", x, 410, 22, rl.RAYWHITE)
-		draw_text(fmt.tprintf("%s L%d", def.name, t.level), x, 438, 20, rl.GOLD)
+		draw_text("Selected Tower", x, 416, 22, rl.RAYWHITE)
+		draw_text(fmt.tprintf("%s L%d", def.name, t.level), x, 444, 20, rl.GOLD)
 
 		upgrade := upgrade_cost(t, def)
-		draw_button(x, 466, 108, 38, fmt.tprintf("U  $%d", upgrade), false)
-		draw_button(x+116, 466, 104, 38, fmt.tprintf("S  $%d", int(f32(t.total_invested)*0.70)), false)
+		draw_button(x, 472, 108, 38, fmt.tprintf("U  $%d", upgrade), false)
+		draw_button(x+116, 472, 104, 38, fmt.tprintf("S  $%d", int(f32(t.total_invested)*0.70)), false)
 
-		draw_text(def.role, x, 516, 16, rl.LIGHTGRAY)
-		draw_text(fmt.tprintf("Damage: %.1f  Range: %.0f", tower_damage(t, def), tower_range(t, def)), x, 540, 17, rl.RAYWHITE)
-		draw_text(fmt.tprintf("Type: %s", damage_type_name(def.damage_type)), x, 562, 17, rl.RAYWHITE)
-		if def.slow_amount > 0 { draw_text(fmt.tprintf("Slow: %.0f%%", def.slow_amount*100), x, 584, 16, rl.SKYBLUE) }
-		if def.burn_damage > 0 { draw_text(fmt.tprintf("Burn: %.1f / tick", tower_burn_damage(t,def)), x, 584, 16, rl.ORANGE) }
+		draw_text(def.role, x, 522, 16, rl.LIGHTGRAY)
+		draw_text(fmt.tprintf("Damage: %.1f  Range: %.0f", tower_damage(t, def), tower_range(t, def)), x, 546, 17, rl.RAYWHITE)
+		draw_text(fmt.tprintf("Type: %s", damage_type_name(def.damage_type)), x, 568, 17, rl.RAYWHITE)
+		if def.slow_amount > 0 { draw_text(fmt.tprintf("Slow: %.0f%%", def.slow_amount*100), x, 590, 16, rl.SKYBLUE) }
+		if def.burn_damage > 0 { draw_text(fmt.tprintf("Burn: %.1f / tick", tower_burn_damage(t,def)), x, 590, 16, rl.ORANGE) }
 	}
 
 	preview_index := g.current_wave
@@ -221,7 +220,8 @@ draw_pause_message :: proc(g: ^Game) {
 		draw_button(650,410,140,46,"Cancel",false)
 		return
 	}
-	draw_text("PAUSED", 555, 270, 42, rl.RAYWHITE)
-	draw_button(520,340,240,46,"Resume  [Esc]",false)
-	draw_button(520,400,240,46,"Restart Level  [R]",false)
+	draw_text("MENU", 584, 255, 42, rl.RAYWHITE)
+	draw_button(520,320,240,46,"Resume  [Esc]",false)
+	draw_button(520,380,240,46,"Restart Level  [R]",false)
+	draw_button(520,440,240,46,"Quit  [Q]",false)
 }

@@ -6,6 +6,8 @@ main :: proc() {
 	rl.SetConfigFlags(rl.ConfigFlags{.WINDOW_RESIZABLE, .WINDOW_HIGHDPI, .VSYNC_HINT})
 	rl.InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "2D Tower Defense - Odin Prototype")
 	defer rl.CloseWindow()
+	// Escape is a gameplay control; closing remains available through the window controls.
+	rl.SetExitKey(.KEY_NULL)
 
 	rl.SetWindowMinSize(960, 540)
 
@@ -28,7 +30,7 @@ main :: proc() {
 	game := init_game()
 	defer unload_assets(&game.assets)
 
-	for !rl.WindowShouldClose() {
+	for !rl.WindowShouldClose() && !game.quit_requested {
 		update_game(&game, rl.GetFrameTime())
 		draw_game(&game)
 	}

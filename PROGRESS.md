@@ -40,7 +40,7 @@ odin build src
 - Restyled right-hand HUD with resource icons, tower cards, affordability feedback, selected-tower statistics, upgrade/sell values, and next-wave previews.
 - Placement ghosts display tower range before construction, and HUD buttons provide mouse-accessible speed control.
 - Wave progress now reports the active wave and remaining-wave count without overflowing after the final wave.
-- Escape pauses and resumes play; the pause overlay offers a confirmation-protected current-level restart.
+- Wave progress and a Menu button live in the right panel, keeping the battlefield unobstructed; the menu offers resume, confirmation-protected restart, and quit actions.
 - Victory and defeat overlays report waves cleared, enemies defeated and leaked, remaining lives, and gold.
 - Artwork conventions and replacement instructions are documented in `assets/ART_GUIDE.md`.
 
