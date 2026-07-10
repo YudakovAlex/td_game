@@ -28,13 +28,16 @@ update_enemies :: proc(g: ^Game, dt: f32) {
 		}
 		if !e.alive { continue }
 
-		if e.path_index >= len(PATH_POINTS) {
+		level := &g.levels[g.current_level]
+		route := &level.routes[e.route_index]
+		if e.path_index >= route.point_count {
 			e.alive = false
 			g.lives -= e.lives_damage
+			g.enemies_leaked += 1
 			continue
 		}
 
-		target := PATH_POINTS[e.path_index]
+		target := route.points[e.path_index]
 		to_target := v_sub(target, e.pos)
 		dist := v_len(to_target)
 
@@ -87,6 +90,7 @@ apply_damage_to_enemy :: proc(g: ^Game, enemy_index: int, damage: f32, damage_ty
 	if e.hp <= 0 {
 		e.alive = false
 		g.gold += e.gold_reward
+		g.enemies_defeated += 1
 	}
 }
 

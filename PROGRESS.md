@@ -15,8 +15,8 @@ odin build src
 
 ## Playable content
 
-- One fixed-path Grasslands map on a 24×14 building grid.
-- 15 waves, ending with an enhanced boss.
+- Three sequential 24×18 levels: Grasslands, dual-route Forest Pass, and fast-enemy-focused Frozen Road.
+- Grasslands has 15 waves; Forest Pass and Frozen Road have 20 waves each.
 - Four buildable tower families:
   - Arrow: reliable physical single-target damage.
   - Cannon: physical splash damage.
@@ -25,6 +25,7 @@ odin build src
 - Five enemy families:
   - Grunt, Runner, Brute, Armored, and Boss.
 - Three linear tower levels, upgrades, 70% selling refunds, gold rewards, lives, adjustable 1×–3× speed, and victory/defeat states.
+- Level-complete continuation, campaign completion, and current-level retry flows with fresh resources per level.
 - Physical, Magic, and Elemental damage types with centralized resistance multipliers.
 - Strongest-slow replacement and refresh behavior, reduced boss slow effectiveness, and one refreshable burn instance per enemy.
 
@@ -37,6 +38,7 @@ odin build src
 - Placement feedback distinguishes valid, invalid, occupied, and unaffordable tiles.
 - Fixed-size visual-effect pool for sparks, explosions, frost bursts, flame impacts, and burn embers.
 - Restyled right-hand HUD with resource icons, tower cards, affordability feedback, selected-tower statistics, upgrade/sell values, and next-wave previews.
+- Placement ghosts display tower range before construction, and HUD buttons provide mouse-accessible speed control.
 - Artwork conventions and replacement instructions are documented in `assets/ART_GUIDE.md`.
 
 ## Runtime architecture
@@ -44,11 +46,11 @@ odin build src
 The implementation remains intentionally small and data-oriented:
 
 - `game.odin`: shared types, definitions, state, input, and main update orchestration.
-- `map.odin`: fixed path, tile state, battlefield rendering, and placement preview.
+- `map.odin`: level-driven routes, tile state, full-height battlefield rendering, and placement preview.
 - `towers.odin`: placement, upgrades, targeting, firing, and tower rendering.
 - `enemies.odin`: movement, damage/resistances, slow/burn state, and enemy rendering.
 - `projectiles.odin`: homing projectiles, direct/splash hits, and combat effect creation.
-- `waves.odin`: the current 15-wave sequence and spawning state machine.
+- `waves.odin`: bounded level/route definitions, three wave sets, level reset, and spawning state machine.
 - `assets.odin`: sprite-atlas lifecycle and asset-ID lookup.
 - `effects.odin`: bounded transient visual effects.
 - `ui.odin`: virtual-resolution rendering and the in-game HUD.
@@ -68,8 +70,8 @@ The game renders to a fixed 1280×720 target and letterboxes it into a resizable
 - A complete interactive playthrough and visual review at all target window sizes is still required.
 - Wave balance is provisional; waves 11–15 and the Flame/Armored matchup need playtesting.
 - Waves contain only one enemy type each because the current `Wave_Def` has a single spawn group.
-- There is no pause/restart flow despite `Paused` existing in the game-mode enum.
-- Victory and defeat screens are overlays only; retry, next-level, score, and persistence are not implemented.
+- There is no pause flow despite `Paused` existing in the game-mode enum.
+- Result screens support retry and continuation, but score and persistence are not implemented.
 - No audio, settings, menus, saved progression, difficulty selection, or external data files exist yet.
 - Towers support only one targeting policy: enemy furthest along the path.
 - Sprites are static; motion comes from rotation, bobbing, tinting, recoil, and procedural effects.

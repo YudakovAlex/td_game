@@ -17,7 +17,7 @@ draw_game :: proc(g: ^Game) {
 	rl.ClearBackground(rl.RAYWHITE)
 
 	draw_map(g)
-	draw_path()
+	draw_path(g)
 	draw_build_preview(g)
 	draw_towers(g)
 	draw_enemies(g)
@@ -27,9 +27,13 @@ draw_game :: proc(g: ^Game) {
 
 	switch g.mode {
 	case .Victory:
-		draw_center_message("VICTORY", rl.DARKGREEN)
+		if g.current_level+1 < g.level_count {
+			draw_result_message("LEVEL COMPLETE", "Continue", rl.DARKGREEN)
+		} else {
+			draw_result_message("CAMPAIGN COMPLETE", "", rl.GOLD)
+		}
 	case .Defeat:
-		draw_center_message("DEFEAT", rl.RED)
+		draw_result_message("DEFEAT", "Retry", rl.RED)
 	case .Playing, .Paused:
 	}
 	rl.EndTextureMode()
@@ -62,7 +66,7 @@ draw_ui :: proc(g: ^Game) {
 	x := UI_X + 20
 	y := 20
 
-	draw_text("RUNE SIEGE", x, y, 26, rl.Color{235,218,174,255})
+	draw_text(fmt.tprintf("%d/%d  %s",g.current_level+1,g.level_count,g.levels[g.current_level].name), x, y, 22, rl.Color{235,218,174,255})
 	y += 42
 
 	draw_icon_or_glyph(g, .Icon_Gold, vec2(f32(x+10),f32(y+10)), rl.GOLD)
@@ -84,7 +88,9 @@ draw_ui :: proc(g: ^Game) {
 
 	draw_button(x, 320, 220, 42, "Space - Start Wave", false)
 
-	draw_text(fmt.tprintf("Speed: %.0fx  [+/-]", g.game_speed), x, 372, 20, rl.RAYWHITE)
+	draw_text(fmt.tprintf("Speed: %.0fx", g.game_speed), x, 374, 20, rl.RAYWHITE)
+	draw_button_disabled(x+134,368,38,32,"-",false,g.game_speed <= 1)
+	draw_button_disabled(x+182,368,38,32,"+",false,g.game_speed >= 3)
 
 	if g.selected_tower_index >= 0 && g.selected_tower_index < g.tower_count {
 		t := &g.towers[g.selected_tower_index]
@@ -143,16 +149,23 @@ damage_type_name :: proc(kind: Damage_Type) -> string {
 }
 
 draw_button :: proc(x, y, w, h: int, label: string, selected: bool) {
+	draw_button_disabled(x,y,w,h,label,selected,false)
+}
+
+draw_button_disabled :: proc(x, y, w, h: int, label: string, selected, disabled: bool) {
 	color := rl.Color{70, 70, 78, 255}
 	mouse := screen_to_game_pos(rl.GetMousePosition())
-	if point_in_rect(mouse,x,y,w,h) { color = rl.Color{88,82,82,255} }
+	if point_in_rect(mouse,x,y,w,h) && !disabled { color = rl.Color{88,82,82,255} }
 	if selected {
 		color = rl.Color{105, 105, 135, 255}
 	}
+	if disabled { color = rl.Color{45,45,50,255} }
 
 	rl.DrawRectangle(i32(x), i32(y), i32(w), i32(h), color)
 	rl.DrawRectangleLines(i32(x), i32(y), i32(w), i32(h), rl.RAYWHITE)
-	draw_text(label, x+12, y+11, 18, rl.RAYWHITE)
+	text_color := rl.RAYWHITE
+	if disabled { text_color = rl.GRAY }
+	draw_text(label, x+12, y+(h-18)/2, 18, text_color)
 }
 
 draw_center_message :: proc(text: string, color: rl.Color) {
@@ -161,4 +174,13 @@ draw_center_message :: proc(text: string, color: rl.Color) {
 	text_c := fmt.ctprintf("%s", text)
 	text_width := int(rl.MeasureText(text_c, 56))
 	draw_text(text, SCREEN_WIDTH/2-text_width/2, SCREEN_HEIGHT/2-30, 56, color)
+}
+
+draw_result_message :: proc(title, action: string, color: rl.Color) {
+	rl.DrawRectangle(0,0,SCREEN_WIDTH,SCREEN_HEIGHT,rl.Color{0,0,0,150})
+	title_c := fmt.ctprintf("%s",title)
+	title_width := int(rl.MeasureText(title_c,48))
+	draw_text(title,SCREEN_WIDTH/2-title_width/2,315,48,color)
+	if action == "" { return }
+	draw_button(520,410,240,48,fmt.tprintf("%s  [Enter]",action),false)
 }

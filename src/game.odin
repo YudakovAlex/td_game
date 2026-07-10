@@ -8,7 +8,7 @@ SCREEN_HEIGHT :: 720
 
 TILE_SIZE :: 40
 MAP_W     :: 24
-MAP_H     :: 14
+MAP_H     :: 18
 
 UI_X :: MAP_W * TILE_SIZE
 UI_W :: SCREEN_WIDTH - UI_X
@@ -18,6 +18,9 @@ MAX_TOWERS      :: 128
 MAX_PROJECTILES :: 512
 MAX_WAVES       :: 20
 MAX_EFFECTS     :: 256
+MAX_LEVELS      :: 3
+MAX_ROUTES      :: 2
+MAX_PATH_POINTS :: 12
 
 START_GOLD  :: 200
 START_LIVES :: 20
@@ -128,6 +131,21 @@ Wave_Def :: struct {
 	speed_mult:     f32,
 }
 
+Path_Route :: struct {
+	points: [MAX_PATH_POINTS]Vec2,
+	point_count: int,
+}
+
+Level_Def :: struct {
+	name: string,
+	starting_gold: int,
+	starting_lives: int,
+	routes: [MAX_ROUTES]Path_Route,
+	route_count: int,
+	waves: [MAX_WAVES]Wave_Def,
+	wave_count: int,
+}
+
 Enemy :: struct {
 	kind: Enemy_Type,
 
@@ -137,6 +155,7 @@ Enemy :: struct {
 
 	speed:      f32,
 	path_index: int,
+	route_index: int,
 
 	alive: bool,
 
@@ -204,11 +223,17 @@ Assets :: struct {
 
 Game :: struct {
 	mode: Game_Mode,
+	restart_confirmation: bool,
+	levels: [MAX_LEVELS]Level_Def,
+	level_count: int,
+	current_level: int,
 
 	tiles: [MAP_H][MAP_W]Tile,
 
 	gold:  int,
 	lives: int,
+	enemies_defeated: int,
+	enemies_leaked:   int,
 
 	selected_tower_type:  Tower_Type,
 	selected_tower_index: int,
@@ -457,31 +482,26 @@ point_in_rect :: proc(p: Vec2, x, y, w, h: int) -> bool {
 
 init_game :: proc() -> Game {
 	g := Game{}
-
-	g.mode = .Playing
-	g.gold = START_GOLD
-	g.lives = START_LIVES
-
-	g.selected_tower_type = .None
-	g.selected_tower_index = -1
-
-	g.wave_state = .Waiting
-	g.current_wave = 0
-	g.game_speed = 1.0
-
-	init_map(&g)
-	init_waves(&g)
+	init_levels(&g)
+	g.current_level = 0
+	load_level(&g, g.current_level)
 	load_assets(&g.assets)
 
 	return g
 }
 
 update_game :: proc(g: ^Game, raw_dt: f32) {
+	if g.mode == .Paused {
+		handle_pause_input(g)
+		return
+	}
 	if g.mode != .Playing {
+		handle_result_input(g)
 		return
 	}
 
 	handle_input(g)
+	if g.mode != .Playing { return }
 	g.visual_time += raw_dt
 
 	dt := raw_dt * g.game_speed
@@ -503,9 +523,81 @@ update_game :: proc(g: ^Game, raw_dt: f32) {
 	}
 }
 
+waves_cleared :: proc(g: ^Game) -> int {
+	return clamp(g.current_wave, 0, g.wave_count)
+}
+
+waves_remaining :: proc(g: ^Game) -> int {
+	return max(g.wave_count-waves_cleared(g), 0)
+}
+
+displayed_wave :: proc(g: ^Game) -> int {
+	if g.wave_count <= 0 { return 0 }
+	if g.wave_state == .Finished { return g.wave_count }
+	return clamp(g.current_wave+1, 1, g.wave_count)
+}
+
+change_game_speed :: proc(g: ^Game, delta: f32) {
+	g.game_speed += delta
+	if g.game_speed < 1 { g.game_speed = 1 }
+	if g.game_speed > 3 { g.game_speed = 3 }
+}
+
+continue_campaign :: proc(g: ^Game) {
+	if g.mode != .Victory { return }
+	if g.current_level+1 >= g.level_count { return }
+	g.current_level += 1
+	load_level(g, g.current_level)
+}
+
+handle_result_input :: proc(g: ^Game) {
+	mouse_screen := rl.GetMousePosition()
+	mouse := screen_to_game_pos(mouse_screen)
+	activate := rl.IsKeyPressed(.ENTER)
+	if rl.IsMouseButtonPressed(.LEFT) && point_in_game_view(mouse_screen) && point_in_rect(mouse, 520, 410, 240, 48) {
+		activate = true
+	}
+	if !activate { return }
+	if g.mode == .Defeat {
+		load_level(g, g.current_level)
+	} else if g.mode == .Victory && g.current_level+1 < g.level_count {
+		continue_campaign(g)
+	}
+}
+
+handle_pause_input :: proc(g: ^Game) {
+	mouse_screen := rl.GetMousePosition()
+	mouse := screen_to_game_pos(mouse_screen)
+	click := rl.IsMouseButtonPressed(.LEFT) && point_in_game_view(mouse_screen)
+
+	if g.restart_confirmation {
+		if rl.IsKeyPressed(.ESCAPE) || (click && point_in_rect(mouse, 650, 410, 140, 46)) {
+			g.restart_confirmation = false
+			return
+		}
+		if rl.IsKeyPressed(.ENTER) || (click && point_in_rect(mouse, 490, 410, 140, 46)) {
+			load_level(g, g.current_level)
+		}
+		return
+	}
+
+	if rl.IsKeyPressed(.ESCAPE) || (click && point_in_rect(mouse, 520, 340, 240, 46)) {
+		g.mode = .Playing
+		return
+	}
+	if rl.IsKeyPressed(.R) || (click && point_in_rect(mouse, 520, 400, 240, 46)) {
+		g.restart_confirmation = true
+	}
+}
+
 handle_input :: proc(g: ^Game) {
 	mouse_screen := rl.GetMousePosition()
 	mouse := screen_to_game_pos(mouse_screen)
+	if rl.IsKeyPressed(.ESCAPE) {
+		g.mode = .Paused
+		g.restart_confirmation = false
+		return
+	}
 
 	if rl.IsKeyPressed(.ONE) {
 		g.selected_tower_type = .Arrow
@@ -529,15 +621,11 @@ handle_input :: proc(g: ^Game) {
 	}
 
 	if rl.IsKeyPressed(.EQUAL) {
-		if g.game_speed < 3.0 {
-			g.game_speed += 1.0
-		}
+		change_game_speed(g, 1)
 	}
 
 	if rl.IsKeyPressed(.MINUS) {
-		if g.game_speed > 1.0 {
-			g.game_speed -= 1.0
-		}
+		change_game_speed(g, -1)
 	}
 
 	if rl.IsMouseButtonPressed(.LEFT) {
@@ -602,6 +690,12 @@ handle_ui_click :: proc(g: ^Game, mouse: Vec2) {
 	}
 	if point_in_rect(mouse, UI_X+20, 320, 220, 42) {
 		try_start_wave(g)
+	}
+	if point_in_rect(mouse, UI_X+154, 368, 38, 32) {
+		change_game_speed(g, -1)
+	}
+	if point_in_rect(mouse, UI_X+202, 368, 38, 32) {
+		change_game_speed(g, 1)
 	}
 
 	if g.selected_tower_index >= 0 {
