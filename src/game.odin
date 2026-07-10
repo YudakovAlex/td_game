@@ -554,7 +554,7 @@ handle_result_input :: proc(g: ^Game) {
 	mouse_screen := rl.GetMousePosition()
 	mouse := screen_to_game_pos(mouse_screen)
 	activate := rl.IsKeyPressed(.ENTER)
-	if rl.IsMouseButtonPressed(.LEFT) && point_in_game_view(mouse_screen) && point_in_rect(mouse, 520, 410, 240, 48) {
+	if rl.IsMouseButtonPressed(.LEFT) && point_in_game_view(mouse_screen) && point_in_rect(mouse, 520, 440, 240, 48) {
 		activate = true
 	}
 	if !activate { return }

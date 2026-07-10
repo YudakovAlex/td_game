@@ -39,6 +39,9 @@ odin build src
 - Fixed-size visual-effect pool for sparks, explosions, frost bursts, flame impacts, and burn embers.
 - Restyled right-hand HUD with resource icons, tower cards, affordability feedback, selected-tower statistics, upgrade/sell values, and next-wave previews.
 - Placement ghosts display tower range before construction, and HUD buttons provide mouse-accessible speed control.
+- Wave progress now reports the active wave and remaining-wave count without overflowing after the final wave.
+- Escape pauses and resumes play; the pause overlay offers a confirmation-protected current-level restart.
+- Victory and defeat overlays report waves cleared, enemies defeated and leaked, remaining lives, and gold.
 - Artwork conventions and replacement instructions are documented in `assets/ART_GUIDE.md`.
 
 ## Runtime architecture
@@ -70,8 +73,7 @@ The game renders to a fixed 1280×720 target and letterboxes it into a resizable
 - A complete interactive playthrough and visual review at all target window sizes is still required.
 - Wave balance is provisional; waves 11–15 and the Flame/Armored matchup need playtesting.
 - Waves contain only one enemy type each because the current `Wave_Def` has a single spawn group.
-- There is no pause flow despite `Paused` existing in the game-mode enum.
-- Result screens support retry and continuation, but score and persistence are not implemented.
+- Result screens support retry and continuation with per-level run statistics, but numeric score and persistence are not implemented.
 - No audio, settings, menus, saved progression, difficulty selection, or external data files exist yet.
 - Towers support only one targeting policy: enemy furthest along the path.
 - Sprites are static; motion comes from rotation, bobbing, tinting, recoil, and procedural effects.
@@ -81,11 +83,11 @@ The game renders to a fixed 1280×720 target and letterboxes it into a resizable
 
 Complete the first true vertical slice rather than expanding to another level:
 
-1. Playtest and balance all 15 waves, tower costs, upgrades, rewards, and resistances.
-2. Add pause, restart, retry, and a proper result screen with score.
+1. Playtest and balance all current waves, tower costs, upgrades, rewards, and resistances.
+2. Support multi-group waves so later waves can combine enemy roles.
 3. Add essential sound feedback for placement, firing/hits, wave start, leaks, boss spawn, and results.
-4. Support multi-group waves so later waves can combine enemy roles.
-5. Add two more towers and one additional enemy only after the current economy and counters are proven.
-6. Move tower, enemy, and wave definitions into external data once their schemas stabilize.
+4. Define scoring and persistence after the economy and run-stat counters are proven.
+5. Move tower, enemy, and wave definitions into external data once their schemas stabilize.
+6. Add towers and enemies only after mixed-wave composition and balance are stable.
 
-The immediate release criterion is a polished, balanced 15-wave Grasslands run that can be started, paused, completed, failed, and retried without restarting the executable.
+The immediate release criterion is a polished, balanced Grasslands run with mixed enemy roles, essential audio feedback, and a persisted result.

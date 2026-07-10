@@ -28,13 +28,15 @@ draw_game :: proc(g: ^Game) {
 	switch g.mode {
 	case .Victory:
 		if g.current_level+1 < g.level_count {
-			draw_result_message("LEVEL COMPLETE", "Continue", rl.DARKGREEN)
+			draw_result_message(g, "LEVEL COMPLETE", "Continue", rl.DARKGREEN)
 		} else {
-			draw_result_message("CAMPAIGN COMPLETE", "", rl.GOLD)
+			draw_result_message(g, "CAMPAIGN COMPLETE", "", rl.GOLD)
 		}
 	case .Defeat:
-		draw_result_message("DEFEAT", "Retry", rl.RED)
-	case .Playing, .Paused:
+		draw_result_message(g, "DEFEAT", "Retry", rl.RED)
+	case .Paused:
+		draw_pause_message(g)
+	case .Playing:
 	}
 	rl.EndTextureMode()
 
@@ -78,7 +80,11 @@ draw_ui :: proc(g: ^Game) {
 	y += 28
 
 	draw_icon_or_glyph(g, .Icon_Wave, vec2(f32(x+10),f32(y+10)), rl.RAYWHITE)
-	draw_text(fmt.tprintf("Wave: %d / %d", g.current_wave+1, g.wave_count), x+28, y, 22, rl.RAYWHITE)
+	draw_text(fmt.tprintf("Wave: %d / %d", displayed_wave(g), g.wave_count), x+28, y, 22, rl.RAYWHITE)
+	remaining := waves_remaining(g)
+	remaining_label := "waves left"
+	if remaining == 1 { remaining_label = "wave left" }
+	draw_text(fmt.tprintf("%d %s", remaining, remaining_label), x+28, y+23, 15, rl.LIGHTGRAY)
 	y += 42
 
 	draw_tower_button(g, x, 110, .Arrow, "1  Arrow", g.selected_tower_type == .Arrow)
@@ -86,7 +92,13 @@ draw_ui :: proc(g: ^Game) {
 	draw_tower_button(g, x, 210, .Frost, "3  Frost", g.selected_tower_type == .Frost)
 	draw_tower_button(g, x, 260, .Flame, "4  Flame", g.selected_tower_type == .Flame)
 
-	draw_button(x, 320, 220, 42, "Space - Start Wave", false)
+	wave_button_label := "Space - Start Wave"
+	wave_button_disabled := g.wave_state != .Waiting || g.mode != .Playing
+	if g.wave_state == .Spawning { wave_button_label = "Wave Spawning" }
+	if g.wave_state == .Clearing { wave_button_label = "Enemies Remaining" }
+	if g.wave_state == .Finished { wave_button_label = "All Waves Cleared" }
+	if g.mode == .Paused { wave_button_label = "Game Paused" }
+	draw_button_disabled(x, 320, 220, 42, wave_button_label, false, wave_button_disabled)
 
 	draw_text(fmt.tprintf("Speed: %.0fx", g.game_speed), x, 374, 20, rl.RAYWHITE)
 	draw_button_disabled(x+134,368,38,32,"-",false,g.game_speed <= 1)
@@ -176,11 +188,40 @@ draw_center_message :: proc(text: string, color: rl.Color) {
 	draw_text(text, SCREEN_WIDTH/2-text_width/2, SCREEN_HEIGHT/2-30, 56, color)
 }
 
-draw_result_message :: proc(title, action: string, color: rl.Color) {
+draw_run_stats :: proc(g: ^Game, center_x, y: int) {
+	lines := [4]string {
+		fmt.tprintf("Waves cleared: %d / %d", waves_cleared(g), g.wave_count),
+		fmt.tprintf("Enemies defeated: %d", g.enemies_defeated),
+		fmt.tprintf("Enemies leaked: %d", g.enemies_leaked),
+		fmt.tprintf("Lives: %d    Gold: %d", max(g.lives, 0), g.gold),
+	}
+	for line, index in lines {
+		line_c := fmt.ctprintf("%s", line)
+		width := int(rl.MeasureText(line_c, 20))
+		draw_text(line, center_x-width/2, y+index*27, 20, rl.RAYWHITE)
+	}
+}
+
+draw_result_message :: proc(g: ^Game, title, action: string, color: rl.Color) {
 	rl.DrawRectangle(0,0,SCREEN_WIDTH,SCREEN_HEIGHT,rl.Color{0,0,0,150})
 	title_c := fmt.ctprintf("%s",title)
 	title_width := int(rl.MeasureText(title_c,48))
-	draw_text(title,SCREEN_WIDTH/2-title_width/2,315,48,color)
+	draw_text(title,SCREEN_WIDTH/2-title_width/2,230,48,color)
+	draw_run_stats(g, SCREEN_WIDTH/2, 300)
 	if action == "" { return }
-	draw_button(520,410,240,48,fmt.tprintf("%s  [Enter]",action),false)
+	draw_button(520,440,240,48,fmt.tprintf("%s  [Enter]",action),false)
+}
+
+draw_pause_message :: proc(g: ^Game) {
+	rl.DrawRectangle(0,0,SCREEN_WIDTH,SCREEN_HEIGHT,rl.Color{0,0,0,165})
+	if g.restart_confirmation {
+		draw_text("RESTART THIS LEVEL?", 438, 300, 36, rl.GOLD)
+		draw_text("Current progress will be lost.", 493, 355, 20, rl.RAYWHITE)
+		draw_button(490,410,140,46,"Confirm",false)
+		draw_button(650,410,140,46,"Cancel",false)
+		return
+	}
+	draw_text("PAUSED", 555, 270, 42, rl.RAYWHITE)
+	draw_button(520,340,240,46,"Resume  [Esc]",false)
+	draw_button(520,400,240,46,"Restart Level  [R]",false)
 }
