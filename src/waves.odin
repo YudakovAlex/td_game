@@ -105,6 +105,7 @@ load_level :: proc(g: ^Game, level_index: int) {
 	g.wave_state = .Waiting
 	g.wave_spawned_count = 0
 	g.wave_spawn_timer = 0
+	g.next_wave_timer = 0
 	g.game_speed = 1
 	init_map(g)
 }
@@ -114,9 +115,18 @@ try_start_wave :: proc(g: ^Game) {
 	g.wave_state = .Spawning
 	g.wave_spawned_count = 0
 	g.wave_spawn_timer = 0
+	g.next_wave_timer = 0
 }
 
-update_wave :: proc(g: ^Game, dt: f32) {
+update_wave :: proc(g: ^Game, dt, raw_dt: f32) {
+	if g.wave_state == .Waiting && g.next_wave_timer > 0 {
+		g.next_wave_timer -= raw_dt
+		if g.next_wave_timer <= 0 {
+			g.next_wave_timer = 0
+			try_start_wave(g)
+		}
+	}
+
 	if g.wave_state == .Spawning {
 		wave := g.waves[g.current_wave]
 		g.wave_spawn_timer -= dt
@@ -130,7 +140,11 @@ update_wave :: proc(g: ^Game, dt: f32) {
 	if g.wave_state == .Clearing && g.enemy_count == 0 {
 		g.current_wave += 1
 		if g.current_wave >= g.wave_count { g.wave_state = .Finished
-		} else { g.wave_state = .Waiting; g.gold += 20 }
+		} else {
+			g.wave_state = .Waiting
+			g.gold += 20
+			g.next_wave_timer = NEXT_WAVE_DELAY
+		}
 	}
 }
 

@@ -1,6 +1,7 @@
 package main
 
 import "core:fmt"
+import "core:math"
 import rl "vendor:raylib"
 
 game_render_target: rl.RenderTexture2D
@@ -93,11 +94,15 @@ draw_ui :: proc(g: ^Game) {
 
 	wave_button_label := "Space - Start Wave"
 	wave_button_disabled := g.wave_state != .Waiting || g.mode != .Playing
+	if g.wave_state == .Waiting && g.next_wave_timer > 0 {
+		seconds_left := int(g.next_wave_timer) + 1
+		wave_button_label = fmt.tprintf("Start Wave - %ds", seconds_left)
+	}
 	if g.wave_state == .Spawning { wave_button_label = "Wave Spawning" }
 	if g.wave_state == .Clearing { wave_button_label = "Enemies Remaining" }
 	if g.wave_state == .Finished { wave_button_label = "All Waves Cleared" }
 	if g.mode == .Paused { wave_button_label = "Game Paused" }
-	draw_button_disabled(x, 326, 220, 42, wave_button_label, false, wave_button_disabled)
+	draw_wave_button(g, x, 326, 220, 42, wave_button_label, wave_button_disabled)
 
 	draw_text(fmt.tprintf("Speed: %.0fx", g.game_speed), x, 380, 20, rl.RAYWHITE)
 	draw_button_disabled(x+134,374,38,32,"-",false,g.game_speed <= 1)
@@ -112,7 +117,7 @@ draw_ui :: proc(g: ^Game) {
 
 		upgrade := upgrade_cost(t, def)
 		draw_button(x, 472, 108, 38, fmt.tprintf("U  $%d", upgrade), false)
-		draw_button(x+116, 472, 104, 38, fmt.tprintf("S  $%d", int(f32(t.total_invested)*0.70)), false)
+		draw_sell_button(x+116, 472, 104, 38, fmt.tprintf("S  $%d", int(f32(t.total_invested)*0.70)))
 
 		draw_text(def.role, x, 522, 16, rl.LIGHTGRAY)
 		draw_text(fmt.tprintf("Damage: %.1f  Range: %.0f", tower_damage(t, def), tower_range(t, def)), x, 546, 17, rl.RAYWHITE)
@@ -161,6 +166,29 @@ damage_type_name :: proc(kind: Damage_Type) -> string {
 
 draw_button :: proc(x, y, w, h: int, label: string, selected: bool) {
 	draw_button_disabled(x,y,w,h,label,selected,false)
+}
+
+draw_sell_button :: proc(x, y, w, h: int, label: string) {
+	color := rl.Color{126, 48, 42, 255}
+	mouse := screen_to_game_pos(rl.GetMousePosition())
+	if point_in_rect(mouse, x, y, w, h) { color = rl.Color{158, 60, 50, 255} }
+
+	rl.DrawRectangle(i32(x), i32(y), i32(w), i32(h), color)
+	rl.DrawRectangleLines(i32(x), i32(y), i32(w), i32(h), rl.Color{255, 150, 125, 255})
+	draw_text(label, x+12, y+(h-18)/2, 18, rl.Color{255, 238, 228, 255})
+}
+
+draw_wave_button :: proc(g: ^Game, x, y, w, h: int, label: string, disabled: bool) {
+	if disabled {
+		draw_button_disabled(x, y, w, h, label, false, true)
+		return
+	}
+
+	pulse := f32(math.sin(f64(g.visual_time*4)))*0.5 + 0.5
+	accent := u8(190 + int(pulse*55))
+	rl.DrawRectangle(i32(x), i32(y), i32(w), i32(h), rl.Color{112, 76, 25, 255})
+	rl.DrawRectangleLines(i32(x-1), i32(y-1), i32(w+2), i32(h+2), rl.Color{255, accent, 65, 255})
+	draw_text(label, x+12, y+(h-18)/2, 18, rl.Color{255, 245, 210, 255})
 }
 
 draw_button_disabled :: proc(x, y, w, h: int, label: string, selected, disabled: bool) {

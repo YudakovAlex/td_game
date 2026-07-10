@@ -24,6 +24,7 @@ MAX_PATH_POINTS :: 12
 
 START_GOLD  :: 200
 START_LIVES :: 20
+NEXT_WAVE_DELAY :: f32(5)
 
 Game_Mode :: enum {
 	Playing,
@@ -256,6 +257,7 @@ Game :: struct {
 	wave_state:         Wave_State,
 	wave_spawned_count: int,
 	wave_spawn_timer:   f32,
+	next_wave_timer:    f32,
 
 	game_speed: f32,
 	visual_time: f32,
@@ -507,7 +509,7 @@ update_game :: proc(g: ^Game, raw_dt: f32) {
 
 	dt := raw_dt * g.game_speed
 
-	update_wave(g, dt)
+	update_wave(g, dt, raw_dt)
 	update_enemies(g, dt)
 	update_towers(g, dt)
 	update_projectiles(g, dt)
