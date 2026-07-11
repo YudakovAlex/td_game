@@ -55,6 +55,12 @@ Tower_Type :: enum {
 	Flame,
 }
 
+Target_Mode :: enum {
+	First,
+	Weakest,
+	Strongest,
+}
+
 Enemy_Type :: enum {
 	Grunt,
 	Runner,
@@ -202,6 +208,7 @@ Tower :: struct {
 	pos:    Vec2,
 
 	level: int,
+	target_mode: Target_Mode,
 
 	cooldown_timer: f32,
 	total_invested: int,
@@ -615,6 +622,10 @@ handle_input :: proc(g: ^Game) {
 		change_game_speed(g, -1)
 	}
 
+	if rl.IsKeyPressed(.TAB) && g.selected_tower_index >= 0 {
+		cycle_tower_target_mode(g, g.selected_tower_index)
+	}
+
 	if rl.IsMouseButtonPressed(.LEFT) {
 		if point_in_game_view(mouse_screen) {
 			if mouse.x < f32(UI_X) {
@@ -690,8 +701,11 @@ handle_ui_click :: proc(g: ^Game, mouse: Vec2) {
 		change_game_speed(g, 1)
 	}
 
-	if g.selected_tower_index >= 0 {
-	if point_in_rect(mouse, UI_X+20, 472, 108, 38) {
+	if g.selected_tower_index >= 0 && g.selected_tower_index < g.tower_count {
+		if point_in_rect(mouse, UI_X+20, 610, 220, 24) {
+			cycle_tower_target_mode(g, g.selected_tower_index)
+		}
+		if point_in_rect(mouse, UI_X+20, 472, 108, 38) {
 			upgrade_tower(g, g.selected_tower_index)
 		}
 		if point_in_rect(mouse, UI_X+136, 472, 104, 38) {

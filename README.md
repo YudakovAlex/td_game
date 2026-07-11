@@ -54,6 +54,7 @@ Enemies travel along the brown paths from blue spawn tiles to red exit tiles. Se
 | Change game speed | `-` / `=` | Speed buttons |
 | Upgrade selected tower | `U` | **U** button |
 | Sell selected tower | `S` | **S** button |
+| Cycle selected tower targeting | `Tab` | **Target** button |
 | Clear selection | — | Right-click |
 | Open or close pause menu | `Esc` | **Menu** button / menu controls |
 | Restart from pause menu | `R` | **Restart** button |

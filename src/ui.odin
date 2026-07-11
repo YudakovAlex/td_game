@@ -120,21 +120,29 @@ draw_ui :: proc(g: ^Game) {
 		draw_sell_button(x+116, 472, 104, 38, fmt.tprintf("S  $%d", int(f32(t.total_invested)*0.70)))
 
 		draw_text(def.role, x, 522, 16, rl.LIGHTGRAY)
-		draw_text(fmt.tprintf("Damage: %.1f  Range: %.0f", tower_damage(t, def), tower_range(t, def)), x, 546, 17, rl.RAYWHITE)
-		draw_text(fmt.tprintf("Type: %s", damage_type_name(def.damage_type)), x, 568, 17, rl.RAYWHITE)
-		if def.slow_amount > 0 { draw_text(fmt.tprintf("Slow: %.0f%%", def.slow_amount*100), x, 590, 16, rl.SKYBLUE) }
-		if def.burn_damage > 0 { draw_text(fmt.tprintf("Burn: %.1f / tick", tower_burn_damage(t,def)), x, 590, 16, rl.ORANGE) }
+		draw_text(fmt.tprintf("Damage: %.1f", tower_damage(t, def)), x, 546, 15, rl.RAYWHITE)
+		draw_text(fmt.tprintf("Range: %.0f", tower_range(t, def)), x+112, 546, 15, rl.RAYWHITE)
+		draw_text(fmt.tprintf("Attack: %.2fs", tower_cooldown(t, def)), x, 568, 15, rl.RAYWHITE)
+		draw_text(fmt.tprintf("Type: %s", damage_type_name(def.damage_type)), x+112, 568, 15, rl.RAYWHITE)
+		if def.splash_radius > 0 {
+			draw_text(fmt.tprintf("Splash: %.0f", def.splash_radius), x, 590, 15, rl.RAYWHITE)
+		} else {
+			draw_text("Single target", x, 590, 15, rl.RAYWHITE)
+		}
+		if def.slow_amount > 0 { draw_text(fmt.tprintf("Slow: %.0f%%", def.slow_amount*100), x+112, 590, 15, rl.SKYBLUE) }
+		if def.burn_damage > 0 { draw_text(fmt.tprintf("Burn: %.1f / tick", tower_burn_damage(t,def)), x+112, 590, 15, rl.ORANGE) }
+		draw_button(x, 610, 220, 24, fmt.tprintf("Target: %s  [Tab]", target_mode_name(t.target_mode)), false)
 	}
 
 	preview_index := g.current_wave
 	if g.wave_state == .Spawning || g.wave_state == .Clearing { preview_index += 1 }
 	if preview_index < g.wave_count {
 		wave := g.waves[preview_index]
-		draw_text("NEXT WAVE", x, 612, 16, rl.GOLD)
+		draw_text("NEXT WAVE", x, 638, 16, rl.GOLD)
 		for group_index := 0; group_index < wave.group_count; group_index += 1 {
 			group := wave.groups[group_index]
 			edef := get_enemy_def(g, group.enemy_type)
-			row_y := 634 + group_index*20
+			row_y := 660 + group_index*18
 			draw_asset(&g.assets, edef.asset, vec2(f32(x+12),f32(row_y+8)), vec2(25,25), 0, rl.WHITE)
 			draw_text(fmt.tprintf("%s  x%d", edef.name, group.count), x+32, row_y, 15, rl.RAYWHITE)
 		}
@@ -155,6 +163,15 @@ draw_tower_button :: proc(g: ^Game, x,y: int, kind: Tower_Type, label: string, s
 damage_type_name :: proc(kind: Damage_Type) -> string {
 	switch kind { case .Physical: return "Physical"; case .Magic: return "Magic"; case .Elemental: return "Elemental" }
 	return ""
+}
+
+target_mode_name :: proc(mode: Target_Mode) -> string {
+	switch mode {
+	case .First:    return "First"
+	case .Weakest:  return "Weakest"
+	case .Strongest:return "Strongest"
+	}
+	return "First"
 }
 
 draw_button :: proc(x, y, w, h: int, label: string, selected: bool) {

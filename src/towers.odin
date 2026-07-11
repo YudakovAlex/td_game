@@ -41,6 +41,7 @@ place_tower :: proc(g: ^Game, kind: Tower_Type, tx, ty: int) {
 	t.tile_y = ty
 	t.pos = tile_center(tx, ty)
 	t.level = 1
+	t.target_mode = .First
 	t.cooldown_timer = 0
 	t.total_invested = def.cost
 
@@ -149,9 +150,43 @@ tower_cooldown :: proc(t: ^Tower, def: Tower_Def) -> f32 {
 	return def.cooldown
 }
 
+next_target_mode :: proc(mode: Target_Mode) -> Target_Mode {
+	switch mode {
+	case .First:
+		return .Weakest
+	case .Weakest:
+		return .Strongest
+	case .Strongest:
+		return .First
+	}
+	return .First
+}
+
+cycle_tower_target_mode :: proc(g: ^Game, index: int) {
+	if index < 0 || index >= g.tower_count {
+		return
+	}
+
+	g.towers[index].target_mode = next_target_mode(g.towers[index].target_mode)
+	play_game_sound(g, .Action)
+}
+
+target_is_better :: proc(mode: Target_Mode, candidate: Enemy, candidate_index: int, current: Enemy, current_index: int) -> bool {
+	if mode == .Weakest && candidate.hp != current.hp {
+		return candidate.hp < current.hp
+	}
+	if mode == .Strongest && candidate.hp != current.hp {
+		return candidate.hp > current.hp
+	}
+
+	if candidate.path_index != current.path_index {
+		return candidate.path_index > current.path_index
+	}
+	return candidate_index < current_index
+}
+
 find_tower_target :: proc(g: ^Game, t: ^Tower, def: Tower_Def) -> int {
 	best := -1
-	best_progress := -1
 
 	r := tower_range(t, def)
 	r_sq := r * r
@@ -166,9 +201,7 @@ find_tower_target :: proc(g: ^Game, t: ^Tower, def: Tower_Def) -> int {
 			continue
 		}
 
-		progress := e.path_index
-		if progress > best_progress {
-			best_progress = progress
+		if best < 0 || target_is_better(t.target_mode, e, i, g.enemies[best], best) {
 			best = i
 		}
 	}
