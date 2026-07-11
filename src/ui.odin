@@ -130,21 +130,14 @@ draw_ui :: proc(g: ^Game) {
 	if g.wave_state == .Spawning || g.wave_state == .Clearing { preview_index += 1 }
 	if preview_index < g.wave_count {
 		wave := g.waves[preview_index]
-		edef := get_enemy_def(wave.enemy_type)
 		draw_text("NEXT WAVE", x, 612, 16, rl.GOLD)
-		draw_asset(&g.assets, edef.asset, vec2(f32(x+20),650), vec2(34,34), 0, rl.WHITE)
-		draw_text(fmt.tprintf("%s  x%d", edef.name, wave.count), x+44, 635, 18, rl.RAYWHITE)
-		draw_text(edef.resistance, x+44, 657, 13, rl.LIGHTGRAY)
-	}
-
-	if g.wave_state == .Waiting {
-		draw_text("State: Waiting", x, 690, 16, rl.LIGHTGRAY)
-	} else if g.wave_state == .Spawning {
-		draw_text("State: Spawning", x, 690, 16, rl.LIGHTGRAY)
-	} else if g.wave_state == .Clearing {
-		draw_text("State: Clearing", x, 690, 16, rl.LIGHTGRAY)
-	} else if g.wave_state == .Finished {
-		draw_text("State: Finished", x, 690, 16, rl.LIGHTGRAY)
+		for group_index := 0; group_index < wave.group_count; group_index += 1 {
+			group := wave.groups[group_index]
+			edef := get_enemy_def(group.enemy_type)
+			row_y := 634 + group_index*20
+			draw_asset(&g.assets, edef.asset, vec2(f32(x+12),f32(row_y+8)), vec2(25,25), 0, rl.WHITE)
+			draw_text(fmt.tprintf("%s  x%d", edef.name, group.count), x+32, row_y, 15, rl.RAYWHITE)
+		}
 	}
 }
 
@@ -216,16 +209,21 @@ draw_center_message :: proc(text: string, color: rl.Color) {
 }
 
 draw_run_stats :: proc(g: ^Game, center_x, y: int) {
-	lines := [4]string {
+	best := g.save.levels[g.current_level]
+	best_label := "Best score: --"
+	if best.completed { best_label = fmt.tprintf("Best score: %d", best.best_score) }
+	lines := [6]string {
 		fmt.tprintf("Waves cleared: %d / %d", waves_cleared(g), g.wave_count),
 		fmt.tprintf("Enemies defeated: %d", g.enemies_defeated),
 		fmt.tprintf("Enemies leaked: %d", g.enemies_leaked),
 		fmt.tprintf("Lives: %d    Gold: %d", max(g.lives, 0), g.gold),
+		fmt.tprintf("Score: %d", displayed_score(g)),
+		best_label,
 	}
 	for line, index in lines {
 		line_c := fmt.ctprintf("%s", line)
 		width := int(rl.MeasureText(line_c, 20))
-		draw_text(line, center_x-width/2, y+index*27, 20, rl.RAYWHITE)
+		draw_text(line, center_x-width/2, y+index*24, 20, rl.RAYWHITE)
 	}
 }
 
@@ -234,9 +232,9 @@ draw_result_message :: proc(g: ^Game, title, action: string, color: rl.Color) {
 	title_c := fmt.ctprintf("%s",title)
 	title_width := int(rl.MeasureText(title_c,48))
 	draw_text(title,SCREEN_WIDTH/2-title_width/2,230,48,color)
-	draw_run_stats(g, SCREEN_WIDTH/2, 300)
+	draw_run_stats(g, SCREEN_WIDTH/2, 288)
 	if action == "" { return }
-	draw_button(520,440,240,48,fmt.tprintf("%s  [Enter]",action),false)
+	draw_button(520,452,240,48,fmt.tprintf("%s  [Enter]",action),false)
 }
 
 draw_pause_message :: proc(g: ^Game) {

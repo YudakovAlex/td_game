@@ -7,13 +7,14 @@ Rune Siege TD is a single-player, fantasy tower-defense prototype written in [Od
 ## Current features
 
 - Three sequential maps: **Grasslands**, **Forest Pass**, and **Frozen Road**.
-- 55 hand-authored waves, including fast, armored, brute, and boss enemies.
+- 55 hand-authored waves, including fast, armored, brute, and boss enemies, with sequential mixed-enemy groups in Grasslands.
 - Four tower families:
   - **Arrow** — quick physical single-target damage.
   - **Cannon** — physical splash damage.
   - **Frost** — magic damage that slows enemies.
   - **Flame** — elemental splash damage with burn.
 - Three tower levels, 70% sell refunds, gold rewards, lives, and 1×–3× game speed.
+- Deterministic run scores and best score/lives records saved per completed level.
 - Pause menu, restart flow, victory/defeat screens, high-DPI support, and a resizable letterboxed window.
 - A painted fantasy sprite atlas with safe primitive-rendering fallbacks when the atlas is unavailable.
 
@@ -71,6 +72,8 @@ src/
   projectiles.odin  Projectile behavior and splash hits
   effects.odin      Temporary combat visual effects
   ui.odin           HUD, menus, and virtual-resolution rendering
+  save.odin         Local result serialization and persistence
+  save_test.odin    Focused scoring and save-format tests
   assets.odin       Sprite-atlas loading and lookup
 assets/
   sprite_atlas.png  Runtime art atlas
@@ -79,6 +82,6 @@ assets/
 
 ## Development notes
 
-The project is an intentionally compact prototype. Tower, enemy, wave, and level data are currently hard-coded in `src/game.odin` and `src/waves.odin`; external data files, audio, saved progression, scoring, additional targeting policies, and mixed-enemy waves are planned but not yet implemented.
+The project is an intentionally compact prototype. Tower, enemy, wave, and level data remain hard-coded in `src/game.odin` and `src/waves.odin`; external data files, audio, additional targeting policies, and broader campaign systems are planned but not yet implemented. Results are saved in the platform user data directory rather than in the project folder.
 
 See [DESIGN.md](DESIGN.md) for the broader game design direction, [PROGRESS.md](PROGRESS.md) for the current implementation status, and [assets/ART_GUIDE.md](assets/ART_GUIDE.md) for artwork replacement instructions.

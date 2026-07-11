@@ -90,6 +90,7 @@ apply_damage_to_enemy :: proc(g: ^Game, enemy_index: int, damage: f32, damage_ty
 	if e.hp <= 0 {
 		e.alive = false
 		g.gold += e.gold_reward
+		g.score_gold_earned += e.gold_reward
 		g.enemies_defeated += 1
 	}
 }

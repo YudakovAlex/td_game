@@ -72,22 +72,20 @@ The game renders to a fixed 1280×720 target and letterboxes it into a resizable
 
 - A complete interactive playthrough and visual review at all target window sizes is still required.
 - Wave balance is provisional; waves 11–15 and the Flame/Armored matchup need playtesting.
-- Waves contain only one enemy type each because the current `Wave_Def` has a single spawn group.
-- Result screens support retry and continuation with per-level run statistics, but numeric score and persistence are not implemented.
-- No audio, settings, menus, saved progression, difficulty selection, or external data files exist yet.
+- Waves support up to three sequential enemy groups; Grasslands uses mixed groups on waves 6, 8, 11, and 13 while Forest Pass and Frozen Road retain single-group definitions.
+- Result screens show deterministic scores and best scores; completed-level best score and best remaining lives are persisted in a versioned user-data text file.
+- No audio, settings, level-select menus, difficulty selection, or external data files exist yet.
 - Towers support only one targeting policy: enemy furthest along the path.
 - Sprites are static; motion comes from rotation, bobbing, tinting, recoil, and procedural effects.
 - Fixed-capacity arrays are appropriate for the current slice but failures at capacity are mostly silent.
 
 ## Recommended next cycle
 
-Complete the first true vertical slice rather than expanding to another level:
+Playtest and polish the completed vertical-slice mechanics before adding new systems:
 
-1. Playtest and balance all current waves, tower costs, upgrades, rewards, and resistances.
-2. Support multi-group waves so later waves can combine enemy roles.
-3. Add essential sound feedback for placement, firing/hits, wave start, leaks, boss spawn, and results.
-4. Define scoring and persistence after the economy and run-stat counters are proven.
-5. Move tower, enemy, and wave definitions into external data once their schemas stabilize.
-6. Add towers and enemies only after mixed-wave composition and balance are stable.
+1. Playtest and balance Grasslands mixed waves, tower costs, upgrades, rewards, and resistances.
+2. Add essential sound feedback for placement, firing/hits, wave start, leaks, boss spawn, and results.
+3. Move tower, enemy, and wave definitions into external data once their schemas stabilize.
+4. Add towers and enemies only after mixed-wave composition and balance are stable.
 
-The immediate release criterion is a polished, balanced Grasslands run with mixed enemy roles, essential audio feedback, and a persisted result.
+The immediate release criterion is a polished, balanced Grasslands run with mixed enemy roles, a visible score, and a persisted best result. Audio remains the next focused polish pass.

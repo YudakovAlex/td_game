@@ -17,6 +17,7 @@ MAX_ENEMIES     :: 512
 MAX_TOWERS      :: 128
 MAX_PROJECTILES :: 512
 MAX_WAVES       :: 20
+MAX_WAVE_GROUPS :: 3
 MAX_EFFECTS     :: 256
 MAX_LEVELS      :: 3
 MAX_ROUTES      :: 2
@@ -125,6 +126,11 @@ Enemy_Def :: struct {
 }
 
 Wave_Def :: struct {
+	groups:     [MAX_WAVE_GROUPS]Wave_Group,
+	group_count: int,
+}
+
+Wave_Group :: struct {
 	enemy_type:     Enemy_Type,
 	count:          int,
 	spawn_interval: f32,
@@ -236,6 +242,10 @@ Game :: struct {
 	lives: int,
 	enemies_defeated: int,
 	enemies_leaked:   int,
+	score_gold_earned: int,
+	result_score:      int,
+	result_saved:      bool,
+	save:              Save_Data,
 
 	selected_tower_type:  Tower_Type,
 	selected_tower_index: int,
@@ -255,8 +265,10 @@ Game :: struct {
 	current_wave: int,
 
 	wave_state:         Wave_State,
+	wave_group_index:   int,
 	wave_spawned_count: int,
 	wave_spawn_timer:   f32,
+	wave_route_cursor:  int,
 	next_wave_timer:    f32,
 
 	game_speed: f32,
@@ -366,7 +378,7 @@ get_enemy_def :: proc(kind: Enemy_Type) -> Enemy_Def {
 	case .Boss:
 		return Enemy_Def {
 			name         = "Boss",
-			max_hp       = 900,
+			max_hp       = 1200,
 			speed        = 32,
 			gold_reward  = 100,
 			lives_damage = 5,
@@ -486,6 +498,7 @@ point_in_rect :: proc(p: Vec2, x, y, w, h: int) -> bool {
 init_game :: proc() -> Game {
 	g := Game{}
 	init_levels(&g)
+	g.save = load_results(g.level_count)
 	g.current_level = 0
 	load_level(&g, g.current_level)
 	load_assets(&g.assets)
@@ -518,11 +531,11 @@ update_game :: proc(g: ^Game, raw_dt: f32) {
 	cleanup_dead_enemies(g)
 
 	if g.lives <= 0 {
+		g.result_score = calculate_score(g)
 		g.mode = .Defeat
-	}
-
-	if g.current_wave >= g.wave_count && g.wave_state == .Finished && g.enemy_count == 0 {
+	} else if g.current_wave >= g.wave_count && g.wave_state == .Finished && g.enemy_count == 0 {
 		g.mode = .Victory
+		save_completed_result(g)
 	}
 }
 
@@ -538,6 +551,24 @@ displayed_wave :: proc(g: ^Game) -> int {
 	if g.wave_count <= 0 { return 0 }
 	if g.wave_state == .Finished { return g.wave_count }
 	return clamp(g.current_wave+1, 1, g.wave_count)
+}
+
+calculate_score :: proc(g: ^Game) -> int {
+	return g.score_gold_earned + waves_cleared(g)*100 + max(g.lives, 0)*50
+}
+
+displayed_score :: proc(g: ^Game) -> int {
+	if g.mode == .Victory || g.mode == .Defeat { return g.result_score }
+	return calculate_score(g)
+}
+
+save_completed_result :: proc(g: ^Game) {
+	if g.result_saved { return }
+	g.result_score = calculate_score(g)
+	if update_best_result(&g.save, g.current_level, g.result_score, max(g.lives, 0)) {
+		save_results(&g.save, g.level_count)
+	}
+	g.result_saved = true
 }
 
 change_game_speed :: proc(g: ^Game, delta: f32) {
@@ -557,7 +588,7 @@ handle_result_input :: proc(g: ^Game) {
 	mouse_screen := rl.GetMousePosition()
 	mouse := screen_to_game_pos(mouse_screen)
 	activate := rl.IsKeyPressed(.ENTER)
-	if rl.IsMouseButtonPressed(.LEFT) && point_in_game_view(mouse_screen) && point_in_rect(mouse, 520, 440, 240, 48) {
+	if rl.IsMouseButtonPressed(.LEFT) && point_in_game_view(mouse_screen) && point_in_rect(mouse, 520, 452, 240, 48) {
 		activate = true
 	}
 	if !activate { return }
