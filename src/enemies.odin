@@ -34,6 +34,7 @@ update_enemies :: proc(g: ^Game, dt: f32) {
 			e.alive = false
 			g.lives -= e.lives_damage
 			g.enemies_leaked += 1
+			play_game_sound(g, .Leak)
 			continue
 		}
 

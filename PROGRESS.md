@@ -1,6 +1,6 @@
 # Rune Siege TD — Progress and Current State
 
-Last updated: July 9, 2026
+Last updated: July 11, 2026
 
 ## Project status
 
@@ -28,6 +28,7 @@ odin build src
 - Level-complete continuation, campaign completion, and current-level retry flows with fresh resources per level.
 - Physical, Magic, and Elemental damage types with centralized resistance multipliers.
 - Strongest-slow replacement and refresh behavior, reduced boss slow effectiveness, and one refreshable burn instance per enemy.
+- Minimal runtime-generated sound cues for actions, impacts, wave starts, bosses, leaks, and results, with safe fallback when audio is unavailable.
 
 ## Visual and interface state
 
@@ -74,7 +75,7 @@ The game renders to a fixed 1280×720 target and letterboxes it into a resizable
 - Wave balance is provisional; waves 11–15 and the Flame/Armored matchup need playtesting.
 - Waves support up to three sequential enemy groups; Grasslands uses mixed groups on waves 6, 8, 11, and 13 while Forest Pass and Frozen Road retain single-group definitions.
 - Result screens show deterministic scores and best scores; completed-level best score and best remaining lives are persisted in a versioned user-data text file.
-- No audio, settings, level-select menus, difficulty selection, or external data files exist yet.
+- No music/settings, level-select menus, difficulty selection, or external data files exist yet.
 - Towers support only one targeting policy: enemy furthest along the path.
 - Sprites are static; motion comes from rotation, bobbing, tinting, recoil, and procedural effects.
 - Fixed-capacity arrays are appropriate for the current slice but failures at capacity are mostly silent.
@@ -84,8 +85,7 @@ The game renders to a fixed 1280×720 target and letterboxes it into a resizable
 Playtest and polish the completed vertical-slice mechanics before adding new systems:
 
 1. Playtest and balance Grasslands mixed waves, tower costs, upgrades, rewards, and resistances.
-2. Add essential sound feedback for placement, firing/hits, wave start, leaks, boss spawn, and results.
-3. Move tower, enemy, and wave definitions into external data once their schemas stabilize.
-4. Add towers and enemies only after mixed-wave composition and balance are stable.
+2. Move tower, enemy, and wave definitions into external data once their schemas stabilize.
+3. Add towers and enemies only after mixed-wave composition and balance are stable.
 
-The immediate release criterion is a polished, balanced Grasslands run with mixed enemy roles, a visible score, and a persisted best result. Audio remains the next focused polish pass.
+The immediate release criterion is a polished, balanced Grasslands run with mixed enemy roles, a visible score, persisted best results, and restrained feedback audio.

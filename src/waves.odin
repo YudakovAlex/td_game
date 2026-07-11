@@ -131,6 +131,14 @@ try_start_wave :: proc(g: ^Game) {
 	g.wave_spawn_timer = 0
 	g.wave_route_cursor = 0
 	g.next_wave_timer = 0
+	play_game_sound(g, .Wave_Start)
+	wave := g.waves[g.current_wave]
+	for i := 0; i < wave.group_count; i += 1 {
+		if wave.groups[i].enemy_type == .Boss {
+			play_game_sound(g, .Boss)
+			break
+		}
+	}
 }
 
 update_wave :: proc(g: ^Game, dt, raw_dt: f32) {

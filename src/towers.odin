@@ -48,6 +48,7 @@ place_tower :: proc(g: ^Game, kind: Tower_Type, tx, ty: int) {
 	g.selected_tower_index = g.tower_count
 	g.selected_tower_type = .None
 	g.tower_count += 1
+	play_game_sound(g, .Action)
 }
 
 upgrade_tower :: proc(g: ^Game, index: int) {
@@ -71,6 +72,7 @@ upgrade_tower :: proc(g: ^Game, index: int) {
 	g.gold -= cost
 	t.total_invested += cost
 	t.level += 1
+	play_game_sound(g, .Action)
 }
 
 upgrade_cost :: proc(t: ^Tower, def: Tower_Def) -> int {
@@ -91,6 +93,7 @@ sell_tower :: proc(g: ^Game, index: int) {
 	g.tower_count -= 1
 
 	g.selected_tower_index = -1
+	play_game_sound(g, .Action)
 }
 
 update_towers :: proc(g: ^Game, dt: f32) {

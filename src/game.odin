@@ -82,6 +82,16 @@ Asset_Id :: enum {
 
 Effect_Type :: enum { Spark, Explosion, Frost_Burst, Flame_Burst, Burn_Ember, Portal }
 
+Sound_Id :: enum {
+	Action,
+	Impact,
+	Wave_Start,
+	Boss,
+	Leak,
+	Victory,
+	Defeat,
+}
+
 Vec2 :: rl.Vector2
 
 Viewport :: struct {
@@ -224,8 +234,20 @@ Visual_Effect :: struct {
 	color:    rl.Color,
 }
 
+Sounds :: struct {
+	action:       rl.Sound,
+	impact:       rl.Sound,
+	wave_start:   rl.Sound,
+	boss:         rl.Sound,
+	leak:         rl.Sound,
+	victory:      rl.Sound,
+	defeat:       rl.Sound,
+	impact_timer: f32,
+}
+
 Assets :: struct {
-	atlas: rl.Texture2D,
+	atlas:  rl.Texture2D,
+	sounds: Sounds,
 }
 
 Game :: struct {
@@ -506,7 +528,33 @@ init_game :: proc() -> Game {
 	return g
 }
 
+play_game_sound :: proc(g: ^Game, id: Sound_Id) {
+	if !rl.IsAudioDeviceReady() { return }
+
+	if id == .Impact {
+		if g.assets.sounds.impact_timer > 0 { return }
+		g.assets.sounds.impact_timer = 0.05
+	}
+
+	sound := rl.Sound{}
+	switch id {
+	case .Action:     sound = g.assets.sounds.action
+	case .Impact:     sound = g.assets.sounds.impact
+	case .Wave_Start: sound = g.assets.sounds.wave_start
+	case .Boss:       sound = g.assets.sounds.boss
+	case .Leak:       sound = g.assets.sounds.leak
+	case .Victory:    sound = g.assets.sounds.victory
+	case .Defeat:     sound = g.assets.sounds.defeat
+	}
+
+	if rl.IsSoundValid(sound) { rl.PlaySound(sound) }
+}
+
 update_game :: proc(g: ^Game, raw_dt: f32) {
+	if g.assets.sounds.impact_timer > 0 {
+		g.assets.sounds.impact_timer -= raw_dt
+	}
+
 	if g.mode == .Paused {
 		handle_pause_input(g)
 		return
@@ -533,8 +581,10 @@ update_game :: proc(g: ^Game, raw_dt: f32) {
 	if g.lives <= 0 {
 		g.result_score = calculate_score(g)
 		g.mode = .Defeat
+		play_game_sound(g, .Defeat)
 	} else if g.current_wave >= g.wave_count && g.wave_state == .Finished && g.enemy_count == 0 {
 		g.mode = .Victory
+		play_game_sound(g, .Victory)
 		save_completed_result(g)
 	}
 }

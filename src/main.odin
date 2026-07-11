@@ -6,6 +6,8 @@ main :: proc() {
 	rl.SetConfigFlags(rl.ConfigFlags{.WINDOW_RESIZABLE, .WINDOW_HIGHDPI, .VSYNC_HINT})
 	rl.InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "2D Tower Defense - Odin Prototype")
 	defer rl.CloseWindow()
+	rl.InitAudioDevice()
+	defer rl.CloseAudioDevice()
 	// Escape is a gameplay control; closing remains available through the window controls.
 	rl.SetExitKey(.KEY_NULL)
 

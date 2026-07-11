@@ -55,6 +55,7 @@ hit_projectile :: proc(g: ^Game, p: ^Projectile) {
 	if p.burn_damage > 0 {
 		apply_burn_to_enemy(g, p.target_index, p.burn_damage, p.burn_duration)
 	}
+	play_game_sound(g, .Impact)
 
 	kind := Effect_Type.Spark
 	if p.splash_radius > 30 { kind = .Explosion }

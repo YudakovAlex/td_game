@@ -15,6 +15,7 @@ Rune Siege TD is a single-player, fantasy tower-defense prototype written in [Od
   - **Flame** — elemental splash damage with burn.
 - Three tower levels, 70% sell refunds, gold rewards, lives, and 1×–3× game speed.
 - Deterministic run scores and best score/lives records saved per completed level.
+- Minimal generated sound cues for actions, combat impacts, waves, bosses, leaks, and results.
 - Pause menu, restart flow, victory/defeat screens, high-DPI support, and a resizable letterboxed window.
 - A painted fantasy sprite atlas with safe primitive-rendering fallbacks when the atlas is unavailable.
 
@@ -82,6 +83,6 @@ assets/
 
 ## Development notes
 
-The project is an intentionally compact prototype. Tower, enemy, wave, and level data remain hard-coded in `src/game.odin` and `src/waves.odin`; external data files, audio, additional targeting policies, and broader campaign systems are planned but not yet implemented. Results are saved in the platform user data directory rather than in the project folder.
+The project is an intentionally compact prototype. Tower, enemy, wave, and level data remain hard-coded in `src/game.odin` and `src/waves.odin`; external data files, music/settings, additional targeting policies, and broader campaign systems are planned but not yet implemented. Results are saved in the platform user data directory rather than in the project folder.
 
 See [DESIGN.md](DESIGN.md) for the broader game design direction, [PROGRESS.md](PROGRESS.md) for the current implementation status, and [assets/ART_GUIDE.md](assets/ART_GUIDE.md) for artwork replacement instructions.
