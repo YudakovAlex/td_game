@@ -3,6 +3,10 @@ package main
 import "core:fmt"
 import rl "vendor:raylib"
 
+// Embed the runtime atlas in the executable so release builds do not depend on
+// an assets directory or on the process working directory.
+SPRITE_ATLAS_PNG :: #load("../assets/sprite_atlas.png")
+
 asset_path :: proc(id: Asset_Id) -> string {
 	switch id {
 	case .Grass: return "assets/terrain/grass.png"
@@ -34,11 +38,16 @@ asset_path :: proc(id: Asset_Id) -> string {
 }
 
 load_assets :: proc(a: ^Assets) {
-	path := "assets/sprite_atlas.png"
-	if rl.FileExists(fmt.ctprintf("%s", path)) {
-		a.atlas = rl.LoadTexture(fmt.ctprintf("%s", path))
-		if rl.IsTextureValid(a.atlas) { rl.SetTextureFilter(a.atlas, .BILINEAR) }
-	}
+	image := rl.LoadImageFromMemory(
+		fmt.ctprintf(".png"),
+		raw_data(SPRITE_ATLAS_PNG),
+		i32(len(SPRITE_ATLAS_PNG)),
+	)
+	if !rl.IsImageValid(image) { return }
+	defer rl.UnloadImage(image)
+
+	a.atlas = rl.LoadTextureFromImage(image)
+	if rl.IsTextureValid(a.atlas) { rl.SetTextureFilter(a.atlas, .BILINEAR) }
 }
 
 unload_assets :: proc(a: ^Assets) {

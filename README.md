@@ -34,6 +34,11 @@ odin build src -out:build/game
 
 On Windows, run `build/game.exe` instead.
 
+The sprite atlas is embedded into the executable at compile time. The built
+`game.exe` is therefore self-contained and can be copied to another Windows PC
+without the `assets` directory. The destination PC must still have a compatible
+Windows architecture and graphics support.
+
 ## How to play
 
 Enemies travel along the brown paths from blue spawn tiles to red exit tiles. Select a tower, then left-click an empty green tile to build it. Click an existing tower to inspect it and upgrade or sell it.
