@@ -29,6 +29,83 @@ test_content_files_load_current_definitions :: proc(t: ^testing.T) {
 }
 
 @(test)
+test_grasslands_content_curve :: proc(t: ^testing.T) {
+	g := Game{}
+	init_levels(&g)
+	defer unload_level_content(&g.levels)
+	defer unload_content(&g.content)
+	testing.expect(t, load_content(&g))
+
+	grasslands := &g.levels[0]
+	testing.expect(t, grasslands.wave_count == 15)
+
+	// The opening waves introduce the basic enemy roles in sequence.
+	testing.expect(t, grasslands.waves[0].groups[0].enemy_type == .Grunt)
+	testing.expect(t, grasslands.waves[2].groups[0].enemy_type == .Runner)
+	testing.expect(t, grasslands.waves[4].groups[0].enemy_type == .Brute)
+
+	// Armored enemies arrive only after the basic roles are established.
+	for wave_index := 0; wave_index < 10; wave_index += 1 {
+		wave := grasslands.waves[wave_index]
+		for group_index := 0; group_index < wave.group_count; group_index += 1 {
+			testing.expect(t, wave.groups[group_index].enemy_type != .Armored)
+		}
+	}
+	testing.expect(t, grasslands.waves[10].groups[0].enemy_type == .Armored)
+
+	// Boss waves remain explicit milestones in the level curve.
+	testing.expect(t, grasslands.waves[9].group_count == 1)
+	testing.expect(t, grasslands.waves[9].groups[0].enemy_type == .Boss)
+	testing.expect(t, grasslands.waves[14].group_count == 1)
+	testing.expect(t, grasslands.waves[14].groups[0].enemy_type == .Boss)
+}
+
+@(test)
+test_grasslands_mixed_wave_roles :: proc(t: ^testing.T) {
+	g := Game{}
+	init_levels(&g)
+	defer unload_level_content(&g.levels)
+	defer unload_content(&g.content)
+	testing.expect(t, load_content(&g))
+
+	grasslands := &g.levels[0]
+	expected_first := [4]Enemy_Type{.Runner, .Brute, .Armored, .Runner}
+	expected_second := [4]Enemy_Type{.Grunt, .Runner, .Grunt, .Armored}
+	mixed_wave_indices := [4]int{5, 7, 10, 12}
+
+	for i in 0..<len(mixed_wave_indices) {
+		wave := grasslands.waves[mixed_wave_indices[i]]
+		testing.expect(t, wave.group_count == 2)
+		testing.expect(t, wave.groups[0].enemy_type == expected_first[i])
+		testing.expect(t, wave.groups[1].enemy_type == expected_second[i])
+		testing.expect(t, wave.groups[0].count > 0)
+		testing.expect(t, wave.groups[1].count > 0)
+	}
+}
+
+@(test)
+test_tower_and_armored_matchups_remain_distinct :: proc(t: ^testing.T) {
+	g := Game{}
+	init_levels(&g)
+	defer unload_level_content(&g.levels)
+	defer unload_content(&g.content)
+	testing.expect(t, load_content(&g))
+
+	arrow := g.content.towers[int(Tower_Type.Arrow)]
+	cannon := g.content.towers[int(Tower_Type.Cannon)]
+	frost := g.content.towers[int(Tower_Type.Frost)]
+	flame := g.content.towers[int(Tower_Type.Flame)]
+	armored := g.content.enemies[int(Enemy_Type.Armored)]
+
+	testing.expect(t, arrow.damage_type == .Physical)
+	testing.expect(t, cannon.damage_type == .Physical && cannon.splash_radius > 0)
+	testing.expect(t, frost.damage_type == .Magic && frost.slow_amount > 0)
+	testing.expect(t, flame.damage_type == .Elemental && flame.splash_radius > 0 && flame.burn_damage > 0)
+	testing.expect(t, armored.physical_multiplier < 1)
+	testing.expect(t, armored.magic_multiplier > 1)
+}
+
+@(test)
 test_map_parser_rejects_invalid_metadata_and_routes :: proc(t: ^testing.T) {
 	valid := `{"version":1,"level":"test","name":"Test","starting_gold":1,"starting_lives":1,"routes":[{"points":[{"x":20,"y":20},{"x":60,"y":20}]}]}`
 	level := Level_Def{}

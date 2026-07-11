@@ -65,7 +65,9 @@ The game renders to a fixed 1280×720 target and letterboxes it into a resizable
 ## Validation completed
 
 - Odin static check passes.
+- Odin test suite passes with 23 tests, including Grasslands wave-curve, mixed-wave, and tower/enemy matchup regression coverage.
 - Native executable build passes.
+- A native launch was attempted, but the current environment could not open its X11 display or initialize audio; no interactive playthrough was completed here.
 - The committed sprite atlas is a valid 1536×1024 RGBA PNG.
 - Asset ownership has one load and one matching unload.
 - Missing atlas data falls back to primitive rendering rather than preventing play.
@@ -90,3 +92,5 @@ Playtest and polish the completed vertical-slice mechanics before adding new sys
 3. Add towers and enemies only after mixed-wave composition and balance are stable.
 
 The immediate release criterion is a polished, balanced Grasslands run with mixed enemy roles, a visible score, persisted best results, and restrained feedback audio.
+
+The current content already satisfies the intended role progression and matchup contracts: Runner appears before Brute, Armored appears after the opening role introductions, mixed waves retain their sequential group order, and both Grasslands boss waves remain explicit milestones. No numeric balance changes were made without an observed gameplay failure; a complete interactive playthrough and visual review remain the next validation step when a graphical/audio runtime is available.
