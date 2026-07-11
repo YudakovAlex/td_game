@@ -37,9 +37,10 @@ odin build src -out:build/game
 On Windows, run `build/game.exe` instead.
 
 The sprite atlas is embedded into the executable at compile time. The built
-`game.exe` is therefore self-contained and can be copied to another Windows PC
-without the `assets` directory. The destination PC must still have a compatible
-Windows architecture and graphics support.
+executable still requires the repository's `data/` directory at runtime. Keep
+the working directory at the repository root, or copy `data/` alongside the
+executable's working directory. The destination PC must still have a
+compatible Windows architecture and graphics support.
 
 ## How to play
 
@@ -75,7 +76,13 @@ src/
   ui.odin           HUD, menus, and virtual-resolution rendering
   save.odin         Local result serialization and persistence
   save_test.odin    Focused scoring and save-format tests
+  content.odin      JSON content loading and validation
+  content_test.odin Content schema and capacity tests
   assets.odin       Sprite-atlas loading and lookup
+data/
+  towers.json       Tower definitions
+  enemies.json      Enemy definitions and resistances
+  waves/             Per-level wave definitions
 assets/
   sprite_atlas.png  Runtime art atlas
   ART_GUIDE.md      Atlas layout and replacement guidance
@@ -83,6 +90,10 @@ assets/
 
 ## Development notes
 
-The project is an intentionally compact prototype. Tower, enemy, wave, and level data remain hard-coded in `src/game.odin` and `src/waves.odin`; external data files, music/settings, additional targeting policies, and broader campaign systems are planned but not yet implemented. Results are saved in the platform user data directory rather than in the project folder.
+The project is an intentionally compact prototype. Tower, enemy, and wave
+definitions are loaded from versioned JSON files in `data/`; map routes, level
+metadata, music/settings, additional targeting policies, and broader campaign
+systems remain in code or are not yet implemented. Results are saved in the
+platform user data directory rather than in the project folder.
 
 See [DESIGN.md](DESIGN.md) for the broader game design direction, [PROGRESS.md](PROGRESS.md) for the current implementation status, and [assets/ART_GUIDE.md](assets/ART_GUIDE.md) for artwork replacement instructions.

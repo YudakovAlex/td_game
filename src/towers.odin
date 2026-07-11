@@ -27,7 +27,7 @@ place_tower :: proc(g: ^Game, kind: Tower_Type, tx, ty: int) {
 		return
 	}
 
-	def := get_tower_def(kind)
+	def := get_tower_def(g, kind)
 
 	if g.gold < def.cost {
 		return
@@ -61,7 +61,7 @@ upgrade_tower :: proc(g: ^Game, index: int) {
 		return
 	}
 
-	def := get_tower_def(t.kind)
+	def := get_tower_def(g, t.kind)
 
 	cost := upgrade_cost(t, def)
 
@@ -99,7 +99,7 @@ sell_tower :: proc(g: ^Game, index: int) {
 update_towers :: proc(g: ^Game, dt: f32) {
 	for i := 0; i < g.tower_count; i += 1 {
 		t := &g.towers[i]
-		def := get_tower_def(t.kind)
+		def := get_tower_def(g, t.kind)
 
 		t.cooldown_timer -= dt
 		if t.recoil > 0 { t.recoil -= dt*6 }
@@ -210,7 +210,7 @@ fire_projectile :: proc(g: ^Game, t: ^Tower, def: Tower_Def, target_index: int) 
 draw_towers :: proc(g: ^Game) {
 	for i := 0; i < g.tower_count; i += 1 {
 		t := g.towers[i]
-		def := get_tower_def(t.kind)
+		def := get_tower_def(g, t.kind)
 
 		color := def.color
 

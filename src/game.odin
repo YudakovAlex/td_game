@@ -125,14 +125,22 @@ Tower_Def :: struct {
 }
 
 Enemy_Def :: struct {
-	name:         string,
-	max_hp:       f32,
-	speed:        f32,
-	gold_reward:  int,
-	lives_damage: int,
-	asset:        Asset_Id,
-	resistance:   string,
-	color:        rl.Color,
+	name:                 string,
+	max_hp:               f32,
+	speed:                f32,
+	gold_reward:          int,
+	lives_damage:         int,
+	asset:                Asset_Id,
+	resistance:           string,
+	physical_multiplier:  f32,
+	magic_multiplier:     f32,
+	elemental_multiplier: f32,
+	color:                rl.Color,
+}
+
+Content_Data :: struct {
+	towers:  [5]Tower_Def,
+	enemies: [5]Enemy_Def,
 }
 
 Wave_Def :: struct {
@@ -268,6 +276,7 @@ Game :: struct {
 	result_score:      int,
 	result_saved:      bool,
 	save:              Save_Data,
+	content:           Content_Data,
 
 	selected_tower_type:  Tower_Type,
 	selected_tower_index: int,
@@ -297,127 +306,14 @@ Game :: struct {
 	visual_time: f32,
 }
 
-get_tower_def :: proc(kind: Tower_Type) -> Tower_Def {
-	switch kind {
-	case .None:
-		return Tower_Def {}
-	case .Arrow:
-		return Tower_Def {
-			name           = "Arrow",
-			cost           = 50,
-			damage         = 18,
-			range          = 135,
-			cooldown       = 0.55,
-			projectile_spd = 460,
-			splash_radius  = 0,
-			damage_type    = .Physical,
-			slow_amount    = 0,
-			slow_duration  = 0,
-			asset          = .Tower_Arrow,
-			role           = "Reliable single-target damage",
-			color          = rl.GREEN,
-		}
-	case .Cannon:
-		return Tower_Def {
-			name           = "Cannon",
-			cost           = 90,
-			damage         = 38,
-			range          = 120,
-			cooldown       = 1.20,
-			projectile_spd = 340,
-			splash_radius  = 48,
-			damage_type    = .Physical,
-			slow_amount    = 0,
-			slow_duration  = 0,
-			asset          = .Tower_Cannon,
-			role           = "Splash damage against groups",
-			color          = rl.ORANGE,
-		}
-	case .Frost:
-		return Tower_Def {
-			name           = "Frost",
-			cost           = 80,
-			damage         = 6,
-			range          = 125,
-			cooldown       = 0.85,
-			projectile_spd = 380,
-			splash_radius  = 0,
-			damage_type    = .Magic,
-			slow_amount    = 0.45,
-			slow_duration  = 1.75,
-			asset          = .Tower_Frost,
-			role           = "Control through strong slows",
-			color          = rl.SKYBLUE,
-		}
-	case .Flame:
-		return Tower_Def {
-			name = "Flame", cost = 100, damage = 14, range = 105,
-			cooldown = 0.75, projectile_spd = 390, splash_radius = 25,
-			damage_type = .Elemental, burn_damage = 5, burn_duration = 3.0,
-			asset = .Tower_Flame, role = "Short-range splash and burning",
-			color = rl.Color{245, 105, 35, 255},
-		}
-	}
-
-	return Tower_Def {}
+get_tower_def :: proc(g: ^Game, kind: Tower_Type) -> Tower_Def {
+	if kind < .Arrow || kind > .Flame { return Tower_Def{} }
+	return g.content.towers[int(kind)]
 }
 
-get_enemy_def :: proc(kind: Enemy_Type) -> Enemy_Def {
-	switch kind {
-	case .Grunt:
-		return Enemy_Def {
-			name         = "Grunt",
-			max_hp       = 60,
-			speed        = 65,
-			gold_reward  = 5,
-			lives_damage = 1,
-			asset        = .Enemy_Grunt,
-			resistance   = "No resistance",
-			color        = rl.RED,
-		}
-	case .Runner:
-		return Enemy_Def {
-			name         = "Runner",
-			max_hp       = 38,
-			speed        = 105,
-			gold_reward  = 5,
-			lives_damage = 1,
-			asset        = .Enemy_Runner,
-			resistance   = "Fast, lightly protected",
-			color        = rl.YELLOW,
-		}
-	case .Brute:
-		return Enemy_Def {
-			name         = "Brute",
-			max_hp       = 180,
-			speed        = 42,
-			gold_reward  = 14,
-			lives_damage = 2,
-			asset        = .Enemy_Brute,
-			resistance   = "20% Physical resistance",
-			color        = rl.MAROON,
-		}
-	case .Boss:
-		return Enemy_Def {
-			name         = "Boss",
-			max_hp       = 1200,
-			speed        = 32,
-			gold_reward  = 100,
-			lives_damage = 5,
-			asset        = .Enemy_Boss,
-			resistance   = "15% global resistance",
-			color        = rl.PURPLE,
-		}
-	case .Armored:
-		return Enemy_Def {
-			name = "Armored", max_hp = 320, speed = 38, gold_reward = 22,
-			lives_damage = 2, asset = .Enemy_Armored,
-			resistance = "Physical 35% / Magic weak",
-			color = rl.Color{92, 105, 125, 255},
-		}
-	}
-
-	return Enemy_Def {}
+get_enemy_def :: proc(g: ^Game, kind: Enemy_Type) -> Enemy_Def {
+	if kind < .Grunt || kind > .Armored { return Enemy_Def{} }
+	return g.content.enemies[int(kind)]
 }
 
 vec2 :: proc(x, y: f32) -> Vec2 {
@@ -517,15 +413,16 @@ point_in_rect :: proc(p: Vec2, x, y, w, h: int) -> bool {
 		p.y < f32(y+h)
 }
 
-init_game :: proc() -> Game {
+init_game :: proc() -> (Game, bool) {
 	g := Game{}
 	init_levels(&g)
+	if !load_content(&g) { unload_content(&g.content); return g, false }
 	g.save = load_results(g.level_count)
 	g.current_level = 0
 	load_level(&g, g.current_level)
 	load_assets(&g.assets)
 
-	return g
+	return g, true
 }
 
 play_game_sound :: proc(g: ^Game, id: Sound_Id) {

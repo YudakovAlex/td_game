@@ -29,7 +29,9 @@ main :: proc() {
 
 	rl.SetTargetFPS(60)
 
-	game := init_game()
+	game, ok := init_game()
+	if !ok { return }
+	defer unload_content(&game.content)
 	defer unload_assets(&game.assets)
 
 	for !rl.WindowShouldClose() && !game.quit_requested {

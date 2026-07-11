@@ -83,7 +83,7 @@ apply_damage_to_enemy :: proc(g: ^Game, enemy_index: int, damage: f32, damage_ty
 
 	final_damage := damage
 
-	final_damage *= damage_multiplier(e.kind, damage_type)
+	final_damage *= damage_multiplier(g, e.kind, damage_type)
 
 	e.hp -= final_damage
 	e.damage_flash = 0.10
@@ -96,15 +96,13 @@ apply_damage_to_enemy :: proc(g: ^Game, enemy_index: int, damage: f32, damage_ty
 	}
 }
 
-damage_multiplier :: proc(kind: Enemy_Type, damage_type: Damage_Type) -> f32 {
-	if kind == .Armored {
-		if damage_type == .Physical { return 0.65 }
-		if damage_type == .Magic { return 1.35 }
-		return 1.0
+damage_multiplier :: proc(g: ^Game, kind: Enemy_Type, damage_type: Damage_Type) -> f32 {
+	def := get_enemy_def(g, kind)
+	switch damage_type {
+	case .Physical:  return def.physical_multiplier
+	case .Magic:     return def.magic_multiplier
+	case .Elemental: return def.elemental_multiplier
 	}
-	if kind == .Brute && damage_type == .Physical { return 0.80 }
-	if kind == .Brute && damage_type == .Magic { return 1.10 }
-	if kind == .Boss { return 0.85 }
 	return 1.0
 }
 
@@ -144,7 +142,7 @@ draw_enemies :: proc(g: ^Game) {
 			continue
 		}
 
-		def := get_enemy_def(e.kind)
+		def := get_enemy_def(g, e.kind)
 
 		size := f32(32)
 		if e.kind == .Brute || e.kind == .Armored { size = 39 }

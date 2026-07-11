@@ -110,7 +110,7 @@ draw_ui :: proc(g: ^Game) {
 
 	if g.selected_tower_index >= 0 && g.selected_tower_index < g.tower_count {
 		t := &g.towers[g.selected_tower_index]
-		def := get_tower_def(t.kind)
+		def := get_tower_def(g, t.kind)
 
 		draw_text("Selected Tower", x, 416, 22, rl.RAYWHITE)
 		draw_text(fmt.tprintf("%s L%d", def.name, t.level), x, 444, 20, rl.GOLD)
@@ -133,7 +133,7 @@ draw_ui :: proc(g: ^Game) {
 		draw_text("NEXT WAVE", x, 612, 16, rl.GOLD)
 		for group_index := 0; group_index < wave.group_count; group_index += 1 {
 			group := wave.groups[group_index]
-			edef := get_enemy_def(group.enemy_type)
+			edef := get_enemy_def(g, group.enemy_type)
 			row_y := 634 + group_index*20
 			draw_asset(&g.assets, edef.asset, vec2(f32(x+12),f32(row_y+8)), vec2(25,25), 0, rl.WHITE)
 			draw_text(fmt.tprintf("%s  x%d", edef.name, group.count), x+32, row_y, 15, rl.RAYWHITE)
@@ -146,7 +146,7 @@ draw_icon_or_glyph :: proc(g: ^Game, id: Asset_Id, pos: Vec2, color: rl.Color) {
 }
 
 draw_tower_button :: proc(g: ^Game, x,y: int, kind: Tower_Type, label: string, selected: bool) {
-	def := get_tower_def(kind)
+	def := get_tower_def(g, kind)
 	draw_button(x,y,220,42,fmt.tprintf("%s   $%d",label,def.cost),selected)
 	draw_asset(&g.assets,def.asset,vec2(f32(x+196),f32(y+21)),vec2(30,30),0,rl.WHITE)
 	if g.gold < def.cost { rl.DrawRectangle(i32(x),i32(y),220,42,rl.Color{18,18,20,125}) }

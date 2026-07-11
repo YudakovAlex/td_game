@@ -72,7 +72,7 @@ draw_build_preview :: proc(g: ^Game) {
 	if mouse.x < 0 || mouse.x >= f32(UI_X) || mouse.y < 0 || mouse.y >= f32(MAP_H*TILE_SIZE) { return }
 	tx, ty := screen_to_tile(mouse)
 	valid := g.tiles[ty][tx].kind == .Buildable && tower_at_tile(g,tx,ty) < 0
-	def := get_tower_def(g.selected_tower_type)
+	def := get_tower_def(g, g.selected_tower_type)
 	affordable := g.gold >= def.cost
 	c := rl.Color{70,210,105,100}
 	if !valid { c = rl.Color{220,70,65,120} } else if !affordable { c = rl.Color{230,165,55,120} }

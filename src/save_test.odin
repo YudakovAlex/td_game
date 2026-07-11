@@ -50,6 +50,8 @@ test_malformed_save_is_rejected :: proc(t: ^testing.T) {
 test_grasslands_has_selected_mixed_waves :: proc(t: ^testing.T) {
 	g := Game{}
 	init_levels(&g)
+	defer unload_content(&g.content)
+	testing.expect(t, load_content(&g))
 	testing.expect(t, g.levels[0].waves[5].group_count == 2)
 	testing.expect(t, g.levels[0].waves[7].group_count == 2)
 	testing.expect(t, g.levels[0].waves[10].group_count == 2)
@@ -61,6 +63,8 @@ test_grasslands_has_selected_mixed_waves :: proc(t: ^testing.T) {
 test_wave_groups_clear_sequentially :: proc(t: ^testing.T) {
 	g := Game{}
 	init_levels(&g)
+	defer unload_content(&g.content)
+	testing.expect(t, load_content(&g))
 	g.current_level = 0
 	g.levels[0].wave_count = 15
 	g.waves = g.levels[0].waves
