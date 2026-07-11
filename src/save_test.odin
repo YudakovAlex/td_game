@@ -47,6 +47,26 @@ test_malformed_save_is_rejected :: proc(t: ^testing.T) {
 }
 
 @(test)
+test_old_save_without_new_levels_remains_compatible :: proc(t: ^testing.T) {
+	legacy := "RUNE_SIEGE_RESULTS 1\n0 800 18 true\n2 1200 16 true\n"
+	decoded, ok := parse_results(legacy, MAX_LEVELS)
+	testing.expect(t, ok)
+	testing.expect(t, decoded.levels[0].best_score == 800)
+	testing.expect(t, decoded.levels[2].best_lives == 16)
+	testing.expect(t, !decoded.levels[3].completed)
+}
+
+@(test)
+test_new_level_result_serializes_with_existing_save_format :: proc(t: ^testing.T) {
+	data := Save_Data{}
+	data.levels[5] = Saved_Level_Result{true, 3456, 14}
+	encoded := serialize_results(&data, MAX_LEVELS)
+	decoded, ok := parse_results(encoded, MAX_LEVELS)
+	testing.expect(t, ok)
+	testing.expect(t, decoded.levels[5] == data.levels[5])
+}
+
+@(test)
 test_grasslands_has_selected_mixed_waves :: proc(t: ^testing.T) {
 	g := Game{}
 	init_levels(&g)

@@ -1,18 +1,19 @@
 # Rune Siege TD
 
-Rune Siege TD is a single-player, fantasy tower-defense prototype written in [Odin](https://odin-lang.org/) with Raylib. Build towers on the grid, stop enemies before they reach the exit, and clear a three-level campaign.
+Rune Siege TD is a single-player, fantasy tower-defense prototype written in [Odin](https://odin-lang.org/) with Raylib. Build towers on the grid, stop enemies before they reach the exit, and clear a six-level campaign.
 
 ![Rune Siege TD sprite atlas](assets/sprite_atlas.png)
 
 ## Current features
 
-- Three sequential maps: **Grasslands**, **Forest Pass**, and **Frozen Road**.
-- 55 hand-authored waves, including fast, armored, brute, and boss enemies, with sequential mixed-enemy groups in Grasslands.
+- Six sequential maps: **Grasslands**, **Forest Pass**, **Frozen Road**, **Ruined Outskirts**, **Ruined Market**, and **Ruined Keep**.
+- 115 hand-authored waves, including fast, armored, brute, wraith, siege beast, and boss enemies, with sequential mixed-enemy groups.
 - Four tower families:
   - **Arrow** — quick physical single-target damage.
   - **Cannon** — physical splash damage.
   - **Frost** — magic damage that slows enemies.
   - **Flame** — elemental splash damage with burn.
+- Seven enemy families: Grunt, Runner, Brute, Armored, Wraith, Siege Beast, and Boss.
 - Three tower levels, 70% sell refunds, gold rewards, lives, and 1×–3× game speed.
 - Deterministic run scores and best score/lives records saved per completed level.
 - Minimal generated sound cues for actions, combat impacts, waves, bosses, leaks, and results.

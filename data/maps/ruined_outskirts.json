@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "level": "ruined_outskirts",
+  "name": "Ruined Outskirts",
+  "starting_gold": 240,
+  "starting_lives": 20,
+  "routes": [
+    {
+      "points": [
+        {"x": 20, "y": 360},
+        {"x": 160, "y": 360},
+        {"x": 160, "y": 120},
+        {"x": 400, "y": 120},
+        {"x": 400, "y": 560},
+        {"x": 680, "y": 560},
+        {"x": 680, "y": 280},
+        {"x": 940, "y": 280}
+      ]
+    }
+  ]
+}

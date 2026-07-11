@@ -14,6 +14,9 @@ test_content_files_load_current_definitions :: proc(t: ^testing.T) {
 	testing.expect(t, g.content.towers[int(Tower_Type.Flame)].burn_damage == 5)
 	testing.expect(t, g.content.enemies[int(Enemy_Type.Armored)].physical_multiplier == 0.65)
 	testing.expect(t, g.content.enemies[int(Enemy_Type.Armored)].magic_multiplier == 1.35)
+	testing.expect(t, g.content.enemies[int(Enemy_Type.Wraith)].magic_multiplier == 0.55)
+	testing.expect(t, g.content.enemies[int(Enemy_Type.Siege_Beast)].physical_multiplier == 0.78)
+	testing.expect(t, g.level_count == 6)
 	testing.expect(t, g.levels[0].wave_count == 15)
 	testing.expect(t, g.levels[0].waves[5].group_count == 2)
 	testing.expect(t, g.levels[0].waves[5].groups[0].enemy_type == .Runner)
@@ -26,6 +29,42 @@ test_content_files_load_current_definitions :: proc(t: ^testing.T) {
 	testing.expect(t, g.levels[1].routes[1].point_count == 8)
 	testing.expect(t, g.levels[2].route_count == 1)
 	testing.expect(t, g.levels[2].routes[0].point_count == 10)
+	testing.expect(t, g.levels[3].name == "Ruined Outskirts")
+	testing.expect(t, g.levels[3].wave_count == 20)
+	testing.expect(t, g.levels[3].route_count == 1)
+	testing.expect(t, g.levels[4].name == "Ruined Market")
+	testing.expect(t, g.levels[4].wave_count == 20)
+	testing.expect(t, g.levels[4].route_count == 2)
+	testing.expect(t, g.levels[5].name == "Ruined Keep")
+	testing.expect(t, g.levels[5].wave_count == 20)
+	testing.expect(t, g.levels[5].routes[0].point_count == 6)
+}
+
+@(test)
+test_ruined_city_wave_introduces_new_enemy_roles :: proc(t: ^testing.T) {
+	g := Game{}
+	init_levels(&g)
+	defer unload_level_content(&g.levels)
+	defer unload_content(&g.content)
+	testing.expect(t, load_content(&g))
+
+	for level_index := 3; level_index < 6; level_index += 1 {
+		level := &g.levels[level_index]
+		wraith_seen := false
+		siege_beast_seen := false
+		for wave_index := 0; wave_index < level.wave_count; wave_index += 1 {
+			wave := level.waves[wave_index]
+			for group_index := 0; group_index < wave.group_count; group_index += 1 {
+			#partial switch wave.groups[group_index].enemy_type {
+				case .Wraith: wraith_seen = true
+				case .Siege_Beast: siege_beast_seen = true
+				}
+			}
+		}
+		testing.expect(t, wraith_seen)
+		testing.expect(t, siege_beast_seen)
+		testing.expect(t, level.waves[level.wave_count-1].groups[0].enemy_type == .Boss)
+	}
 }
 
 @(test)

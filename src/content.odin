@@ -131,6 +131,8 @@ enemy_type_from_id :: proc(id: string) -> (Enemy_Type, bool) {
 	case "brute":   return .Brute, true
 	case "boss":    return .Boss, true
 	case "armored": return .Armored, true
+	case "wraith":  return .Wraith, true
+	case "siege_beast": return .Siege_Beast, true
 	}
 	return .Grunt, false
 }
@@ -155,6 +157,7 @@ asset_id_from_name :: proc(name: string) -> (Asset_Id, bool) {
 	case "enemy_brute":   return .Enemy_Brute, true
 	case "enemy_boss":    return .Enemy_Boss, true
 	case "enemy_armored": return .Enemy_Armored, true
+	case "primitive":     return .Count, true
 	}
 	return .Count, false
 }
@@ -178,6 +181,8 @@ enemy_asset_for_type :: proc(kind: Enemy_Type) -> Asset_Id {
 	case .Brute:   return .Enemy_Brute
 	case .Boss:    return .Enemy_Boss
 	case .Armored: return .Enemy_Armored
+	case .Wraith:  return .Count
+	case .Siege_Beast: return .Count
 	}
 	return .Count
 }
@@ -241,10 +246,10 @@ parse_enemies :: proc(contents: string, content: ^Content_Data) -> (bool, string
 	parse_err := json.unmarshal_string(contents, &raw, allocator=context.temp_allocator)
 	if parse_err != nil { return false, "invalid JSON or unexpected field type" }
 	if raw.version != CONTENT_VERSION { return false, "unsupported content version" }
-	if len(raw.enemies) != 5 { return false, "expected exactly five enemy definitions" }
+	if len(raw.enemies) != 7 { return false, "expected exactly seven enemy definitions" }
 
 	content.enemies = {}
-	seen: [5]bool
+	seen: [7]bool
 	for raw_def in raw.enemies {
 		kind, kind_ok := enemy_type_from_id(raw_def.id)
 		if !kind_ok { return false, fmt.tprintf("unsupported enemy id: %s", raw_def.id) }
@@ -394,12 +399,18 @@ load_content :: proc(g: ^Game) -> bool {
 	valid, err = parse_enemies(string(enemy_contents), &g.content)
 	if !valid { fmt.println("Content load failed:", enemies_path, "-", err); return false }
 
-	map_paths := [3]string{
+	map_paths := [MAX_LEVELS]string{
 		fmt.tprintf("%s/maps/grasslands.json", CONTENT_DIR),
 		fmt.tprintf("%s/maps/forest_pass.json", CONTENT_DIR),
 		fmt.tprintf("%s/maps/frozen_road.json", CONTENT_DIR),
+		fmt.tprintf("%s/maps/ruined_outskirts.json", CONTENT_DIR),
+		fmt.tprintf("%s/maps/ruined_market.json", CONTENT_DIR),
+		fmt.tprintf("%s/maps/ruined_keep.json", CONTENT_DIR),
 	}
-	map_ids := [3]string{"grasslands", "forest_pass", "frozen_road"}
+	map_ids := [MAX_LEVELS]string{
+		"grasslands", "forest_pass", "frozen_road",
+		"ruined_outskirts", "ruined_market", "ruined_keep",
+	}
 	for i := 0; i < len(map_paths); i += 1 {
 		contents, read_err := os.read_entire_file_from_path(map_paths[i], context.temp_allocator)
 		if read_err != os.ERROR_NONE {
@@ -413,12 +424,18 @@ load_content :: proc(g: ^Game) -> bool {
 		}
 	}
 
-	wave_paths := [3]string{
+	wave_paths := [MAX_LEVELS]string{
 		fmt.tprintf("%s/waves/grasslands.json", CONTENT_DIR),
 		fmt.tprintf("%s/waves/forest_pass.json", CONTENT_DIR),
 		fmt.tprintf("%s/waves/frozen_road.json", CONTENT_DIR),
+		fmt.tprintf("%s/waves/ruined_outskirts.json", CONTENT_DIR),
+		fmt.tprintf("%s/waves/ruined_market.json", CONTENT_DIR),
+		fmt.tprintf("%s/waves/ruined_keep.json", CONTENT_DIR),
 	}
-	wave_ids := [3]string{"grasslands", "forest_pass", "frozen_road"}
+	wave_ids := [MAX_LEVELS]string{
+		"grasslands", "forest_pass", "frozen_road",
+		"ruined_outskirts", "ruined_market", "ruined_keep",
+	}
 	for i := 0; i < len(wave_paths); i += 1 {
 		contents, read_err := os.read_entire_file_from_path(wave_paths[i], context.temp_allocator)
 		if read_err != os.ERROR_NONE {

@@ -15,15 +15,16 @@ odin build src
 
 ## Playable content
 
-- Three sequential 24×18 levels: Grasslands, dual-route Forest Pass, and fast-enemy-focused Frozen Road.
+- Six sequential 24×18 levels: Grasslands, dual-route Forest Pass, fast-enemy-focused Frozen Road, and the three-map Ruined City region of Ruined Outskirts, Ruined Market, and Ruined Keep.
 - Grasslands has 15 waves; Forest Pass and Frozen Road have 20 waves each.
+- Each Ruined City level has 20 hand-authored waves with new enemy introductions, mixed groups, and a final boss wave.
 - Four buildable tower families:
   - Arrow: reliable physical single-target damage.
   - Cannon: physical splash damage.
   - Frost: magic damage and slowing.
   - Flame: elemental splash damage and non-stacking burn.
-- Five enemy families:
-  - Grunt, Runner, Brute, Armored, and Boss.
+- Seven enemy families:
+  - Grunt, Runner, Brute, Armored, Wraith, Siege Beast, and Boss.
 - Three linear tower levels, upgrades, 70% selling refunds, gold rewards, lives, adjustable 1×–3× speed, and victory/defeat states.
 - Level-complete continuation, campaign completion, and current-level retry flows with fresh resources per level.
 - Physical, Magic, and Elemental damage types with centralized resistance multipliers.
@@ -54,7 +55,7 @@ The implementation remains intentionally small and data-oriented:
 - `towers.odin`: placement, upgrades, targeting, firing, and tower rendering.
 - `enemies.odin`: movement, damage/resistances, slow/burn state, and enemy rendering.
 - `projectiles.odin`: homing projectiles, direct/splash hits, and combat effect creation.
-- `waves.odin`: bounded level/route definitions, three wave sets, level reset, and spawning state machine.
+- `waves.odin`: bounded level/route definitions, six wave sets, level reset, and spawning state machine.
 - `assets.odin`: sprite-atlas lifecycle and asset-ID lookup.
 - `effects.odin`: bounded transient visual effects.
 - `ui.odin`: virtual-resolution rendering and the in-game HUD.
@@ -65,17 +66,17 @@ The game renders to a fixed 1280×720 target and letterboxes it into a resizable
 ## Validation completed
 
 - Odin static check passes.
-- Odin test suite passes with 23 tests, including Grasslands wave-curve, mixed-wave, and tower/enemy matchup regression coverage.
+- Odin test suite passes with 27 tests, including Grasslands wave-curve, Ruined City content, campaign continuation, save compatibility, and tower/enemy matchup regression coverage.
 - Native executable build passes.
 - A native launch was attempted, but the current environment could not open its X11 display or initialize audio; no interactive playthrough was completed here.
-- The committed sprite atlas is a valid 1536×1024 RGBA PNG.
+- The committed sprite atlas is a valid 1536×1024 RGBA PNG; Wraith and Siege Beast use distinct primitive fallback visuals.
 - Asset ownership has one load and one matching unload.
 - Missing atlas data falls back to primitive rendering rather than preventing play.
 
 ## Known gaps and risks
 
 - A complete interactive playthrough and visual review at all target window sizes is still required.
-- Wave balance is provisional; waves 11–15 and the Flame/Armored matchup need playtesting.
+- Wave balance is provisional; Grasslands waves 11–15, the Flame/Armored matchup, and all Ruined City waves need playtesting.
 - Waves support up to three sequential enemy groups; Grasslands uses mixed groups on waves 6, 8, 11, and 13 while Forest Pass and Frozen Road retain single-group definitions.
 - Result screens show deterministic scores and best scores; completed-level best score and best remaining lives are persisted in a versioned user-data text file.
 - No music/settings, level-select menus, or difficulty selection exist yet. Tower, enemy, wave, and level map definitions load from versioned JSON files in `data/`; campaign order remains fixed in code.
@@ -85,12 +86,12 @@ The game renders to a fixed 1280×720 target and letterboxes it into a resizable
 
 ## Recommended next cycle
 
-Playtest and polish the completed vertical-slice mechanics before adding new systems:
+Playtest and polish the expanded campaign before adding new systems:
 
-1. Playtest and balance Grasslands mixed waves, tower costs, upgrades, rewards, and resistances.
+1. Playtest and balance the three Ruined City levels, especially Wraith/Siege Beast matchups.
 2. Playtest the JSON-backed definitions and keep their schemas stable while balancing.
-3. Add towers and enemies only after mixed-wave composition and balance are stable.
+3. Add new mechanics only after the six-level campaign's economy and wave pacing are stable.
 
-The immediate release criterion is a polished, balanced Grasslands run with mixed enemy roles, a visible score, persisted best results, and restrained feedback audio.
+The immediate release criterion is a polished, balanced six-level run with mixed enemy roles, a visible score, persisted best results, and restrained feedback audio.
 
-The current content already satisfies the intended role progression and matchup contracts: Runner appears before Brute, Armored appears after the opening role introductions, mixed waves retain their sequential group order, and both Grasslands boss waves remain explicit milestones. No numeric balance changes were made without an observed gameplay failure; a complete interactive playthrough and visual review remain the next validation step when a graphical/audio runtime is available.
+The original Grasslands content still satisfies its intended role progression and matchup contracts: Runner appears before Brute, Armored appears after the opening role introductions, mixed waves retain their sequential group order, and both Grasslands boss waves remain explicit milestones. The Ruined City values are initial balance targets; a complete interactive playthrough and visual review remain the next validation step when a graphical/audio runtime is available.

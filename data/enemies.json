@@ -70,6 +70,34 @@
       "magic_multiplier": 1.35,
       "elemental_multiplier": 1,
       "color": [92, 105, 125, 255]
+    },
+    {
+      "id": "wraith",
+      "name": "Wraith",
+      "max_hp": 125,
+      "speed": 78,
+      "gold_reward": 10,
+      "lives_damage": 1,
+      "asset": "primitive",
+      "resistance": "Magic 45% resistance / Physical weakness",
+      "physical_multiplier": 1.15,
+      "magic_multiplier": 0.55,
+      "elemental_multiplier": 0.9,
+      "color": [183, 126, 235, 255]
+    },
+    {
+      "id": "siege_beast",
+      "name": "Siege Beast",
+      "max_hp": 520,
+      "speed": 27,
+      "gold_reward": 34,
+      "lives_damage": 3,
+      "asset": "primitive",
+      "resistance": "Heavy body / Elemental weakness",
+      "physical_multiplier": 0.78,
+      "magic_multiplier": 1.1,
+      "elemental_multiplier": 1.2,
+      "color": [128, 82, 62, 255]
     }
   ]
 }

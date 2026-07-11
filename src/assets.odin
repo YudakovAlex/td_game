@@ -113,6 +113,7 @@ unload_assets :: proc(a: ^Assets) {
 }
 
 draw_asset :: proc(a: ^Assets, id: Asset_Id, center: Vec2, size: Vec2, rotation: f32, tint: rl.Color) -> bool {
+	if id >= .Count { return false }
 	texture := a.atlas
 	if !rl.IsTextureValid(texture) { return false }
 	cell_w := f32(texture.width)/6

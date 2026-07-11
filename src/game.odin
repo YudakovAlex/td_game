@@ -19,7 +19,7 @@ MAX_PROJECTILES :: 512
 MAX_WAVES       :: 20
 MAX_WAVE_GROUPS :: 3
 MAX_EFFECTS     :: 256
-MAX_LEVELS      :: 3
+MAX_LEVELS      :: 6
 MAX_ROUTES      :: 2
 MAX_PATH_POINTS :: 12
 
@@ -67,6 +67,8 @@ Enemy_Type :: enum {
 	Brute,
 	Boss,
 	Armored,
+	Wraith,
+	Siege_Beast,
 }
 
 Damage_Type :: enum {
@@ -144,7 +146,7 @@ Enemy_Def :: struct {
 
 Content_Data :: struct {
 	towers:  [5]Tower_Def,
-	enemies: [5]Enemy_Def,
+	enemies: [7]Enemy_Def,
 }
 
 Wave_Def :: struct {
@@ -317,7 +319,7 @@ get_tower_def :: proc(g: ^Game, kind: Tower_Type) -> Tower_Def {
 }
 
 get_enemy_def :: proc(g: ^Game, kind: Enemy_Type) -> Enemy_Def {
-	if kind < .Grunt || kind > .Armored { return Enemy_Def{} }
+	if kind < .Grunt || kind > .Siege_Beast { return Enemy_Def{} }
 	return g.content.enemies[int(kind)]
 }
 

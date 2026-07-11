@@ -1,7 +1,7 @@
 package main
 
 init_levels :: proc(g: ^Game) {
-	g.level_count = 3
+	g.level_count = MAX_LEVELS
 	g.levels = {}
 }
 

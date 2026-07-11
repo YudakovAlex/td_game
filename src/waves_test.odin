@@ -49,3 +49,25 @@ test_wave_summary_is_empty_outside_active_wave :: proc(t: ^testing.T) {
 	testing.expect(t, wave_enemies_spawned(&g) == 0)
 	testing.expect(t, wave_enemies_remaining(&g) == 0)
 }
+
+@(test)
+test_campaign_continues_into_ruined_city_and_stops_after_final_level :: proc(t: ^testing.T) {
+	g := Game{}
+	init_levels(&g)
+	defer unload_level_content(&g.levels)
+	defer unload_content(&g.content)
+	testing.expect(t, load_content(&g))
+
+	g.current_level = 2
+	g.mode = .Victory
+	continue_campaign(&g)
+	testing.expect(t, g.current_level == 3)
+	testing.expect(t, g.mode == .Playing)
+	testing.expect(t, g.levels[g.current_level].name == "Ruined Outskirts")
+
+	g.current_level = 5
+	g.mode = .Victory
+	continue_campaign(&g)
+	testing.expect(t, g.current_level == 5)
+	testing.expect(t, g.level_count == 6)
+}

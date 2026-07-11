@@ -147,6 +147,8 @@ draw_enemies :: proc(g: ^Game) {
 		size := f32(32)
 		if e.kind == .Brute || e.kind == .Armored { size = 39 }
 		if e.kind == .Boss { size = 52 }
+		if e.kind == .Wraith { size = 34 }
+		if e.kind == .Siege_Beast { size = 46 }
 		bob := f32(1.5) * f32(math.sin(f64(g.visual_time*5+f32(i))))
 		rl.DrawEllipse(i32(e.pos.x), i32(e.pos.y+size*0.34), size*0.35, size*0.15, rl.Color{0,0,0,75})
 		tint := rl.WHITE
