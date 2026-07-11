@@ -171,7 +171,61 @@ cycle_tower_target_mode :: proc(g: ^Game, index: int) {
 	play_game_sound(g, .Action)
 }
 
-target_is_better :: proc(mode: Target_Mode, candidate: Enemy, candidate_index: int, current: Enemy, current_index: int) -> bool {
+enemy_route_progress :: proc(g: ^Game, e: ^Enemy) -> f32 {
+	if g.current_level < 0 || g.current_level >= g.level_count {
+		return f32(e.path_index)
+	}
+
+	level := &g.levels[g.current_level]
+	if e.route_index < 0 || e.route_index >= level.route_count {
+		return f32(e.path_index)
+	}
+
+	route := &level.routes[e.route_index]
+	if route.point_count < 2 {
+		return f32(e.path_index)
+	}
+	if e.path_index <= 0 {
+		return 0
+	}
+
+	total_length: f32 = 0
+	for i := 1; i < route.point_count; i += 1 {
+		total_length += v_len(v_sub(route.points[i], route.points[i-1]))
+	}
+	if total_length <= 0 {
+		return f32(e.path_index)
+	}
+
+	if e.path_index >= route.point_count {
+		return 1
+	}
+
+	progress_length: f32 = 0
+	for i := 1; i < e.path_index; i += 1 {
+		progress_length += v_len(v_sub(route.points[i], route.points[i-1]))
+	}
+
+	segment_start := route.points[e.path_index-1]
+	segment_end := route.points[e.path_index]
+	segment_length := v_len(v_sub(segment_end, segment_start))
+	segment_progress := v_len(v_sub(e.pos, segment_start))
+	if segment_progress < 0 { segment_progress = 0 }
+	if segment_progress > segment_length { segment_progress = segment_length }
+	progress_length += segment_progress
+
+	return progress_length / total_length
+}
+
+target_is_better :: proc(
+	mode: Target_Mode,
+	candidate: Enemy,
+	candidate_progress: f32,
+	candidate_index: int,
+	current: Enemy,
+	current_progress: f32,
+	current_index: int,
+) -> bool {
 	if mode == .Weakest && candidate.hp != current.hp {
 		return candidate.hp < current.hp
 	}
@@ -179,8 +233,11 @@ target_is_better :: proc(mode: Target_Mode, candidate: Enemy, candidate_index: i
 		return candidate.hp > current.hp
 	}
 
-	if candidate.path_index != current.path_index {
-		return candidate.path_index > current.path_index
+	if candidate_progress != current_progress {
+		return candidate_progress > current_progress
+	}
+	if candidate.route_index != current.route_index {
+		return candidate.route_index < current.route_index
 	}
 	return candidate_index < current_index
 }
@@ -201,7 +258,13 @@ find_tower_target :: proc(g: ^Game, t: ^Tower, def: Tower_Def) -> int {
 			continue
 		}
 
-		if best < 0 || target_is_better(t.target_mode, e, i, g.enemies[best], best) {
+		candidate_progress := enemy_route_progress(g, &e)
+		current_progress: f32 = 0
+		if best >= 0 {
+			current_progress = enemy_route_progress(g, &g.enemies[best])
+		}
+
+		if best < 0 || target_is_better(t.target_mode, e, candidate_progress, i, g.enemies[best], current_progress, best) {
 			best = i
 		}
 	}

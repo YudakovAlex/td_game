@@ -84,7 +84,12 @@ draw_ui :: proc(g: ^Game) {
 	remaining := waves_remaining(g)
 	remaining_label := "waves left"
 	if remaining == 1 { remaining_label = "wave left" }
-	draw_text(fmt.tprintf("%d %s", remaining, remaining_label), x+28, y+21, 14, rl.LIGHTGRAY)
+	active_remaining := wave_enemies_remaining(g)
+	if active_remaining > 0 {
+		draw_text(fmt.tprintf("%d %s  ·  %d enemies", remaining, remaining_label, active_remaining), x+28, y+21, 14, rl.LIGHTGRAY)
+	} else {
+		draw_text(fmt.tprintf("%d %s", remaining, remaining_label), x+28, y+21, 14, rl.LIGHTGRAY)
+	}
 	draw_button(x+154, 78, 66, 34, "Menu", false)
 
 	draw_tower_button(g, x, 126, .Arrow, "1  Arrow", g.selected_tower_type == .Arrow)
@@ -99,7 +104,7 @@ draw_ui :: proc(g: ^Game) {
 		wave_button_label = fmt.tprintf("Start Wave - %ds", seconds_left)
 	}
 	if g.wave_state == .Spawning { wave_button_label = "Wave Spawning" }
-	if g.wave_state == .Clearing { wave_button_label = "Enemies Remaining" }
+	if g.wave_state == .Clearing { wave_button_label = fmt.tprintf("Enemies: %d left", wave_enemies_remaining(g)) }
 	if g.wave_state == .Finished { wave_button_label = "All Waves Cleared" }
 	if g.mode == .Paused { wave_button_label = "Game Paused" }
 	draw_wave_button(g, x, 326, 220, 42, wave_button_label, wave_button_disabled)
@@ -138,7 +143,7 @@ draw_ui :: proc(g: ^Game) {
 	if g.wave_state == .Spawning || g.wave_state == .Clearing { preview_index += 1 }
 	if preview_index < g.wave_count {
 		wave := g.waves[preview_index]
-		draw_text("NEXT WAVE", x, 638, 16, rl.GOLD)
+		draw_text(fmt.tprintf("NEXT WAVE  %d ENEMIES", wave_enemy_total(wave)), x, 638, 16, rl.GOLD)
 		for group_index := 0; group_index < wave.group_count; group_index += 1 {
 			group := wave.groups[group_index]
 			edef := get_enemy_def(g, group.enemy_type)

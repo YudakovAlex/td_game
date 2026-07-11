@@ -5,6 +5,51 @@ init_levels :: proc(g: ^Game) {
 	g.levels = {}
 }
 
+wave_enemy_total :: proc(wave: Wave_Def) -> int {
+	total := 0
+	for i := 0; i < wave.group_count; i += 1 {
+		total += wave.groups[i].count
+	}
+	return total
+}
+
+wave_enemies_spawned :: proc(g: ^Game) -> int {
+	if g.wave_state != .Spawning && g.wave_state != .Clearing {
+		return 0
+	}
+	if g.current_wave < 0 || g.current_wave >= g.wave_count {
+		return 0
+	}
+
+	wave := g.waves[g.current_wave]
+	spawned := 0
+	group_count := g.wave_group_index
+	if group_count > wave.group_count { group_count = wave.group_count }
+	for i := 0; i < group_count; i += 1 {
+		spawned += wave.groups[i].count
+	}
+	if g.wave_group_index < wave.group_count {
+		current_count := g.wave_spawned_count
+		if current_count > wave.groups[g.wave_group_index].count {
+			current_count = wave.groups[g.wave_group_index].count
+		}
+		if current_count > 0 { spawned += current_count }
+	}
+	return spawned
+}
+
+wave_enemies_remaining :: proc(g: ^Game) -> int {
+	if g.wave_state != .Spawning && g.wave_state != .Clearing {
+		return 0
+	}
+	if g.current_wave < 0 || g.current_wave >= g.wave_count {
+		return 0
+	}
+
+	remaining := wave_enemy_total(g.waves[g.current_wave]) - wave_enemies_spawned(g) + g.enemy_count
+	return max(remaining, 0)
+}
+
 load_level :: proc(g: ^Game, level_index: int) {
 	level := &g.levels[level_index]
 	g.mode = .Playing

@@ -1,0 +1,51 @@
+package main
+
+import "core:testing"
+
+@(test)
+test_wave_enemy_total_sums_groups :: proc(t: ^testing.T) {
+	wave := Wave_Def{}
+	wave.groups[0].count = 10
+	wave.groups[1].count = 7
+	wave.group_count = 2
+	testing.expect(t, wave_enemy_total(wave) == 17)
+}
+
+@(test)
+test_wave_summary_tracks_sequential_group_progress :: proc(t: ^testing.T) {
+	g := Game{}
+	g.wave_count = 1
+	g.waves[0].groups[0].count = 10
+	g.waves[0].groups[1].count = 7
+	g.waves[0].group_count = 2
+	g.current_wave = 0
+	g.wave_group_index = 0
+	g.wave_spawned_count = 4
+	g.enemy_count = 3
+	g.wave_state = .Spawning
+
+	testing.expect(t, wave_enemy_total(g.waves[0]) == 17)
+	testing.expect(t, wave_enemies_spawned(&g) == 4)
+	testing.expect(t, wave_enemies_remaining(&g) == 16)
+
+	g.wave_state = .Clearing
+	g.wave_group_index = 1
+	g.wave_spawned_count = 7
+	g.enemy_count = 2
+	testing.expect(t, wave_enemies_spawned(&g) == 17)
+	testing.expect(t, wave_enemies_remaining(&g) == 2)
+}
+
+@(test)
+test_wave_summary_is_empty_outside_active_wave :: proc(t: ^testing.T) {
+	g := Game{}
+	g.wave_count = 1
+	g.waves[0].group_count = 1
+	g.waves[0].groups[0].count = 10
+	g.current_wave = 0
+	g.wave_state = .Waiting
+	g.enemy_count = 4
+
+	testing.expect(t, wave_enemies_spawned(&g) == 0)
+	testing.expect(t, wave_enemies_remaining(&g) == 0)
+}

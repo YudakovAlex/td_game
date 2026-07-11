@@ -45,6 +45,50 @@ test_tower_target_ties_are_deterministic :: proc(t: ^testing.T) {
 }
 
 @(test)
+test_first_target_uses_continuous_route_progress :: proc(t: ^testing.T) {
+	g := Game{}
+	g.level_count = 1
+	g.current_level = 0
+	g.levels[0].route_count = 1
+	route := Path_Route{}
+	route.points[0] = Vec2{0, 0}
+	route.points[1] = Vec2{100, 0}
+	route.points[2] = Vec2{100, 100}
+	route.point_count = 3
+	g.levels[0].routes[0] = route
+	g.enemy_count = 2
+	g.enemies[0] = Enemy{pos = Vec2{90, 0}, path_index = 1, route_index = 0, hp = 100, alive = true}
+	g.enemies[1] = Enemy{pos = Vec2{10, 0}, path_index = 1, route_index = 0, hp = 100, alive = true}
+
+	tower := Tower{pos = Vec2{50, 0}, target_mode = .First}
+	testing.expect(t, find_tower_target(&g, &tower, Tower_Def{range = 100}) == 0)
+}
+
+@(test)
+test_first_target_route_ties_are_deterministic :: proc(t: ^testing.T) {
+	g := Game{}
+	g.level_count = 1
+	g.current_level = 0
+	g.levels[0].route_count = 2
+	route_a := Path_Route{}
+	route_a.points[0] = Vec2{0, 0}
+	route_a.points[1] = Vec2{100, 0}
+	route_a.point_count = 2
+	g.levels[0].routes[0] = route_a
+	route_b := Path_Route{}
+	route_b.points[0] = Vec2{0, 100}
+	route_b.points[1] = Vec2{200, 100}
+	route_b.point_count = 2
+	g.levels[0].routes[1] = route_b
+	g.enemy_count = 2
+	g.enemies[0] = Enemy{pos = Vec2{50, 0}, path_index = 1, route_index = 0, hp = 100, alive = true}
+	g.enemies[1] = Enemy{pos = Vec2{100, 100}, path_index = 1, route_index = 1, hp = 100, alive = true}
+
+	tower := Tower{pos = Vec2{100, 50}, target_mode = .First}
+	testing.expect(t, find_tower_target(&g, &tower, Tower_Def{range = 100}) == 0)
+}
+
+@(test)
 test_target_mode_cycle :: proc(t: ^testing.T) {
 	testing.expect(t, next_target_mode(.First) == .Weakest)
 	testing.expect(t, next_target_mode(.Weakest) == .Strongest)
