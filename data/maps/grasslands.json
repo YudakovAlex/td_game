@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "level": "grasslands",
+  "name": "Grasslands",
+  "starting_gold": 200,
+  "starting_lives": 20,
+  "routes": [
+    {
+      "points": [
+        {"x": 20, "y": 300},
+        {"x": 180, "y": 300},
+        {"x": 180, "y": 100},
+        {"x": 420, "y": 100},
+        {"x": 420, "y": 500},
+        {"x": 700, "y": 500},
+        {"x": 700, "y": 220},
+        {"x": 940, "y": 220}
+      ]
+    }
+  ]
+}

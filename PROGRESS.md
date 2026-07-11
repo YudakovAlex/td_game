@@ -58,6 +58,7 @@ The implementation remains intentionally small and data-oriented:
 - `assets.odin`: sprite-atlas lifecycle and asset-ID lookup.
 - `effects.odin`: bounded transient visual effects.
 - `ui.odin`: virtual-resolution rendering and the in-game HUD.
+- `content.odin`: versioned JSON loading and validation for towers, enemies, maps, and waves.
 
 The game renders to a fixed 1280×720 target and letterboxes it into a resizable, high-DPI-aware window. Mouse input is converted back into logical game coordinates.
 
@@ -75,7 +76,7 @@ The game renders to a fixed 1280×720 target and letterboxes it into a resizable
 - Wave balance is provisional; waves 11–15 and the Flame/Armored matchup need playtesting.
 - Waves support up to three sequential enemy groups; Grasslands uses mixed groups on waves 6, 8, 11, and 13 while Forest Pass and Frozen Road retain single-group definitions.
 - Result screens show deterministic scores and best scores; completed-level best score and best remaining lives are persisted in a versioned user-data text file.
-- No music/settings, level-select menus, or difficulty selection exist yet. Tower, enemy, and wave definitions now load from versioned JSON files in `data/`; map routes and level metadata remain hard-coded.
+- No music/settings, level-select menus, or difficulty selection exist yet. Tower, enemy, wave, and level map definitions load from versioned JSON files in `data/`; campaign order remains fixed in code.
 - Towers support only one targeting policy: enemy furthest along the path.
 - Sprites are static; motion comes from rotation, bobbing, tinting, recoil, and procedural effects.
 - Fixed-capacity arrays are appropriate for the current slice but failures at capacity are mostly silent.

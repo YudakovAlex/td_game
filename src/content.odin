@@ -71,6 +71,24 @@ Raw_Wave_File :: struct {
 	waves:   []Raw_Wave_Def `json:"waves"`,
 }
 
+Raw_Map_Point :: struct {
+	x: f32 `json:"x"`,
+	y: f32 `json:"y"`,
+}
+
+Raw_Map_Route :: struct {
+	points: []Raw_Map_Point `json:"points"`,
+}
+
+Raw_Map_File :: struct {
+	version:        int             `json:"version"`,
+	level:          string          `json:"level"`,
+	name:           string          `json:"name"`,
+	starting_gold:  int             `json:"starting_gold"`,
+	starting_lives: int             `json:"starting_lives"`,
+	routes:         []Raw_Map_Route `json:"routes"`,
+}
+
 clone_content_string :: proc(value: string) -> string {
 	cloned, err := strings.clone(value, context.allocator)
 	if err != nil { return "" }
@@ -87,6 +105,13 @@ unload_content :: proc(content: ^Content_Data) {
 		delete(content.enemies[i].resistance)
 	}
 	content^ = {}
+}
+
+unload_level_content :: proc(levels: ^[MAX_LEVELS]Level_Def) {
+	for i := 0; i < MAX_LEVELS; i += 1 {
+		delete(levels[i].name)
+		levels[i] = {}
+	}
 }
 
 tower_type_from_id :: proc(id: string) -> (Tower_Type, bool) {
@@ -293,6 +318,62 @@ parse_waves :: proc(contents: string, expected_level: string, level: ^Level_Def)
 	return true, ""
 }
 
+parse_map :: proc(contents: string, expected_level: string, level: ^Level_Def) -> (bool, string) {
+	raw := Raw_Map_File{}
+	parse_err := json.unmarshal_string(contents, &raw, allocator=context.temp_allocator)
+	if parse_err != nil { return false, "invalid JSON or unexpected field type" }
+	if raw.version != CONTENT_VERSION { return false, "unsupported content version" }
+	if raw.level != expected_level { return false, "map file has the wrong level id" }
+	if raw.name == "" { return false, "map name is required" }
+	if raw.starting_gold <= 0 || raw.starting_lives <= 0 {
+		return false, "starting gold and lives must be positive"
+	}
+	if len(raw.routes) <= 0 || len(raw.routes) > MAX_ROUTES {
+		return false, "route count is outside the supported capacity"
+	}
+
+	for raw_route, route_index in raw.routes {
+		if len(raw_route.points) < 2 || len(raw_route.points) > MAX_PATH_POINTS {
+			return false, fmt.tprintf("route %d point count is outside the supported capacity", route_index+1)
+		}
+
+		for raw_point, point_index in raw_route.points {
+			if raw_point.x < 0 || raw_point.x >= f32(UI_X) ||
+				raw_point.y < 0 || raw_point.y >= f32(MAP_H*TILE_SIZE) {
+				return false, fmt.tprintf("route %d point %d is outside the map bounds", route_index+1, point_index+1)
+			}
+
+			if point_index > 0 {
+				previous := raw_route.points[point_index-1]
+				if previous.x == raw_point.x && previous.y == raw_point.y {
+					return false, fmt.tprintf("route %d has a zero-length segment", route_index+1)
+				}
+				if previous.x != raw_point.x && previous.y != raw_point.y {
+					return false, fmt.tprintf("route %d has a diagonal segment", route_index+1)
+				}
+			}
+
+		}
+	}
+
+	parsed := Level_Def{
+		name = clone_content_string(raw.name),
+		starting_gold = raw.starting_gold,
+		starting_lives = raw.starting_lives,
+		route_count = len(raw.routes),
+	}
+	for raw_route, route_index in raw.routes {
+		route := &parsed.routes[route_index]
+		route.point_count = len(raw_route.points)
+		for raw_point, point_index in raw_route.points {
+			route.points[point_index] = vec2(raw_point.x, raw_point.y)
+		}
+	}
+
+	level^ = parsed
+	return true, ""
+}
+
 load_content :: proc(g: ^Game) -> bool {
 	towers_path := fmt.tprintf("%s/towers.json", CONTENT_DIR)
 	enemies_path := fmt.tprintf("%s/enemies.json", CONTENT_DIR)
@@ -312,6 +393,25 @@ load_content :: proc(g: ^Game) -> bool {
 	if !valid { fmt.println("Content load failed:", towers_path, "-", err); return false }
 	valid, err = parse_enemies(string(enemy_contents), &g.content)
 	if !valid { fmt.println("Content load failed:", enemies_path, "-", err); return false }
+
+	map_paths := [3]string{
+		fmt.tprintf("%s/maps/grasslands.json", CONTENT_DIR),
+		fmt.tprintf("%s/maps/forest_pass.json", CONTENT_DIR),
+		fmt.tprintf("%s/maps/frozen_road.json", CONTENT_DIR),
+	}
+	map_ids := [3]string{"grasslands", "forest_pass", "frozen_road"}
+	for i := 0; i < len(map_paths); i += 1 {
+		contents, read_err := os.read_entire_file_from_path(map_paths[i], context.temp_allocator)
+		if read_err != os.ERROR_NONE {
+			fmt.println("Content load failed:", map_paths[i], "-", os.error_string(read_err))
+			return false
+		}
+		valid, err = parse_map(string(contents), map_ids[i], &g.levels[i])
+		if !valid {
+			fmt.println("Content load failed:", map_paths[i], "-", err)
+			return false
+		}
+	}
 
 	wave_paths := [3]string{
 		fmt.tprintf("%s/waves/grasslands.json", CONTENT_DIR),

@@ -82,6 +82,7 @@ src/
 data/
   towers.json       Tower definitions
   enemies.json      Enemy definitions and resistances
+  maps/             Level metadata and fixed routes
   waves/             Per-level wave definitions
 assets/
   sprite_atlas.png  Runtime art atlas
@@ -90,10 +91,10 @@ assets/
 
 ## Development notes
 
-The project is an intentionally compact prototype. Tower, enemy, and wave
-definitions are loaded from versioned JSON files in `data/`; map routes, level
-metadata, music/settings, additional targeting policies, and broader campaign
-systems remain in code or are not yet implemented. Results are saved in the
-platform user data directory rather than in the project folder.
+The project is an intentionally compact prototype. Tower, enemy, wave, and
+level map definitions are loaded from versioned JSON files in `data/`; music,
+settings, additional targeting policies, and broader campaign systems remain
+in code or are not yet implemented. Results are saved in the platform user
+data directory rather than in the project folder.
 
 See [DESIGN.md](DESIGN.md) for the broader game design direction, [PROGRESS.md](PROGRESS.md) for the current implementation status, and [assets/ART_GUIDE.md](assets/ART_GUIDE.md) for artwork replacement instructions.

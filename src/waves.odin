@@ -1,31 +1,8 @@
 package main
 
-set_route :: proc(route: ^Path_Route, points: ..Vec2) {
-	route.point_count = min(len(points), MAX_PATH_POINTS)
-	for i := 0; i < route.point_count; i += 1 { route.points[i] = points[i] }
-}
-
 init_levels :: proc(g: ^Game) {
 	g.level_count = 3
-
-	grass := &g.levels[0]
-	grass.name = "Grasslands"
-	grass.starting_gold, grass.starting_lives = START_GOLD, START_LIVES
-	grass.route_count = 1
-	set_route(&grass.routes[0],vec2(20,300),vec2(180,300),vec2(180,100),vec2(420,100),vec2(420,500),vec2(700,500),vec2(700,220),vec2(940,220))
-
-	forest := &g.levels[1]
-	forest.name = "Forest Pass"
-	forest.starting_gold, forest.starting_lives = 220, START_LIVES
-	forest.route_count = 2
-	set_route(&forest.routes[0],vec2(20,140),vec2(220,140),vec2(220,300),vec2(500,300),vec2(500,100),vec2(740,100),vec2(740,340),vec2(940,340))
-	set_route(&forest.routes[1],vec2(20,580),vec2(220,580),vec2(220,420),vec2(500,420),vec2(500,620),vec2(740,620),vec2(740,460),vec2(940,460))
-
-	frozen := &g.levels[2]
-	frozen.name = "Frozen Road"
-	frozen.starting_gold, frozen.starting_lives = 230, START_LIVES
-	frozen.route_count = 1
-	set_route(&frozen.routes[0],vec2(20,660),vec2(140,660),vec2(140,420),vec2(340,420),vec2(340,180),vec2(580,180),vec2(580,540),vec2(820,540),vec2(820,260),vec2(940,260))
+	g.levels = {}
 }
 
 load_level :: proc(g: ^Game, level_index: int) {

@@ -7,6 +7,7 @@ import "core:strings"
 test_content_files_load_current_definitions :: proc(t: ^testing.T) {
 	g := Game{}
 	init_levels(&g)
+	defer unload_level_content(&g.levels)
 	defer unload_content(&g.content)
 	testing.expect(t, load_content(&g))
 	testing.expect(t, g.content.towers[int(Tower_Type.Arrow)].cost == 50)
@@ -16,6 +17,48 @@ test_content_files_load_current_definitions :: proc(t: ^testing.T) {
 	testing.expect(t, g.levels[0].wave_count == 15)
 	testing.expect(t, g.levels[0].waves[5].group_count == 2)
 	testing.expect(t, g.levels[0].waves[5].groups[0].enemy_type == .Runner)
+	testing.expect(t, g.levels[0].name == "Grasslands")
+	testing.expect(t, g.levels[0].starting_gold == 200)
+	testing.expect(t, g.levels[0].route_count == 1)
+	testing.expect(t, g.levels[0].routes[0].point_count == 8)
+	testing.expect(t, g.levels[1].route_count == 2)
+	testing.expect(t, g.levels[1].routes[0].point_count == 8)
+	testing.expect(t, g.levels[1].routes[1].point_count == 8)
+	testing.expect(t, g.levels[2].route_count == 1)
+	testing.expect(t, g.levels[2].routes[0].point_count == 10)
+}
+
+@(test)
+test_map_parser_rejects_invalid_metadata_and_routes :: proc(t: ^testing.T) {
+	valid := `{"version":1,"level":"test","name":"Test","starting_gold":1,"starting_lives":1,"routes":[{"points":[{"x":20,"y":20},{"x":60,"y":20}]}]}`
+	level := Level_Def{}
+
+	ok, _ := parse_map(valid, "test", &level)
+	testing.expect(t, ok)
+	delete(level.name)
+
+	wrong_version := strings_replace(valid, `"version":1`, `"version":2`)
+	ok, _ = parse_map(wrong_version, "test", &level)
+	testing.expect(t, !ok)
+
+	ok, _ = parse_map(valid, "other", &level)
+	testing.expect(t, !ok)
+
+	no_routes := strings_replace(valid, `"routes":[{"points":[{"x":20,"y":20},{"x":60,"y":20}]}]`, `"routes":[]`)
+	ok, _ = parse_map(no_routes, "test", &level)
+	testing.expect(t, !ok)
+
+	one_point := strings_replace(valid, `{"x":20,"y":20},{"x":60,"y":20}`, `{"x":20,"y":20}`)
+	ok, _ = parse_map(one_point, "test", &level)
+	testing.expect(t, !ok)
+
+	out_of_bounds := strings_replace(valid, `"x":20`, `"x":960`)
+	ok, _ = parse_map(out_of_bounds, "test", &level)
+	testing.expect(t, !ok)
+
+	diagonal := strings_replace(valid, `{"x":60,"y":20}`, `{"x":60,"y":40}`)
+	ok, _ = parse_map(diagonal, "test", &level)
+	testing.expect(t, !ok)
 }
 
 @(test)

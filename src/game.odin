@@ -23,8 +23,6 @@ MAX_LEVELS      :: 3
 MAX_ROUTES      :: 2
 MAX_PATH_POINTS :: 12
 
-START_GOLD  :: 200
-START_LIVES :: 20
 NEXT_WAVE_DELAY :: f32(5)
 
 Game_Mode :: enum {
@@ -416,7 +414,11 @@ point_in_rect :: proc(p: Vec2, x, y, w, h: int) -> bool {
 init_game :: proc() -> (Game, bool) {
 	g := Game{}
 	init_levels(&g)
-	if !load_content(&g) { unload_content(&g.content); return g, false }
+	if !load_content(&g) {
+		unload_content(&g.content)
+		unload_level_content(&g.levels)
+		return g, false
+	}
 	g.save = load_results(g.level_count)
 	g.current_level = 0
 	load_level(&g, g.current_level)

@@ -32,6 +32,7 @@ main :: proc() {
 	game, ok := init_game()
 	if !ok { return }
 	defer unload_content(&game.content)
+	defer unload_level_content(&game.levels)
 	defer unload_assets(&game.assets)
 
 	for !rl.WindowShouldClose() && !game.quit_requested {
