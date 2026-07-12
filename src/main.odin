@@ -14,12 +14,16 @@ main :: proc() {
 	rl.SetWindowMinSize(960, 540)
 
 	monitor := rl.GetCurrentMonitor()
-	window_w := rl.GetMonitorWidth(monitor) * 9 / 10
-	window_h := rl.GetMonitorHeight(monitor) * 9 / 10
+	monitor_w := rl.GetMonitorWidth(monitor) * 9 / 10
+	monitor_h := rl.GetMonitorHeight(monitor) * 9 / 10
+	window_w := monitor_w
+	window_h := window_w * SCREEN_HEIGHT / SCREEN_WIDTH
+	if window_h > monitor_h {
+		window_h = monitor_h
+		window_w = window_h * SCREEN_WIDTH / SCREEN_HEIGHT
+	}
 	if window_w < SCREEN_WIDTH {
 		window_w = SCREEN_WIDTH
-	}
-	if window_h < SCREEN_HEIGHT {
 		window_h = SCREEN_HEIGHT
 	}
 	rl.SetWindowSize(window_w, window_h)
