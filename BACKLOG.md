@@ -28,7 +28,9 @@ high-DPI, and letterboxing behavior for later window sizes.
 game-and-panel layout and does not show avoidable side bars, while supported
 non-matching window sizes remain safely letterboxed.
 
-### [ ] Keep upgrade-button text inside its bounds
+### [ ] Keep upgrade-button text inside its bounds — TO IGNORE / NOT REQUIRED
+
+**Status:** To ignore / not required. Do not schedule this item.
 
 **Problem:** The `Upgrade` label and price run beyond the button boundary at
 the current side-panel size.
@@ -79,7 +81,9 @@ useful, without duplicating the next-wave preview.
 **Done when:** Players can distinguish an available action, an automatic
 countdown, and active-wave progress at a glance.
 
-### [ ] Raise contrast and minimum size for side-panel body text
+### [ ] Raise contrast and minimum size for side-panel body text — TO IGNORE / NOT REQUIRED
+
+**Status:** To ignore / not required. Do not schedule this item.
 
 **Problem:** The 14–15 px labels, disabled prices, wave-preview rows, and
 secondary tower statistics remain difficult to read against the dark panel,
@@ -94,7 +98,9 @@ supported window size and for unaffordable states.
 **Done when:** Costs, stats, status text, and wave-preview rows are readable
 without enlarging the window or relying on memorized shortcuts.
 
-### [ ] Reduce side-panel density and improve scan order
+### [ ] Reduce side-panel density and improve scan order — TO IGNORE / NOT REQUIRED
+
+**Status:** To ignore / not required. Do not schedule this item.
 
 **Problem:** The panel contains level context, resources, wave state, four
 tower cards, speed controls, selected-tower details, and a next-wave preview
@@ -111,7 +117,9 @@ the current decision. Do not hide essential state behind a new interaction.
 selected tower's key decision, and the next wave in that order within a quick
 scan.
 
-### [ ] Balance right-panel spacing and usable width
+### [ ] Balance right-panel spacing and usable width — TO IGNORE / NOT REQUIRED
+
+**Status:** To ignore / not required. Do not schedule this item.
 
 **Problem:** The right panel does not distribute its contents evenly. In the
 current layout, the four tower cards form a relatively narrow centered stack
@@ -133,7 +141,9 @@ its sections align to a clear content width, and there is no conspicuous unused
 area beside the tower cards or crowding in the lower sections. The full layout
 still fits without clipping or overlap at every supported render size.
 
-### [ ] Add direct feedback for side-menu controls
+### [ ] Add direct feedback for side-menu controls — TO IGNORE / NOT REQUIRED
+
+**Status:** To ignore / not required. Do not schedule this item.
 
 **Problem:** Mouse hover is available, but important controls have limited
 feedback for focus, keyboard navigation, or the reason a click had no effect.
@@ -367,15 +377,11 @@ themes and progression roles before full production begins.
 ## Suggested sequence
 
 1. Start with a window sized to the full game-and-panel aspect ratio.
-2. Keep upgrade-button text inside its bounds and center Speed labels.
-3. Improve side-panel text readability and disabled-state explanations.
-4. Clarify countdown and active-wave wording.
-5. Reduce side-panel density while preserving the selected-tower and
-   next-wave separation.
-6. Standardize side-menu hover, selected, disabled, and focus feedback.
-7. Fix the missing Wraith and Siege Beast visuals.
-8. Make road artwork directional.
-9. Redesign Ruined Outskirts terrain and decorations.
+2. Center Speed button labels.
+3. Clarify countdown and active-wave wording.
+4. Fix the missing Wraith and Siege Beast visuals.
+5. Make road artwork directional.
+6. Redesign Ruined Outskirts terrain and decorations.
 
 Long-term systems should follow campaign polish and use the simulator and level
 constructor to support expansion:
