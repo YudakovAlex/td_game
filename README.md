@@ -99,4 +99,4 @@ settings, additional targeting policies, and broader campaign systems remain
 in code or are not yet implemented. Results are saved in the platform user
 data directory rather than in the project folder.
 
-See [DESIGN.md](DESIGN.md) for the broader game design direction, [PROGRESS.md](PROGRESS.md) for the current implementation status, and [assets/ART_GUIDE.md](assets/ART_GUIDE.md) for artwork replacement instructions.
+See [DESIGN.md](DESIGN.md) for the broader game design direction, [PROGRESS.md](PROGRESS.md) for the current implementation status, [BACKLOG.md](BACKLOG.md) for open visual and content work, and [assets/ART_GUIDE.md](assets/ART_GUIDE.md) for artwork replacement instructions.
