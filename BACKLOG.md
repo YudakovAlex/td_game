@@ -14,6 +14,39 @@ The checked entries describe code-level work that has been completed. The
 unchecked upgrade-label and text-readability entries still require interactive
 visual verification at the supported render sizes before they can be closed.
 
+## Playtest screenshot review — 2026-07-12
+
+The screenshot confirms the existing [Improve readability of small
+text](#-improve-readability-of-small-text) item: side-panel labels, costs, and
+wave-preview text have insufficient contrast at the current render size. No
+duplicate issue is added for that observation.
+
+### [ ] Make corner road artwork consistent across terrains
+
+**Problem:** Corner road tiles use visibly different artwork or styling from
+one terrain to another. The corners do not read as one consistent road system
+when comparing levels.
+
+**Work:** Define a consistent corner-road treatment for each terrain and make
+sure all corner orientations use the same visual language as that terrain's
+straight road segments. Preserve the route direction and terrain identity.
+
+**Done when:** Every terrain has matching corner and straight road artwork,
+and all four corner orientations remain visually clear in gameplay.
+
+### [ ] Keep enemies on the road in Ruined Outskirts
+
+**Problem:** In Ruined Outskirts, enemies can leave the authored route and
+travel across buildable terrain. The screenshot shows several enemies moving
+in a vertical line away from the visible road.
+
+**Work:** Fix Ruined Outskirts route/path traversal so enemy movement follows
+the route points and remains on road tiles throughout the level. Verify turns,
+spawn, exit, and the full wave lifecycle.
+
+**Done when:** No enemy can move across buildable terrain in Ruined Outskirts,
+and all enemies reach the exit by following the visible road.
+
 ### [x] Start with a window sized to the full game-and-panel area
 
 **Problem:** The initial window leaves black areas at the sides because its
