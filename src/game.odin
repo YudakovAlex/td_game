@@ -672,7 +672,7 @@ handle_map_click :: proc(g: ^Game, mouse: Vec2) {
 }
 
 handle_ui_click :: proc(g: ^Game, mouse: Vec2) {
-	if point_in_rect(mouse, UI_X+174, 78, 66, 34) {
+	if point_in_rect(mouse, UI_X+174, 10, 66, 30) {
 		g.mode = .Paused
 		g.restart_confirmation = false
 		return
@@ -704,13 +704,13 @@ handle_ui_click :: proc(g: ^Game, mouse: Vec2) {
 	}
 
 	if g.selected_tower_index >= 0 && g.selected_tower_index < g.tower_count {
-		if point_in_rect(mouse, UI_X+20, 610, 220, 24) {
+		if point_in_rect(mouse, UI_X+20, 598, 220, 24) {
 			cycle_tower_target_mode(g, g.selected_tower_index)
 		}
-		if point_in_rect(mouse, UI_X+20, 472, 108, 38) {
+		if point_in_rect(mouse, UI_X+20, 474, 108, 34) {
 			upgrade_tower(g, g.selected_tower_index)
 		}
-		if point_in_rect(mouse, UI_X+136, 472, 104, 38) {
+		if point_in_rect(mouse, UI_X+136, 474, 104, 34) {
 			sell_tower(g, g.selected_tower_index)
 		}
 	}

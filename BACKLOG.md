@@ -3,6 +3,126 @@
 Visual and content issues collected from playtesting. Items are ordered by
 priority within the current polish cycle.
 
+## Side-menu review — 2026-07-11
+
+The current side-menu pass resolves the earlier header/Menu collision, gives
+wave status its own non-action treatment, labels the selected-tower actions,
+and separates the selected-tower and next-wave sections. The following
+remaining issues were identified from the current Grasslands view and should
+be carried into the next polish pass.
+
+### [ ] Start with a window sized to the full game-and-panel area
+
+**Problem:** The initial window leaves black areas at the sides because its
+starting aspect ratio does not match the logical game canvas, including the
+side panel.
+
+**Work:** Set the startup window dimensions to the full logical canvas aspect
+ratio, including the map and side panel. Preserve the existing resize,
+high-DPI, and letterboxing behavior for later window sizes.
+
+**Done when:** A newly launched game fills the initial window with the full
+game-and-panel layout and does not show avoidable side bars, while supported
+non-matching window sizes remain safely letterboxed.
+
+### [ ] Keep upgrade-button text inside its bounds
+
+**Problem:** The `Upgrade` label and price run beyond the button boundary at
+the current side-panel size.
+
+**Work:** Fit the action label within the existing button, using a shorter
+layout or smaller readable text as needed. Keep the full action meaning and
+price visible.
+
+**Done when:** The complete upgrade label is contained within the button with
+consistent padding and no overlap or clipping.
+
+### [ ] Center the Speed button labels
+
+**Problem:** The `-` and `+` labels in the Speed controls are not visually
+centered within their buttons.
+
+**Work:** Center each label horizontally and vertically using the button
+rectangle rather than fixed text offsets.
+
+**Done when:** Both Speed labels remain centered at the supported render sizes.
+
+### [ ] Make disabled states explain why an action is unavailable
+
+**Problem:** Unaffordable tower cards and the unavailable `Upgrade` action are
+shown mainly through dimmed colors. A player cannot immediately tell whether
+an action is unavailable because of insufficient gold, a maximum tower level,
+or another state.
+
+**Work:** Keep the distinct disabled styling, but add concise supporting
+feedback such as `Need $20 more` or `MAX LEVEL` where it fits. Preserve the
+normal price and action label so the economy remains scannable.
+
+**Done when:** A player can identify the reason an unavailable tower or
+selected-tower action cannot be used without guessing or trying the click.
+
+### [ ] Improve countdown and active-wave wording
+
+**Problem:** `Start Wave 2s` can be read as an action with a price or duration,
+and the current waiting/active state is not equally explicit in every state.
+The wave number and remaining-wave count are clear, but active enemy progress
+is only available in the lower status area.
+
+**Work:** Use explicit wording such as `Starting in 2s` for the automatic
+countdown and define a compact, consistent status pattern for waiting,
+spawning, and clearing. Include current enemies remaining when that value is
+useful, without duplicating the next-wave preview.
+
+**Done when:** Players can distinguish an available action, an automatic
+countdown, and active-wave progress at a glance.
+
+### [ ] Raise contrast and minimum size for side-panel body text
+
+**Problem:** The 14–15 px labels, disabled prices, wave-preview rows, and
+secondary tower statistics remain difficult to read against the dark panel,
+especially with the decorative display font. The screenshot also shows a
+large contrast gap between prominent headings and supporting information.
+
+**Work:** Establish a minimum readable body size and contrast for panel text.
+Use the decorative treatment for headings and retain the fantasy identity in
+colors, borders, and larger labels. Check the result at the smallest
+supported window size and for unaffordable states.
+
+**Done when:** Costs, stats, status text, and wave-preview rows are readable
+without enlarging the window or relying on memorized shortcuts.
+
+### [ ] Reduce side-panel density and improve scan order
+
+**Problem:** The panel contains level context, resources, wave state, four
+tower cards, speed controls, selected-tower details, and a next-wave preview
+in one narrow vertical column. The current grouping is better, but the lower
+sections still compete for attention and leave little room for longer role or
+status text.
+
+**Work:** Prioritize the order of information during preparation versus active
+combat, add a small amount of breathing room where possible, and keep the
+selected tower's action row and the next-wave preview visually subordinate to
+the current decision. Do not hide essential state behind a new interaction.
+
+**Done when:** A player can locate resources, the next available action, the
+selected tower's key decision, and the next wave in that order within a quick
+scan.
+
+### [ ] Add direct feedback for side-menu controls
+
+**Problem:** Mouse hover is available, but important controls have limited
+feedback for focus, keyboard navigation, or the reason a click had no effect.
+This is most noticeable on disabled tower cards, speed limits, and selected
+tower actions.
+
+**Work:** Standardize hover, selected, disabled, and keyboard-focus states;
+where a control is disabled, pair the visual state with the reason already
+logged above. Keep the current mouse and keyboard shortcuts unchanged.
+
+**Done when:** Every side-menu control has a visibly distinct state for
+available, hovered, selected, disabled, and focused interaction where
+applicable.
+
 ## High priority
 
 ### [ ] Make road sprites follow road direction
@@ -117,6 +237,24 @@ squares without obscuring routes or buildable tiles.
 road design is visibly different from Forest Pass, and decorations do not
 reduce path or tower-placement readability.
 
+## Testing and tooling
+
+### [ ] Add a tester-mode build
+
+**Problem:** Testing a specific level or tower setup currently requires
+progressing through the campaign and obeying the normal starting-gold and
+tower-cost rules.
+
+**Work:** Add a compile-time tester mode that lets a tester select any level
+directly and place or upgrade any number of towers without gold restrictions.
+Keep the mode out of normal campaign builds, and make its active state clear
+when launching the game so test results are not mistaken for normal balance
+results.
+
+**Done when:** A tester can launch the tester build, choose any available
+level, freely construct and upgrade towers, and exercise waves without
+changing normal campaign rules or saved player results.
+
 ## Long-term features
 
 ### [ ] Increase campaign difficulty and introduce complexity levels
@@ -203,20 +341,24 @@ themes and progression roles before full production begins.
 
 ## Suggested sequence
 
-1. Fix the wave header/Menu collision and clarify wave status.
-2. Improve side-panel text readability and selected-tower action labels.
-3. Separate the selected-tower and next-wave sections, including overflow space.
-4. Strengthen tower-card selection feedback.
-5. Fix the missing Wraith and Siege Beast visuals.
-6. Make road artwork directional.
-7. Redesign Ruined Outskirts terrain and decorations.
+1. Start with a window sized to the full game-and-panel aspect ratio.
+2. Keep upgrade-button text inside its bounds and center Speed labels.
+3. Improve side-panel text readability and disabled-state explanations.
+4. Clarify countdown and active-wave wording.
+5. Reduce side-panel density while preserving the selected-tower and
+   next-wave separation.
+6. Standardize side-menu hover, selected, disabled, and focus feedback.
+7. Fix the missing Wraith and Siege Beast visuals.
+8. Make road artwork directional.
+9. Redesign Ruined Outskirts terrain and decorations.
 
 Long-term systems should follow campaign polish and use the simulator and level
 constructor to support expansion:
 
-8. Define difficulty and complexity tiers.
-9. Design more varied route layouts.
-10. Build the level-balance simulator.
-11. Create the level constructor.
-12. Plan the 99-level, 11-terrain campaign structure.
-13. Add the AI-adversary mode.
+8. Add a compile-time tester-mode build.
+9. Define difficulty and complexity tiers.
+10. Design more varied route layouts.
+11. Build the level-balance simulator.
+12. Create the level constructor.
+13. Plan the 99-level, 11-terrain campaign structure.
+14. Add the AI-adversary mode.
