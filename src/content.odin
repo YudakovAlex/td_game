@@ -157,6 +157,8 @@ asset_id_from_name :: proc(name: string) -> (Asset_Id, bool) {
 	case "enemy_brute":   return .Enemy_Brute, true
 	case "enemy_boss":    return .Enemy_Boss, true
 	case "enemy_armored": return .Enemy_Armored, true
+	case "enemy_wraith": return .Enemy_Wraith, true
+	case "enemy_siege_beast": return .Enemy_Siege_Beast, true
 	case "primitive":     return .Count, true
 	}
 	return .Count, false
@@ -181,8 +183,8 @@ enemy_asset_for_type :: proc(kind: Enemy_Type) -> Asset_Id {
 	case .Brute:   return .Enemy_Brute
 	case .Boss:    return .Enemy_Boss
 	case .Armored: return .Enemy_Armored
-	case .Wraith:  return .Count
-	case .Siege_Beast: return .Count
+	case .Wraith:  return .Enemy_Wraith
+	case .Siege_Beast: return .Enemy_Siege_Beast
 	}
 	return .Count
 }

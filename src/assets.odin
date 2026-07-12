@@ -5,6 +5,9 @@ import "core:fmt"
 import "core:math"
 import rl "vendor:raylib"
 
+ATLAS_COLUMNS :: 6
+ATLAS_ROWS    :: 5
+
 // Embed the runtime atlas in the executable so release builds do not depend on
 // an assets directory or on the process working directory.
 SPRITE_ATLAS_PNG :: #load("../assets/sprite_atlas.png")
@@ -24,6 +27,8 @@ asset_path :: proc(id: Asset_Id) -> string {
 	case .Enemy_Brute: return "assets/enemies/brute.png"
 	case .Enemy_Boss: return "assets/enemies/boss.png"
 	case .Enemy_Armored: return "assets/enemies/armored.png"
+	case .Enemy_Wraith: return "assets/enemies/wraith.png"
+	case .Enemy_Siege_Beast: return "assets/enemies/siege_beast.png"
 	case .Projectile_Arrow: return "assets/projectiles/arrow.png"
 	case .Projectile_Cannon: return "assets/projectiles/cannon.png"
 	case .Projectile_Frost: return "assets/projectiles/frost.png"
@@ -34,6 +39,7 @@ asset_path :: proc(id: Asset_Id) -> string {
 	case .Icon_Upgrade: return "assets/ui/upgrade.png"
 	case .Icon_Sell: return "assets/ui/sell.png"
 	case .Icon_Speed: return "assets/ui/speed.png"
+	case .Path_Turn: return "assets/terrain/path_turn.png"
 	case .Count: return ""
 	}
 	return ""
@@ -116,10 +122,10 @@ draw_asset :: proc(a: ^Assets, id: Asset_Id, center: Vec2, size: Vec2, rotation:
 	if id >= .Count { return false }
 	texture := a.atlas
 	if !rl.IsTextureValid(texture) { return false }
-	cell_w := f32(texture.width)/6
-	cell_h := f32(texture.height)/4
+	cell_w := f32(texture.width)/ATLAS_COLUMNS
+	cell_h := f32(texture.height)/ATLAS_ROWS
 	index := int(id)
-	source := rl.Rectangle{f32(index%6)*cell_w, f32(index/6)*cell_h, cell_w, cell_h}
+	source := rl.Rectangle{f32(index%ATLAS_COLUMNS)*cell_w, f32(index/ATLAS_COLUMNS)*cell_h, cell_w, cell_h}
 	dest := rl.Rectangle{center.x, center.y, size.x, size.y}
 	rl.DrawTexturePro(texture, source, dest, vec2(size.x/2, size.y/2), rotation, tint)
 	return true

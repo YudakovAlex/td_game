@@ -7,7 +7,7 @@ All art uses a low-resolution painted fantasy RTS style, viewed from a top-down 
 - Export RGBA PNGs with transparent backgrounds at 128×128; important detail must remain readable when drawn at 32–52 logical pixels.
 - Terrain tiles are seamless square 128×128 images. Entity sprites are centered with 10% transparent padding.
 - Towers face right in source art. Runtime rotation supplies aiming direction.
-- The runtime atlas is `assets/sprite_atlas.png`: a 6×4 grid in the `Asset_Id` order declared in `src/game.odin`. Replacing it requires no code changes.
+- The runtime atlas is `assets/sprite_atlas.png`: a 6×5 grid in the `Asset_Id` order declared in `src/game.odin`. The turn-road cell occupies the previously unused last cell of row four; Wraith and Siege Beast occupy the first two cells of the final row. Replacing it requires preserving the grid dimensions and asset order.
 - Keep lighting, camera, saturation, and scale consistent across a generation batch. Inspect assets at their in-game size before accepting them.
 
 ## Generation prompt template

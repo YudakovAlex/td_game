@@ -83,6 +83,7 @@ Asset_Id :: enum {
 	Enemy_Grunt, Enemy_Runner, Enemy_Brute, Enemy_Boss, Enemy_Armored,
 	Projectile_Arrow, Projectile_Cannon, Projectile_Frost, Projectile_Flame,
 	Icon_Gold, Icon_Lives, Icon_Wave, Icon_Upgrade, Icon_Sell, Icon_Speed,
+	Path_Turn, Enemy_Wraith, Enemy_Siege_Beast,
 	Count,
 }
 
@@ -109,7 +110,8 @@ Viewport :: struct {
 }
 
 Tile :: struct {
-	kind: Tile_Type,
+	kind:        Tile_Type,
+	connections: u8,
 }
 
 Tower_Def :: struct {

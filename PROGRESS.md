@@ -41,6 +41,9 @@ odin build src
 - Fixed-size visual-effect pool for sparks, explosions, frost bursts, flame impacts, and burn embers.
 - Restyled right-hand HUD with resource icons, tower cards, affordability feedback, selected-tower statistics, upgrade/sell values, and next-wave previews.
 - Placement ghosts display tower range before construction, and HUD buttons provide mouse-accessible speed control.
+- Road tiles now follow route direction, with rotated straight segments and turn-aware corner artwork.
+- Wraith and Siege Beast use dedicated atlas visuals with primitive fallbacks when artwork is unavailable.
+- Ruined Outskirts has a distinct desaturated ruined palette, darker roads, and restrained deterministic rubble details.
 - Wave progress now reports the active wave and remaining-wave count without overflowing after the final wave.
 - Wave action/status labels now distinguish starting, countdown, spawning, clearing, finished, and paused states; active spawning reports remaining enemies.
 - Wave progress and a Menu button live in the right panel, keeping the battlefield unobstructed; the menu offers resume, confirmation-protected restart, and quit actions.
@@ -67,16 +70,16 @@ The game renders to a fixed 1280×720 target and letterboxes it into a resizable
 ## Validation completed
 
 - Odin static check passes.
-- Odin test suite passes with 30 tests, including wave-status presentation states, Grasslands wave-curve, Ruined City content, campaign continuation, save compatibility, and tower/enemy matchup regression coverage.
+- Odin test suite passes with 33 tests, including route-connectivity rendering cases, wave-status presentation states, Grasslands wave-curve, Ruined City content, campaign continuation, save compatibility, and tower/enemy matchup regression coverage.
 - Native executable build passes.
 - A native launch was attempted, but the current environment could not open its X11 display or initialize audio; no interactive playthrough was completed here.
-- The committed sprite atlas is a valid 1536×1024 RGBA PNG; Wraith and Siege Beast use distinct primitive fallback visuals.
+- The committed sprite atlas is a valid 1536×1280 RGBA PNG with dedicated Wraith, Siege Beast, and turn-road cells.
 - Asset ownership has one load and one matching unload.
 - Missing atlas data falls back to primitive rendering rather than preventing play.
 
 ## Known gaps and risks
 
-- A complete interactive playthrough and visual review at all target window sizes is still required. The HUD validation gate specifically remains open at 1280×720 and 960×540: confirm that selected-tower `Upgrade` labels fit within their buttons, side-panel costs/stats/statuses and wave-preview rows remain readable, three-group previews do not clip, and actionable versus non-actionable controls remain visually distinct.
+- A complete interactive playthrough and visual review at all target window sizes is still required. The HUD validation gate specifically remains open at 1280×720 and 960×540: confirm that selected-tower `Upgrade` labels fit within their buttons, side-panel costs/stats/statuses and wave-preview rows remain readable, three-group previews do not clip, and actionable versus non-actionable controls remain visually distinct. The new road turns, Ruined Outskirts treatment, and dedicated enemy visuals also need compiled-runtime review.
 - Wave balance is provisional; Grasslands waves 11–15, the Flame/Armored matchup, and all Ruined City waves need playtesting.
 - Waves support up to three sequential enemy groups; Grasslands uses mixed groups on waves 6, 8, 11, and 13 while Forest Pass and Frozen Road retain single-group definitions.
 - Result screens show deterministic scores and best scores; completed-level best score and best remaining lives are persisted in a versioned user-data text file.

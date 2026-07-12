@@ -16,6 +16,8 @@ test_content_files_load_current_definitions :: proc(t: ^testing.T) {
 	testing.expect(t, g.content.enemies[int(Enemy_Type.Armored)].magic_multiplier == 1.35)
 	testing.expect(t, g.content.enemies[int(Enemy_Type.Wraith)].magic_multiplier == 0.55)
 	testing.expect(t, g.content.enemies[int(Enemy_Type.Siege_Beast)].physical_multiplier == 0.78)
+	testing.expect(t, g.content.enemies[int(Enemy_Type.Wraith)].asset == .Enemy_Wraith)
+	testing.expect(t, g.content.enemies[int(Enemy_Type.Siege_Beast)].asset == .Enemy_Siege_Beast)
 	testing.expect(t, g.level_count == 6)
 	testing.expect(t, g.levels[0].wave_count == 15)
 	testing.expect(t, g.levels[0].waves[5].group_count == 2)

@@ -160,7 +160,7 @@ applicable.
 
 ## High priority
 
-### [ ] Make road sprites follow road direction
+### [x] Make road sprites follow road direction
 
 **Problem:** Road sprites are always vertical, regardless of the route's
 direction.
@@ -172,7 +172,10 @@ rotate a suitable sprite at render time) based on each route segment.
 horizontal sections, vertical sections, and corners, without changing enemy
 movement or map logic.
 
-### [ ] Make Wraith and Siege Beast sprites visible in compiled builds
+**Status:** Route connectivity is stored on map tiles; straight roads rotate
+the existing path asset and corners use the atlas turn asset.
+
+### [x] Make Wraith and Siege Beast sprites visible in compiled builds
 
 **Problem:** Wraith and Siege Beast sprites are missing or not visible in the
 compiled game.
@@ -183,6 +186,9 @@ fallback rendering in a compiled build.
 **Done when:** Both enemy types have distinct, clearly visible in-game visuals
 at normal gameplay scale, and still render safely when atlas artwork is
 unavailable.
+
+**Status:** Dedicated atlas cells and JSON asset mappings are present; the
+existing primitive color fallback remains active when the texture is unavailable.
 
 ### [ ] Improve readability of small text
 
@@ -259,7 +265,7 @@ states remain distinguishable.
 
 ## Medium priority
 
-### [ ] Distinguish Ruined Outskirts from Forest Pass
+### [x] Distinguish Ruined Outskirts from Forest Pass
 
 **Problem:** Ruined Outskirts currently looks too similar to Forest Pass.
 
@@ -271,6 +277,9 @@ squares without obscuring routes or buildable tiles.
 **Done when:** The level is identifiable as Ruined Outskirts at a glance, its
 road design is visibly different from Forest Pass, and decorations do not
 reduce path or tower-placement readability.
+
+**Status:** Ruined Outskirts now uses a darker desaturated palette, a darker
+route treatment, and deterministic rubble/wall details on buildable tiles.
 
 ## Testing and tooling
 
@@ -382,6 +391,9 @@ themes and progression roles before full production begins.
 4. Fix the missing Wraith and Siege Beast visuals.
 5. Make road artwork directional.
 6. Redesign Ruined Outskirts terrain and decorations.
+
+The visual items in this sequence are now implemented; the remaining work is
+interactive verification at the supported render sizes.
 
 Long-term systems should follow campaign polish and use the simulator and level
 constructor to support expansion:
