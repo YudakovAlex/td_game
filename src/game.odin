@@ -6,6 +6,8 @@ import rl "vendor:raylib"
 SCREEN_WIDTH  :: 1280
 SCREEN_HEIGHT :: 720
 
+TESTER_MODE :: #config(RUNE_SIEGE_TESTER_MODE, false)
+
 TILE_SIZE :: 40
 MAP_W     :: 24
 MAP_H     :: 18
@@ -284,6 +286,7 @@ Game :: struct {
 	score_gold_earned: int,
 	result_score:      int,
 	result_saved:      bool,
+	playtest_logged:   bool,
 	save:              Save_Data,
 	content:           Content_Data,
 
@@ -491,11 +494,13 @@ update_game :: proc(g: ^Game, raw_dt: f32) {
 	if g.lives <= 0 {
 		g.result_score = calculate_score(g)
 		g.mode = .Defeat
+		log_playtest_result(g)
 		play_game_sound(g, .Defeat)
 	} else if g.current_wave >= g.wave_count && g.wave_state == .Finished && g.enemy_count == 0 {
 		g.mode = .Victory
 		play_game_sound(g, .Victory)
 		save_completed_result(g)
+		log_playtest_result(g)
 	}
 }
 
@@ -525,7 +530,7 @@ displayed_score :: proc(g: ^Game) -> int {
 save_completed_result :: proc(g: ^Game) {
 	if g.result_saved { return }
 	g.result_score = calculate_score(g)
-	if update_best_result(&g.save, g.current_level, g.result_score, max(g.lives, 0)) {
+	if !TESTER_MODE && update_best_result(&g.save, g.current_level, g.result_score, max(g.lives, 0)) {
 		save_results(&g.save, g.level_count)
 	}
 	g.result_saved = true
@@ -606,6 +611,19 @@ handle_input :: proc(g: ^Game) {
 		g.mode = .Paused
 		g.restart_confirmation = false
 		return
+	}
+
+	if TESTER_MODE {
+		if rl.IsKeyPressed(.PAGE_UP) && g.current_level > 0 {
+			g.current_level -= 1
+			load_level(g, g.current_level)
+			return
+		}
+		if rl.IsKeyPressed(.PAGE_DOWN) && g.current_level+1 < g.level_count {
+			g.current_level += 1
+			load_level(g, g.current_level)
+			return
+		}
 	}
 
 	if rl.IsKeyPressed(.ONE) {

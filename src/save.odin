@@ -32,6 +32,66 @@ results_file_path :: proc() -> (string, bool) {
 	return path, true
 }
 
+playtest_log_path :: proc() -> (string, bool) {
+	base, err := os.user_data_dir(context.allocator, true)
+	if err != os.ERROR_NONE {
+		fmt.println("Could not resolve the user data directory:", os.error_string(err))
+		return "", false
+	}
+
+	path, path_err := os.join_path({base, "Rune Siege TD", "playtest_runs.txt"}, context.allocator)
+	if path_err != nil {
+		fmt.println("Could not build the playtest log path:", path_err)
+		return "", false
+	}
+	return path, true
+}
+
+playtest_outcome_name :: proc(g: ^Game) -> string {
+	if g.mode == .Victory { return "VICTORY" }
+	return "DEFEAT"
+}
+
+log_playtest_result :: proc(g: ^Game) {
+	if g.playtest_logged || (g.mode != .Victory && g.mode != .Defeat) { return }
+	path, ok := playtest_log_path()
+	if !ok { return }
+
+	existing := ""
+	contents, read_err := os.read_entire_file_from_path(path, context.temp_allocator)
+	if read_err == os.ERROR_NONE {
+		existing = string(contents)
+	} else if os.exists(path) {
+		fmt.println("Could not read the playtest log:", os.error_string(read_err))
+		return
+	}
+
+	builder := strings.builder_make()
+	defer strings.builder_destroy(&builder)
+	fmt.sbprintf(&builder, "%sRUN level=%d name=\"%s\" outcome=%s score=%d lives=%d gold=%d towers=%d\n",
+		existing, g.current_level+1, g.levels[g.current_level].name, playtest_outcome_name(g),
+		g.result_score, max(g.lives, 0), g.gold, g.tower_count)
+	for i := 0; i < g.tower_count; i += 1 {
+		t := g.towers[i]
+		def := get_tower_def(g, t.kind)
+		fmt.sbprintf(&builder, "TOWER kind=%s tile=%d,%d level=%d\n", def.name, t.tile_x, t.tile_y, t.level)
+	}
+	fmt.sbprintf(&builder, "END\n")
+
+	log := strings.to_string(builder)
+	directory_err := os.make_directory_all(os.dir(path))
+	if directory_err != os.ERROR_NONE {
+		fmt.println("Could not create the playtest log directory:", os.error_string(directory_err))
+		return
+	}
+	write_err := os.write_entire_file_from_string(path, log)
+	if write_err != os.ERROR_NONE {
+		fmt.println("Could not save the playtest log:", os.error_string(write_err))
+		return
+	}
+	g.playtest_logged = true
+}
+
 load_results :: proc(level_count: int) -> Save_Data {
 	data := Save_Data{}
 	path, ok := results_file_path()

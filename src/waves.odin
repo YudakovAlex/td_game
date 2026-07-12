@@ -58,6 +58,7 @@ load_level :: proc(g: ^Game, level_index: int) {
 	g.enemies_defeated, g.enemies_leaked = 0, 0
 	g.score_gold_earned, g.result_score = 0, 0
 	g.result_saved = false
+	g.playtest_logged = false
 	g.selected_tower_type, g.selected_tower_index = .None, -1
 	g.enemies = {}
 	g.enemy_count = 0

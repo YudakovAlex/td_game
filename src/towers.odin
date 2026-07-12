@@ -29,11 +29,11 @@ place_tower :: proc(g: ^Game, kind: Tower_Type, tx, ty: int) {
 
 	def := get_tower_def(g, kind)
 
-	if g.gold < def.cost {
+	if !TESTER_MODE && g.gold < def.cost {
 		return
 	}
 
-	g.gold -= def.cost
+	if !TESTER_MODE { g.gold -= def.cost }
 
 	t := Tower{}
 	t.kind = kind
@@ -66,11 +66,11 @@ upgrade_tower :: proc(g: ^Game, index: int) {
 
 	cost := upgrade_cost(t, def)
 
-	if g.gold < cost {
+	if !TESTER_MODE && g.gold < cost {
 		return
 	}
 
-	g.gold -= cost
+	if !TESTER_MODE { g.gold -= cost }
 	t.total_invested += cost
 	t.level += 1
 	play_game_sound(g, .Action)

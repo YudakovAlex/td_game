@@ -25,6 +25,28 @@ road_asset_for_connections :: proc(connections: u8) -> (Asset_Id, f32) {
 	return .Path, 0
 }
 
+road_color_for_level :: proc(level_name: string) -> rl.Color {
+	if level_name == "Ruined Outskirts" { return rl.Color{92,75,66,255} }
+	return rl.BROWN
+}
+
+draw_road_connectors :: proc(center: Vec2, connections: u8, color: rl.Color) {
+	for direction in 0..<4 {
+		bit := u8(1 << u8(direction))
+		if (connections & bit) == 0 { continue }
+
+		offset := Vec2{}
+		switch bit {
+		case ROUTE_NORTH: offset = vec2(0, -f32(TILE_SIZE/2))
+		case ROUTE_EAST:  offset = vec2(f32(TILE_SIZE/2), 0)
+		case ROUTE_SOUTH: offset = vec2(0, f32(TILE_SIZE/2))
+		case ROUTE_WEST:  offset = vec2(-f32(TILE_SIZE/2), 0)
+		}
+		rl.DrawLineEx(center, v_add(center, offset), 6, color)
+	}
+	rl.DrawCircleV(center, 3, color)
+}
+
 mark_route_tiles :: proc(g: ^Game, route: ^Path_Route) {
 	for i := 0; i < route.point_count-1; i += 1 {
 		a := route.points[i]
@@ -72,6 +94,7 @@ init_map :: proc(g: ^Game) {
 
 draw_map :: proc(g: ^Game) {
 	ruin_style := g.levels[g.current_level].name == "Ruined Outskirts"
+	path_color := road_color_for_level(g.levels[g.current_level].name)
 	for y := 0; y < MAP_H; y += 1 {
 		for x := 0; x < MAP_W; x += 1 {
 			tile := g.tiles[y][x]
@@ -93,6 +116,7 @@ draw_map :: proc(g: ^Game) {
 			if ruin_style && tile.kind == .Buildable { tint = rl.Color{180,185,170,255} }
 			if ruin_style && tile.kind == .Path { tint = rl.Color{185,175,155,255} }
 			draw_asset(&g.assets,asset,tile_center(x,y),vec2(TILE_SIZE,TILE_SIZE),rotation,tint)
+			if tile.kind == .Path { draw_road_connectors(tile_center(x,y), tile.connections, path_color) }
 			h := (x*37+y*71+x*y*11)%29
 			if tile.kind == .Buildable && ruin_style && h == 5 {
 				stone := v_add(tile_center(x,y),vec2(-11,10))
@@ -119,7 +143,7 @@ draw_build_preview :: proc(g: ^Game) {
 	tx, ty := screen_to_tile(mouse)
 	valid := g.tiles[ty][tx].kind == .Buildable && tower_at_tile(g,tx,ty) < 0
 	def := get_tower_def(g, g.selected_tower_type)
-	affordable := g.gold >= def.cost
+	affordable := TESTER_MODE || g.gold >= def.cost
 	c := rl.Color{70,210,105,100}
 	if !valid { c = rl.Color{220,70,65,120} } else if !affordable { c = rl.Color{230,165,55,120} }
 	center := tile_center(tx,ty)
@@ -134,8 +158,7 @@ draw_build_preview :: proc(g: ^Game) {
 
 draw_path :: proc(g: ^Game) {
 	level := &g.levels[g.current_level]
-	path_color := rl.BROWN
-	if level.name == "Ruined Outskirts" { path_color = rl.Color{92,75,66,255} }
+	path_color := road_color_for_level(level.name)
 	for route_index := 0; route_index < level.route_count; route_index += 1 {
 		route := &level.routes[route_index]
 		for i := 0; i < route.point_count-1; i += 1 {

@@ -3,6 +3,29 @@ package main
 import "core:math"
 import rl "vendor:raylib"
 
+advance_enemy_on_route :: proc(e: ^Enemy, route: ^Path_Route, distance: f32) {
+	remaining := distance
+	for remaining > 0 && e.path_index < route.point_count {
+		target := route.points[e.path_index]
+		to_target := v_sub(target, e.pos)
+		dist := v_len(to_target)
+		if dist <= 0.0001 {
+			e.pos = target
+			e.path_index += 1
+			continue
+		}
+
+		if remaining < dist {
+			e.pos = v_add(e.pos, v_mul(v_norm(to_target), remaining))
+			break
+		}
+
+		e.pos = target
+		e.path_index += 1
+		remaining -= dist
+	}
+}
+
 update_enemies :: proc(g: ^Game, dt: f32) {
 	for i := 0; i < g.enemy_count; i += 1 {
 		e := &g.enemies[i]
@@ -38,24 +61,12 @@ update_enemies :: proc(g: ^Game, dt: f32) {
 			continue
 		}
 
-		target := route.points[e.path_index]
-		to_target := v_sub(target, e.pos)
-		dist := v_len(to_target)
-
 		speed := e.speed
 		if e.slow_timer > 0 {
 			speed *= 1.0 - e.slow_amount
 		}
 
-		step := speed * dt
-
-		if step >= dist {
-			e.pos = target
-			e.path_index += 1
-		} else {
-			dir := v_norm(to_target)
-			e.pos = v_add(e.pos, v_mul(dir, step))
-		}
+		advance_enemy_on_route(e, route, speed*dt)
 	}
 }
 

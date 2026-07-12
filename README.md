@@ -35,6 +35,10 @@ odin build src -out:build/game
 ./build/game
 ```
 
+For a free-build tester executable, compile with
+`-define:RUNE_SIEGE_TESTER_MODE=true`. Page Up and Page Down switch levels;
+the tester build labels itself in-game and does not alter normal saved results.
+
 On Windows, run `build/game.exe` instead.
 
 The sprite atlas is embedded into the executable at compile time. The built
@@ -42,6 +46,10 @@ executable still requires the repository's `data/` directory at runtime. Keep
 the working directory at the repository root, or copy `data/` alongside the
 executable's working directory. The destination PC must still have a
 compatible Windows architecture and graphics support.
+
+Completed runs are appended to `playtest_runs.txt` beside the saved results
+in the platform user-data directory, including final resources and every
+tower's tile and level.
 
 ## How to play
 

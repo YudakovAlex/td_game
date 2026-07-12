@@ -8,6 +8,7 @@ game_render_target: rl.RenderTexture2D
 
 draw_text :: proc(text: string, x, y, font_size: int, color: rl.Color) {
 	text_c := fmt.ctprintf("%s", text)
+	rl.DrawText(text_c, i32(x+1), i32(y+1), i32(font_size), rl.Color{0,0,0,180})
 	rl.DrawText(text_c, i32(x), i32(y), i32(font_size), color)
 }
 
@@ -63,14 +64,17 @@ draw_game :: proc(g: ^Game) {
 }
 
 draw_ui :: proc(g: ^Game) {
+	if TESTER_MODE {
+		draw_text("TESTER MODE", 12, 12, 14, rl.Color{255, 205, 90, 255})
+	}
 	rl.DrawRectangle(i32(UI_X), 0, i32(UI_W), SCREEN_HEIGHT, rl.Color{29, 27, 31, 255})
 	rl.DrawRectangle(i32(UI_X), 0, 5, SCREEN_HEIGHT, rl.Color{126, 95, 52, 255})
 
 	x := UI_X + 20
 	y := 14
 
-	draw_text(fmt.tprintf("%d/%d",g.current_level+1,g.level_count), x, y, 14, rl.Color{235,218,174,255})
-	draw_text(g.levels[g.current_level].name, x+34, y, 15, rl.Color{235,218,174,255})
+	draw_text(fmt.tprintf("%d/%d",g.current_level+1,g.level_count), x, y, 16, rl.Color{235,218,174,255})
+	draw_text(g.levels[g.current_level].name, x+34, y, 16, rl.Color{235,218,174,255})
 	draw_button(x+154, 10, 66, 30, "Menu", false)
 
 	y = 48
@@ -86,7 +90,7 @@ draw_ui :: proc(g: ^Game) {
 	remaining := waves_remaining(g)
 	remaining_label := "waves left"
 	if remaining == 1 { remaining_label = "wave left" }
-	draw_text(fmt.tprintf("%d %s", remaining, remaining_label), x+28, y+21, 14, rl.LIGHTGRAY)
+	draw_text(fmt.tprintf("%d %s", remaining, remaining_label), x+28, y+21, 16, rl.LIGHTGRAY)
 
 	draw_tower_button(g, x, 126, .Arrow, "1  Arrow", g.selected_tower_type == .Arrow)
 	draw_tower_button(g, x, 176, .Cannon, "2  Cannon", g.selected_tower_type == .Cannon)
@@ -113,27 +117,27 @@ draw_ui :: proc(g: ^Game) {
 		draw_text(fmt.tprintf("%s  L%d", def.name, t.level), x, 446, 20, rl.GOLD)
 
 		upgrade := upgrade_cost(t, def)
-		upgrade_available := t.level < 3 && g.gold >= upgrade
+		upgrade_available := t.level < 3 && (TESTER_MODE || g.gold >= upgrade)
 		draw_button_disabled(x, 474, 108, 34, fmt.tprintf("Upgrade $%d [U]", upgrade), false, !upgrade_available)
 		draw_sell_button(x+116, 474, 104, 34, fmt.tprintf("Sell $%d [S]", int(f32(t.total_invested)*0.70)))
 		if t.level >= 3 {
-			draw_text("MAX LEVEL", x+4, 509, 12, rl.GOLD)
-		} else if g.gold < upgrade {
-			draw_text(fmt.tprintf("Need $%d more", upgrade-g.gold), x+4, 509, 12, rl.Color{255, 205, 140, 255})
+			draw_text("MAX LEVEL", x+4, 509, 14, rl.GOLD)
+		} else if !TESTER_MODE && g.gold < upgrade {
+			draw_text(fmt.tprintf("Need $%d more", upgrade-g.gold), x+4, 509, 14, rl.Color{255, 205, 140, 255})
 		}
 
 		draw_text(def.role, x, 520, 16, rl.Color{225, 225, 230, 255})
 		draw_text(fmt.tprintf("Damage: %.1f", tower_damage(t, def)), x, 540, 16, rl.Color{245, 245, 242, 255})
-		draw_text(fmt.tprintf("Range: %.0f", tower_range(t, def)), x+112, 540, 14, rl.Color{245, 245, 242, 255})
+		draw_text(fmt.tprintf("Range: %.0f", tower_range(t, def)), x+112, 540, 15, rl.Color{245, 245, 242, 255})
 		draw_text(fmt.tprintf("Attack: %.2fs", tower_cooldown(t, def)), x, 560, 16, rl.Color{245, 245, 242, 255})
-		draw_text(fmt.tprintf("Type: %s", damage_type_name(def.damage_type)), x+112, 560, 14, rl.Color{245, 245, 242, 255})
+		draw_text(fmt.tprintf("Type: %s", damage_type_name(def.damage_type)), x+112, 560, 15, rl.Color{245, 245, 242, 255})
 		if def.splash_radius > 0 {
 			draw_text(fmt.tprintf("Splash: %.0f", def.splash_radius), x, 580, 16, rl.Color{245, 245, 242, 255})
 		} else {
 			draw_text("Single target", x, 580, 16, rl.Color{245, 245, 242, 255})
 		}
-		if def.slow_amount > 0 { draw_text(fmt.tprintf("Slow: %.0f%%", def.slow_amount*100), x+112, 580, 14, rl.SKYBLUE) }
-		if def.burn_damage > 0 { draw_text(fmt.tprintf("Burn: %.1f/tick", tower_burn_damage(t,def)), x+112, 580, 14, rl.ORANGE) }
+		if def.slow_amount > 0 { draw_text(fmt.tprintf("Slow: %.0f%%", def.slow_amount*100), x+112, 580, 15, rl.SKYBLUE) }
+		if def.burn_damage > 0 { draw_text(fmt.tprintf("Burn: %.1f/tick", tower_burn_damage(t,def)), x+112, 580, 15, rl.ORANGE) }
 		draw_button(x, 598, 220, 24, fmt.tprintf("Target: %s  [Tab]", target_mode_name(t.target_mode)), false)
 	}
 
@@ -185,7 +189,7 @@ draw_tower_button :: proc(g: ^Game, x,y: int, kind: Tower_Type, label: string, s
 	def := get_tower_def(g, kind)
 	draw_button(x,y,220,42,fmt.tprintf("%s   $%d",label,def.cost),selected)
 	draw_asset(&g.assets,def.asset,vec2(f32(x+196),f32(y+21)),vec2(30,30),0,rl.WHITE)
-	if g.gold < def.cost {
+	if !TESTER_MODE && g.gold < def.cost {
 		rl.DrawRectangle(i32(x),i32(y),220,42,rl.Color{18,18,20,125})
 		rl.DrawRectangleLines(i32(x),i32(y),220,42,rl.Color{105,105,110,255})
 		draw_text(fmt.tprintf("Need $%d more", def.cost-g.gold), x+12, y+25, 13, rl.Color{255, 205, 140, 255})
@@ -265,8 +269,12 @@ draw_button_disabled :: proc(x, y, w, h: int, label: string, selected, disabled:
 
 draw_button_label :: proc(label: string, x, y, w, h, font_size: int, color: rl.Color) {
 	label_c := fmt.ctprintf("%s", label)
-	label_width := int(rl.MeasureText(label_c, i32(font_size)))
-	draw_text(label, x+(w-label_width)/2, y+(h-font_size)/2, font_size, color)
+	fit_size := font_size
+	for fit_size > 10 && rl.MeasureText(label_c, i32(fit_size)) > i32(w-12) {
+		fit_size -= 1
+	}
+	label_width := int(rl.MeasureText(label_c, i32(fit_size)))
+	draw_text(label, x+(w-label_width)/2, y+(h-fit_size)/2, fit_size, color)
 }
 
 draw_center_message :: proc(text: string, color: rl.Color) {

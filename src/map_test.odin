@@ -66,3 +66,26 @@ test_corner_road_asset_rotations :: proc(t: ^testing.T) {
 	testing.expect(t, asset == .Path_Turn)
 	testing.expect(t, rotation == 270)
 }
+
+@(test)
+test_ruined_outskirts_route_stays_on_authored_segments :: proc(t: ^testing.T) {
+	route := Path_Route{}
+	route.points[0] = vec2(20, 380)
+	route.points[1] = vec2(180, 380)
+	route.points[2] = vec2(180, 140)
+	route.points[3] = vec2(420, 140)
+	route.points[4] = vec2(420, 580)
+	route.points[5] = vec2(700, 580)
+	route.points[6] = vec2(700, 300)
+	route.points[7] = vec2(940, 300)
+	route.point_count = 8
+
+	e := Enemy{pos = route.points[0], path_index = 1, alive = true}
+	advance_enemy_on_route(&e, &route, 200)
+	testing.expect(t, e.pos == vec2(180, 340))
+	testing.expect(t, e.path_index == 2)
+
+	advance_enemy_on_route(&e, &route, 300)
+	testing.expect(t, e.pos == vec2(280, 140))
+	testing.expect(t, e.path_index == 3)
+}

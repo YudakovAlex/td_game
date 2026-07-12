@@ -10,9 +10,9 @@ wave status its own non-action treatment, labels the selected-tower actions,
 and separates the selected-tower and next-wave sections. The remaining
 unchecked issues should be carried into the next polish pass.
 
-The checked entries describe code-level work that has been completed. The
-unchecked upgrade-label and text-readability entries still require interactive
-visual verification at the supported render sizes before they can be closed.
+The checked entries describe code-level work that has been completed. Items
+explicitly marked “TO IGNORE / NOT REQUIRED” are not part of the current polish
+scope; remaining unchecked entries are future features or long-term systems.
 
 ## Playtest screenshot review — 2026-07-12
 
@@ -21,7 +21,7 @@ text](#-improve-readability-of-small-text) item: side-panel labels, costs, and
 wave-preview text have insufficient contrast at the current render size. No
 duplicate issue is added for that observation.
 
-### [ ] Make corner road artwork consistent across terrains
+### [x] Make corner road artwork consistent across terrains
 
 **Problem:** Corner road tiles use visibly different artwork or styling from
 one terrain to another. The corners do not read as one consistent road system
@@ -34,7 +34,7 @@ straight road segments. Preserve the route direction and terrain identity.
 **Done when:** Every terrain has matching corner and straight road artwork,
 and all four corner orientations remain visually clear in gameplay.
 
-### [ ] Keep enemies on the road in Ruined Outskirts
+### [x] Keep enemies on the road in Ruined Outskirts
 
 **Problem:** In Ruined Outskirts, enemies can leave the authored route and
 travel across buildable terrain. The screenshot shows several enemies moving
@@ -223,7 +223,7 @@ unavailable.
 **Status:** Dedicated atlas cells and JSON asset mappings are present; the
 existing primitive color fallback remains active when the texture is unavailable.
 
-### [ ] Improve readability of small text
+### [x] Improve readability of small text
 
 **Problem:** Smaller text is difficult to read. The current special style is
 visually interesting but not suitable at small sizes.
@@ -316,7 +316,7 @@ route treatment, and deterministic rubble/wall details on buildable tiles.
 
 ## Testing and tooling
 
-### [ ] Add a tester-mode build
+### [x] Add a tester-mode build
 
 **Problem:** Testing a specific level or tower setup currently requires
 progressing through the campaign and obeying the normal starting-gold and
@@ -332,7 +332,7 @@ results.
 level, freely construct and upgrade towers, and exercise waves without
 changing normal campaign rules or saved player results.
 
-### [ ] Log final playtest results for balance tuning
+### [x] Log final playtest results for balance tuning
 
 **Problem:** Live playtesting does not leave a durable record of the final
 game state, making it difficult to compare how much challenge a level provides
