@@ -93,28 +93,10 @@ draw_ui :: proc(g: ^Game) {
 	draw_tower_button(g, x, 226, .Frost, "3  Frost", g.selected_tower_type == .Frost)
 	draw_tower_button(g, x, 276, .Flame, "4  Flame", g.selected_tower_type == .Flame)
 
-	if g.wave_state == .Waiting && g.mode == .Playing {
-		wave_button_label := "Start Wave  [Space]"
-		if g.next_wave_timer > 0 {
-			seconds_left := int(g.next_wave_timer) + 1
-			wave_button_label = fmt.tprintf("Starting in %ds", seconds_left)
-		}
-		if g.next_wave_timer > 0 {
-			draw_wave_status(x, 326, 220, 42, wave_button_label)
-		} else {
-			draw_wave_button(g, x, 326, 220, 42, wave_button_label, false)
-		}
+	if g.mode == .Playing && g.wave_state == .Waiting && g.next_wave_timer <= 0 {
+		draw_wave_button(g, x, 326, 220, 42, wave_status_label(g), false)
 	} else {
-		status := "Game Paused"
-		if g.mode == .Playing {
-			switch g.wave_state {
-			case .Waiting: status = "Waiting for Wave"
-			case .Spawning: status = "Wave Spawning"
-			case .Clearing: status = fmt.tprintf("Wave Clearing  ·  %d left", wave_enemies_remaining(g))
-			case .Finished: status = "All Waves Cleared"
-			}
-		}
-		draw_wave_status(x, 326, 220, 42, status)
+		draw_wave_status(x, 326, 220, 42, wave_status_label(g))
 	}
 
 	draw_text(fmt.tprintf("Speed: %.0fx", g.game_speed), x, 380, 20, rl.RAYWHITE)
@@ -170,6 +152,29 @@ draw_ui :: proc(g: ^Game) {
 			draw_text(fmt.tprintf("%s  x%d", edef.name, group.count), x+28, row_y, 15, rl.RAYWHITE)
 		}
 	}
+}
+
+wave_status_label :: proc(g: ^Game) -> string {
+	if g.mode != .Playing {
+		return "Game Paused"
+	}
+
+	switch g.wave_state {
+	case .Waiting:
+		if g.next_wave_timer > 0 {
+			seconds_left := int(g.next_wave_timer) + 1
+			return fmt.tprintf("Starting in %ds", seconds_left)
+		}
+		return "Start Wave [Space]"
+	case .Spawning:
+		return fmt.tprintf("Spawning · %d enemies left", wave_enemies_remaining(g))
+	case .Clearing:
+		return fmt.tprintf("Wave Clearing · %d left", wave_enemies_remaining(g))
+	case .Finished:
+		return "All Waves Cleared"
+	}
+
+	return "Game Paused"
 }
 
 draw_icon_or_glyph :: proc(g: ^Game, id: Asset_Id, pos: Vec2, color: rl.Color) {

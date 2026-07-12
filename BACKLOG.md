@@ -5,13 +5,16 @@ priority within the current polish cycle.
 
 ## Side-menu review — 2026-07-11
 
-The current side-menu pass resolves the earlier header/Menu collision, gives
+The current side-menu pass resolves the entries marked complete below, gives
 wave status its own non-action treatment, labels the selected-tower actions,
-and separates the selected-tower and next-wave sections. The following
-remaining issues were identified from the current Grasslands view and should
-be carried into the next polish pass.
+and separates the selected-tower and next-wave sections. The remaining
+unchecked issues should be carried into the next polish pass.
 
-### [ ] Start with a window sized to the full game-and-panel area
+The checked entries describe code-level work that has been completed. The
+unchecked upgrade-label and text-readability entries still require interactive
+visual verification at the supported render sizes before they can be closed.
+
+### [x] Start with a window sized to the full game-and-panel area
 
 **Problem:** The initial window leaves black areas at the sides because its
 starting aspect ratio does not match the logical game canvas, including the
@@ -37,7 +40,7 @@ price visible.
 **Done when:** The complete upgrade label is contained within the button with
 consistent padding and no overlap or clipping.
 
-### [ ] Center the Speed button labels
+### [x] Center the Speed button labels
 
 **Problem:** The `-` and `+` labels in the Speed controls are not visually
 centered within their buttons.
@@ -47,7 +50,7 @@ rectangle rather than fixed text offsets.
 
 **Done when:** Both Speed labels remain centered at the supported render sizes.
 
-### [ ] Make disabled states explain why an action is unavailable
+### [x] Make disabled states explain why an action is unavailable
 
 **Problem:** Unaffordable tower cards and the unavailable `Upgrade` action are
 shown mainly through dimmed colors. A player cannot immediately tell whether
@@ -61,7 +64,7 @@ normal price and action label so the economy remains scannable.
 **Done when:** A player can identify the reason an unavailable tower or
 selected-tower action cannot be used without guessing or trying the click.
 
-### [ ] Improve countdown and active-wave wording
+### [x] Improve countdown and active-wave wording
 
 **Problem:** `Start Wave 2s` can be read as an action with a price or duration,
 and the current waiting/active state is not equally explicit in every state.
@@ -107,6 +110,28 @@ the current decision. Do not hide essential state behind a new interaction.
 **Done when:** A player can locate resources, the next available action, the
 selected tower's key decision, and the next wave in that order within a quick
 scan.
+
+### [ ] Balance right-panel spacing and usable width
+
+**Problem:** The right panel does not distribute its contents evenly. In the
+current layout, the four tower cards form a relatively narrow centered stack
+with substantial unused space beside them, while the selected-tower and
+next-wave sections use a different width and leave less breathing room for
+their text. The vertical gaps also change noticeably between the header, tower
+cards, speed controls, and lower information sections, making the panel feel
+top-heavy in places and cramped in others.
+
+**Work:** Review the panel as one layout rather than tuning each section in
+isolation. Either spread the existing sections and their internal content more
+evenly across the available panel area, or reduce the panel width to match the
+actual content. Keep consistent horizontal margins, section widths, and
+vertical spacing, while reserving enough room for the longest supported labels,
+selected-tower stats, and next-wave preview.
+
+**Done when:** The panel has a consistent visual rhythm from top to bottom,
+its sections align to a clear content width, and there is no conspicuous unused
+area beside the tower cards or crowding in the lower sections. The full layout
+still fits without clipping or overlap at every supported render size.
 
 ### [ ] Add direct feedback for side-menu controls
 
@@ -162,7 +187,7 @@ larger headings rather than sacrificing letter clarity.
 **Done when:** Small text remains readable during normal play and at supported
 window sizes, with no clipped or ambiguous labels.
 
-### [ ] Fix the wave header and Menu collision
+### [x] Fix the wave header and Menu collision
 
 **Problem:** The Menu button overlaps the wave number and secondary wave-status
 text in the side panel.
@@ -173,7 +198,7 @@ non-overlapping layout space. Keep the layout within the existing panel width.
 **Done when:** The full current-wave label, remaining-wave information, and
 Menu button are visible simultaneously at every supported window size.
 
-### [ ] Separate wave progress from wave action status
+### [x] Separate wave progress from wave action status
 
 **Problem:** The header reports active-wave progress while the large
 `Enemies: N left` control repeats that information. During combat, the control
@@ -186,7 +211,7 @@ non-interactive progress/status treatment while a wave is spawning or clearing.
 **Done when:** Players can immediately tell the current wave, enemy progress,
 and whether an action is available, without duplicate status text.
 
-### [ ] Clarify selected-tower actions
+### [x] Clarify selected-tower actions
 
 **Problem:** The selected-tower controls show `U` and `S` with prices, which
 requires players to already know that they mean Upgrade and Sell.
@@ -197,7 +222,7 @@ as secondary text. Make unaffordable and unavailable actions visibly distinct.
 **Done when:** A player can understand both actions without consulting the
 controls reference, and their availability is obvious before clicking.
 
-### [ ] Organize selected-tower and next-wave sections
+### [x] Organize selected-tower and next-wave sections
 
 **Problem:** Selected-tower details, the targeting control, and the next-wave
 preview are packed together. The target control nearly touches the next-wave
@@ -211,7 +236,7 @@ labels, without hiding or overlapping selected-tower information.
 separate sections, and a three-group preview fits without clipping at supported
 window sizes.
 
-### [ ] Strengthen tower-card selection feedback
+### [x] Strengthen tower-card selection feedback
 
 **Problem:** The four build cards have similar visual treatment, so the active
 tower choice is easy to miss.
