@@ -74,7 +74,7 @@ draw_ui :: proc(g: ^Game) {
 	y := 14
 
 	draw_text(fmt.tprintf("%d/%d",g.current_level+1,g.level_count), x, y, 16, rl.Color{235,218,174,255})
-	draw_text(g.levels[g.current_level].name, x+34, y, 16, rl.Color{235,218,174,255})
+	draw_text(g.levels[g.current_level].name, x+34, y, 14, rl.Color{235,218,174,255})
 	draw_button(x+154, 10, 66, 30, "Menu", false)
 
 	y = 48
@@ -166,7 +166,7 @@ wave_status_label :: proc(g: ^Game) -> string {
 	switch g.wave_state {
 	case .Waiting:
 		if g.next_wave_timer > 0 {
-			seconds_left := int(g.next_wave_timer) + 1
+			seconds_left := int(math.ceil(f64(g.next_wave_timer)))
 			return fmt.tprintf("Starting in %ds", seconds_left)
 		}
 		return "Start Wave [Space]"

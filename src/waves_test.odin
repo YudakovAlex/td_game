@@ -51,6 +51,23 @@ test_wave_summary_is_empty_outside_active_wave :: proc(t: ^testing.T) {
 }
 
 @(test)
+test_wave_start_waits_for_automatic_countdown :: proc(t: ^testing.T) {
+	g := Game{}
+	g.wave_count = 1
+	g.current_wave = 0
+	g.wave_state = .Waiting
+	g.next_wave_timer = NEXT_WAVE_DELAY
+
+	try_start_wave(&g)
+	testing.expect(t, g.wave_state == .Waiting)
+	testing.expect(t, g.next_wave_timer == NEXT_WAVE_DELAY)
+
+	g.next_wave_timer = 0
+	try_start_wave(&g)
+	testing.expect(t, g.wave_state == .Spawning)
+}
+
+@(test)
 test_win_current_wave_advances_and_clears_wave :: proc(t: ^testing.T) {
 	g := Game{}
 	g.wave_count = 2

@@ -80,7 +80,7 @@ load_level :: proc(g: ^Game, level_index: int) {
 }
 
 try_start_wave :: proc(g: ^Game) {
-	if g.wave_state != .Waiting || g.current_wave >= g.wave_count { return }
+	if g.wave_state != .Waiting || g.current_wave >= g.wave_count || g.next_wave_timer > 0 { return }
 	g.wave_state = .Spawning
 	g.wave_group_index = 0
 	g.wave_spawned_count = 0

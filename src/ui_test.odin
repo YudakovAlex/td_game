@@ -10,6 +10,9 @@ test_wave_status_label_waiting_and_countdown :: proc(t: ^testing.T) {
 
 	g.next_wave_timer = 1.2
 	testing.expect(t, wave_status_label(&g) == "Starting in 2s")
+
+	g.next_wave_timer = 5
+	testing.expect(t, wave_status_label(&g) == "Starting in 5s")
 }
 
 @(test)

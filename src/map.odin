@@ -116,7 +116,9 @@ draw_map :: proc(g: ^Game) {
 			if ruin_style && tile.kind == .Buildable { tint = rl.Color{180,185,170,255} }
 			if ruin_style && tile.kind == .Path { tint = rl.Color{185,175,155,255} }
 			draw_asset(&g.assets,asset,tile_center(x,y),vec2(TILE_SIZE,TILE_SIZE),rotation,tint)
-			if tile.kind == .Path { draw_road_connectors(tile_center(x,y), tile.connections, path_color) }
+			if tile.kind == .Path || tile.kind == .Spawn || tile.kind == .Exit {
+				draw_road_connectors(tile_center(x,y), tile.connections, path_color)
+			}
 			h := (x*37+y*71+x*y*11)%29
 			if tile.kind == .Buildable && ruin_style && h == 5 {
 				stone := v_add(tile_center(x,y),vec2(-11,10))
