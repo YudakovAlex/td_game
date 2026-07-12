@@ -332,6 +332,21 @@ results.
 level, freely construct and upgrade towers, and exercise waves without
 changing normal campaign rules or saved player results.
 
+### [ ] Log final playtest results for balance tuning
+
+**Problem:** Live playtesting does not leave a durable record of the final
+game state, making it difficult to compare how much challenge a level provides
+or identify when its economy is too generous.
+
+**Work:** At the end of each test run, record the final result together with
+every tower's placement and level, remaining lives, and remaining gold. Keep
+the log available for later comparison while tuning levels, waves, and tower
+economy.
+
+**Done when:** A tester can review a log entry for each completed run and see
+the complete tower setup plus final lives and gold, so unusually high
+resources can be used as a signal that the level's complexity is too low.
+
 ## Long-term features
 
 ### [ ] Increase campaign difficulty and introduce complexity levels
