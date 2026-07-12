@@ -54,6 +54,14 @@ test_corner_road_asset_rotations :: proc(t: ^testing.T) {
 	testing.expect(t, asset == .Path_Turn)
 	testing.expect(t, rotation == 0)
 
+	asset, rotation = road_asset_for_connections(ROUTE_SOUTH|ROUTE_WEST)
+	testing.expect(t, asset == .Path_Turn)
+	testing.expect(t, rotation == 90)
+
+	asset, rotation = road_asset_for_connections(ROUTE_NORTH|ROUTE_WEST)
+	testing.expect(t, asset == .Path_Turn)
+	testing.expect(t, rotation == 180)
+
 	asset, rotation = road_asset_for_connections(ROUTE_NORTH|ROUTE_EAST)
 	testing.expect(t, asset == .Path_Turn)
 	testing.expect(t, rotation == 270)

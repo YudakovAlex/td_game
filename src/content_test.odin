@@ -34,6 +34,15 @@ test_content_files_load_current_definitions :: proc(t: ^testing.T) {
 	testing.expect(t, g.levels[3].name == "Ruined Outskirts")
 	testing.expect(t, g.levels[3].wave_count == 20)
 	testing.expect(t, g.levels[3].route_count == 1)
+	for route_index := 0; route_index < g.levels[3].route_count; route_index += 1 {
+		route := &g.levels[3].routes[route_index]
+		for point_index := 0; point_index < route.point_count; point_index += 1 {
+			point := route.points[point_index]
+			x_center := f32(int(point.x)/TILE_SIZE*TILE_SIZE + TILE_SIZE/2)
+			y_center := f32(int(point.y)/TILE_SIZE*TILE_SIZE + TILE_SIZE/2)
+			testing.expect(t, point.x == x_center && point.y == y_center)
+		}
+	}
 	testing.expect(t, g.levels[4].name == "Ruined Market")
 	testing.expect(t, g.levels[4].wave_count == 20)
 	testing.expect(t, g.levels[4].route_count == 2)

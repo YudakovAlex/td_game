@@ -349,6 +349,11 @@ parse_map :: proc(contents: string, expected_level: string, level: ^Level_Def) -
 				raw_point.y < 0 || raw_point.y >= f32(MAP_H*TILE_SIZE) {
 				return false, fmt.tprintf("route %d point %d is outside the map bounds", route_index+1, point_index+1)
 			}
+			x_center := f32(int(raw_point.x)/TILE_SIZE*TILE_SIZE + TILE_SIZE/2)
+			y_center := f32(int(raw_point.y)/TILE_SIZE*TILE_SIZE + TILE_SIZE/2)
+			if raw_point.x != x_center || raw_point.y != y_center {
+				return false, fmt.tprintf("route %d point %d is not aligned to a tile center", route_index+1, point_index+1)
+			}
 
 			if point_index > 0 {
 				previous := raw_route.points[point_index-1]
