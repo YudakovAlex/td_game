@@ -52,6 +52,8 @@ Enemies travel along the brown paths from blue spawn tiles to red exit tiles. Se
 | Choose Arrow / Cannon / Frost / Flame | `1` / `2` / `3` / `4` | Tower cards in the side panel |
 | Place or select a tower | — | Left-click a map tile |
 | Start a wave | `Space` | **Start Wave** button |
+| Win the current wave | `Ctrl` + `Shift` + `W` | — |
+| Win the current level | `Ctrl` + `Shift` + `L` | — |
 | Change game speed | `-` / `=` | Speed buttons |
 | Upgrade selected tower | `U` | **U** button |
 | Sell selected tower | `S` | **S** button |

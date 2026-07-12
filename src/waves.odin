@@ -96,6 +96,43 @@ try_start_wave :: proc(g: ^Game) {
 	}
 }
 
+win_current_wave :: proc(g: ^Game) {
+	if g.current_wave < 0 || g.current_wave >= g.wave_count || g.wave_state == .Finished {
+		return
+	}
+
+	g.enemy_count = 0
+	g.current_wave += 1
+	g.wave_group_index = 0
+	g.wave_spawned_count = 0
+	g.wave_spawn_timer = 0
+	g.wave_route_cursor = 0
+
+	if g.current_wave >= g.wave_count {
+		g.wave_state = .Finished
+		g.next_wave_timer = 0
+	} else {
+		g.wave_state = .Waiting
+		g.gold += 20
+		g.next_wave_timer = NEXT_WAVE_DELAY
+	}
+}
+
+win_current_level :: proc(g: ^Game) {
+	if g.wave_count <= 0 || g.wave_state == .Finished {
+		return
+	}
+
+	g.enemy_count = 0
+	g.current_wave = g.wave_count
+	g.wave_state = .Finished
+	g.wave_group_index = 0
+	g.wave_spawned_count = 0
+	g.wave_spawn_timer = 0
+	g.wave_route_cursor = 0
+	g.next_wave_timer = 0
+}
+
 update_wave :: proc(g: ^Game, dt, raw_dt: f32) {
 	if g.wave_state == .Waiting && g.next_wave_timer > 0 {
 		g.next_wave_timer -= raw_dt

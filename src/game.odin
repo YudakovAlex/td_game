@@ -591,6 +591,17 @@ handle_pause_input :: proc(g: ^Game) {
 handle_input :: proc(g: ^Game) {
 	mouse_screen := rl.GetMousePosition()
 	mouse := screen_to_game_pos(mouse_screen)
+	ctrl_pressed := rl.IsKeyDown(.LEFT_CONTROL) || rl.IsKeyDown(.RIGHT_CONTROL)
+	shift_pressed := rl.IsKeyDown(.LEFT_SHIFT) || rl.IsKeyDown(.RIGHT_SHIFT)
+	if ctrl_pressed && shift_pressed && rl.IsKeyPressed(.W) {
+		win_current_wave(g)
+		return
+	}
+	if ctrl_pressed && shift_pressed && rl.IsKeyPressed(.L) {
+		win_current_level(g)
+		return
+	}
+
 	if rl.IsKeyPressed(.ESCAPE) {
 		g.mode = .Paused
 		g.restart_confirmation = false

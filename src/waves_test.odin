@@ -51,6 +51,54 @@ test_wave_summary_is_empty_outside_active_wave :: proc(t: ^testing.T) {
 }
 
 @(test)
+test_win_current_wave_advances_and_clears_wave :: proc(t: ^testing.T) {
+	g := Game{}
+	g.wave_count = 2
+	g.current_wave = 0
+	g.wave_state = .Spawning
+	g.enemy_count = 1
+	g.enemies[0].alive = true
+
+	win_current_wave(&g)
+
+	testing.expect(t, g.current_wave == 1)
+	testing.expect(t, g.wave_state == .Waiting)
+	testing.expect(t, g.enemy_count == 0)
+	testing.expect(t, g.gold == 20)
+	testing.expect(t, g.next_wave_timer == NEXT_WAVE_DELAY)
+}
+
+@(test)
+test_win_current_wave_finishes_final_wave :: proc(t: ^testing.T) {
+	g := Game{}
+	g.wave_count = 1
+	g.current_wave = 0
+	g.wave_state = .Clearing
+
+	win_current_wave(&g)
+
+	testing.expect(t, g.current_wave == 1)
+	testing.expect(t, g.wave_state == .Finished)
+	testing.expect(t, g.next_wave_timer == 0)
+}
+
+@(test)
+test_win_current_level_finishes_all_waves :: proc(t: ^testing.T) {
+	g := Game{}
+	g.wave_count = 3
+	g.current_wave = 1
+	g.wave_state = .Spawning
+	g.enemy_count = 1
+
+	win_current_level(&g)
+
+	testing.expect(t, g.current_wave == 3)
+	testing.expect(t, g.wave_state == .Finished)
+	testing.expect(t, g.enemy_count == 0)
+	testing.expect(t, g.next_wave_timer == 0)
+}
+
+@(test)
 test_campaign_continues_into_ruined_city_and_stops_after_final_level :: proc(t: ^testing.T) {
 	g := Game{}
 	init_levels(&g)
