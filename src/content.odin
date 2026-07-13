@@ -9,6 +9,8 @@ import rl "vendor:raylib"
 CONTENT_DIR     :: "data"
 CONTENT_VERSION :: 1
 
+CAMPAIGN_LEVEL_IDS :: [99]string{"grasslands_01", "grasslands_02", "grasslands_03", "grasslands_04", "grasslands_05", "grasslands_06", "grasslands_07", "grasslands_08", "grasslands_09", "forest_pass_01", "forest_pass_02", "forest_pass_03", "forest_pass_04", "forest_pass_05", "forest_pass_06", "forest_pass_07", "forest_pass_08", "forest_pass_09", "frozen_road_01", "frozen_road_02", "frozen_road_03", "frozen_road_04", "frozen_road_05", "frozen_road_06", "frozen_road_07", "frozen_road_08", "frozen_road_09", "ruined_city_01", "ruined_city_02", "ruined_city_03", "ruined_city_04", "ruined_city_05", "ruined_city_06", "ruined_city_07", "ruined_city_08", "ruined_city_09", "sunken_fen_01", "sunken_fen_02", "sunken_fen_03", "sunken_fen_04", "sunken_fen_05", "sunken_fen_06", "sunken_fen_07", "sunken_fen_08", "sunken_fen_09", "stonefang_mountains_01", "stonefang_mountains_02", "stonefang_mountains_03", "stonefang_mountains_04", "stonefang_mountains_05", "stonefang_mountains_06", "stonefang_mountains_07", "stonefang_mountains_08", "stonefang_mountains_09", "ashen_barrens_01", "ashen_barrens_02", "ashen_barrens_03", "ashen_barrens_04", "ashen_barrens_05", "ashen_barrens_06", "ashen_barrens_07", "ashen_barrens_08", "ashen_barrens_09", "glass_desert_01", "glass_desert_02", "glass_desert_03", "glass_desert_04", "glass_desert_05", "glass_desert_06", "glass_desert_07", "glass_desert_08", "glass_desert_09", "tempest_coast_01", "tempest_coast_02", "tempest_coast_03", "tempest_coast_04", "tempest_coast_05", "tempest_coast_06", "tempest_coast_07", "tempest_coast_08", "tempest_coast_09", "moonvale_01", "moonvale_02", "moonvale_03", "moonvale_04", "moonvale_05", "moonvale_06", "moonvale_07", "moonvale_08", "moonvale_09", "crownspire_01", "crownspire_02", "crownspire_03", "crownspire_04", "crownspire_05", "crownspire_06", "crownspire_07", "crownspire_08", "crownspire_09"}
+
 Raw_Tower_Def :: struct {
 	id:              string `json:"id"`,
 	name:            string `json:"name"`,
@@ -406,52 +408,30 @@ load_content :: proc(g: ^Game) -> bool {
 	valid, err = parse_enemies(string(enemy_contents), &g.content)
 	if !valid { fmt.println("Content load failed:", enemies_path, "-", err); return false }
 
-	map_paths := [MAX_LEVELS]string{
-		fmt.tprintf("%s/maps/grasslands.json", CONTENT_DIR),
-		fmt.tprintf("%s/maps/forest_pass.json", CONTENT_DIR),
-		fmt.tprintf("%s/maps/frozen_road.json", CONTENT_DIR),
-		fmt.tprintf("%s/maps/ruined_outskirts.json", CONTENT_DIR),
-		fmt.tprintf("%s/maps/ruined_market.json", CONTENT_DIR),
-		fmt.tprintf("%s/maps/ruined_keep.json", CONTENT_DIR),
-	}
-	map_ids := [MAX_LEVELS]string{
-		"grasslands", "forest_pass", "frozen_road",
-		"ruined_outskirts", "ruined_market", "ruined_keep",
-	}
-	for i := 0; i < len(map_paths); i += 1 {
-		contents, read_err := os.read_entire_file_from_path(map_paths[i], context.temp_allocator)
+	for level_id, i in CAMPAIGN_LEVEL_IDS {
+		map_path := fmt.tprintf("%s/maps/%s.json", CONTENT_DIR, level_id)
+		contents, read_err := os.read_entire_file_from_path(map_path, context.temp_allocator)
 		if read_err != os.ERROR_NONE {
-			fmt.println("Content load failed:", map_paths[i], "-", os.error_string(read_err))
+			fmt.println("Content load failed:", map_path, "-", os.error_string(read_err))
 			return false
 		}
-		valid, err = parse_map(string(contents), map_ids[i], &g.levels[i])
+		valid, err = parse_map(string(contents), level_id, &g.levels[i])
 		if !valid {
-			fmt.println("Content load failed:", map_paths[i], "-", err)
+			fmt.println("Content load failed:", map_path, "-", err)
 			return false
 		}
 	}
 
-	wave_paths := [MAX_LEVELS]string{
-		fmt.tprintf("%s/waves/grasslands.json", CONTENT_DIR),
-		fmt.tprintf("%s/waves/forest_pass.json", CONTENT_DIR),
-		fmt.tprintf("%s/waves/frozen_road.json", CONTENT_DIR),
-		fmt.tprintf("%s/waves/ruined_outskirts.json", CONTENT_DIR),
-		fmt.tprintf("%s/waves/ruined_market.json", CONTENT_DIR),
-		fmt.tprintf("%s/waves/ruined_keep.json", CONTENT_DIR),
-	}
-	wave_ids := [MAX_LEVELS]string{
-		"grasslands", "forest_pass", "frozen_road",
-		"ruined_outskirts", "ruined_market", "ruined_keep",
-	}
-	for i := 0; i < len(wave_paths); i += 1 {
-		contents, read_err := os.read_entire_file_from_path(wave_paths[i], context.temp_allocator)
+	for level_id, i in CAMPAIGN_LEVEL_IDS {
+		wave_path := fmt.tprintf("%s/waves/%s.json", CONTENT_DIR, level_id)
+		contents, read_err := os.read_entire_file_from_path(wave_path, context.temp_allocator)
 		if read_err != os.ERROR_NONE {
-			fmt.println("Content load failed:", wave_paths[i], "-", os.error_string(read_err))
+			fmt.println("Content load failed:", wave_path, "-", os.error_string(read_err))
 			return false
 		}
-		valid, err = parse_waves(string(contents), wave_ids[i], &g.levels[i])
+		valid, err = parse_waves(string(contents), level_id, &g.levels[i])
 		if !valid {
-			fmt.println("Content load failed:", wave_paths[i], "-", err)
+			fmt.println("Content load failed:", wave_path, "-", err)
 			return false
 		}
 	}

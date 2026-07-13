@@ -123,16 +123,16 @@ test_campaign_continues_into_ruined_city_and_stops_after_final_level :: proc(t: 
 	defer unload_content(&g.content)
 	testing.expect(t, load_content(&g))
 
-	g.current_level = 2
+	g.current_level = 8
 	g.mode = .Victory
 	continue_campaign(&g)
-	testing.expect(t, g.current_level == 3)
+	testing.expect(t, g.current_level == 9)
 	testing.expect(t, g.mode == .Playing)
-	testing.expect(t, g.levels[g.current_level].name == "Ruined Outskirts")
+	testing.expect(t, g.levels[g.current_level].name == "Forest Pass 1 - Trailhead")
 
-	g.current_level = 5
+	g.current_level = 98
 	g.mode = .Victory
 	continue_campaign(&g)
-	testing.expect(t, g.current_level == 5)
-	testing.expect(t, g.level_count == 6)
+	testing.expect(t, g.current_level == 98)
+	testing.expect(t, g.level_count == 99)
 }

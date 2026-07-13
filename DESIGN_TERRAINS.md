@@ -11,7 +11,7 @@ fixed-route tower-defense rules.
 
 ## How to read this document
 
-- **Implemented** means supported by the current six-level slice or current
+- **Implemented** means supported by the current 99-level campaign or current
   data model.
 - **Planned content** means maps, waves, art, or presentation that can use the
   current systems.
@@ -106,9 +106,9 @@ captain represented initially by the current Boss family.
 exit, and a warm hearth cue on victory. Avoid heavy ambient effects that hide
 combat sounds.
 
-**Implementation notes:** This terrain is already represented by
-`data/maps/grasslands.json` and `data/waves/grasslands.json`. Keep it as the
-balance reference for all later terrain chapters.
+**Implementation notes:** This terrain is represented by
+`data/maps/grasslands_01.json` through `data/maps/grasslands_09.json` and the
+matching wave files. Keep it as the balance reference for later chapters.
 
 ### 2. The Forest Pass
 
@@ -153,7 +153,8 @@ the current Boss family with Runner support.
 a low drum when the second route activates. Mist must remain cosmetic and
 never obscure enemies, paths, or tower ranges.
 
-**Implementation notes:** `data/maps/forest_pass.json` already establishes the
+**Implementation notes:** `data/maps/forest_pass_01.json` through
+`data/maps/forest_pass_09.json` establish the
 two-route pattern. New forest maps should vary route length and overlap rather
 than add hidden-path or vision rules.
 
@@ -199,7 +200,8 @@ initially by the generic Boss family with Wraith support.
 single clear spectral cue when Wraiths enter. Snow particles are optional
 presentation and must not reduce silhouette readability.
 
-**Implementation notes:** `data/maps/frozen_road.json` already provides the
+**Implementation notes:** `data/maps/frozen_road_01.json` through
+`data/maps/frozen_road_09.json` provide the
 long alternating route. Its difficulty should come from timing and spacing,
 not from an unannounced slippery-road rule.
 
@@ -659,7 +661,7 @@ or generic terrain framework is required by this design.
   audio, implementation, and nine-defense guidance.
 - The campaign accounts for exactly 99 defenses.
 - Grasslands, Forest Pass, Frozen Road, Ruined Outskirts, Ruined Market, and
-  Ruined Keep remain identifiable as the current six-level slice.
+  Ruined Keep remain identifiable within the complete campaign.
 - Current tower, enemy, route, wave, asset, and fallback constraints are not
   contradicted.
 - Proposed mechanics are marked optional when the current runtime does not

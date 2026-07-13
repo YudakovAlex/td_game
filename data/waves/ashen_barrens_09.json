@@ -1,0 +1,154 @@
+{
+  "version": 1,
+  "level": "ashen_barrens_09",
+  "waves": [
+    {
+      "groups": [
+        {
+          "enemy_id": "grunt",
+          "count": 14,
+          "spawn_interval": 0.55,
+          "hp_multiplier": 1.28,
+          "speed_multiplier": 1
+        }
+      ]
+    },
+    {
+      "groups": [
+        {
+          "enemy_id": "runner",
+          "count": 11,
+          "spawn_interval": 0.35,
+          "hp_multiplier": 1.32,
+          "speed_multiplier": 1.11
+        }
+      ]
+    },
+    {
+      "groups": [
+        {
+          "enemy_id": "brute",
+          "count": 6,
+          "spawn_interval": 0.75,
+          "hp_multiplier": 1.37,
+          "speed_multiplier": 1
+        }
+      ]
+    },
+    {
+      "groups": [
+        {
+          "enemy_id": "brute",
+          "count": 6,
+          "spawn_interval": 0.75,
+          "hp_multiplier": 1.42,
+          "speed_multiplier": 1
+        },
+        {
+          "enemy_id": "runner",
+          "count": 12,
+          "spawn_interval": 0.35,
+          "hp_multiplier": 1.42,
+          "speed_multiplier": 1.12
+        }
+      ]
+    },
+    {
+      "groups": [
+        {
+          "enemy_id": "armored",
+          "count": 6,
+          "spawn_interval": 0.64,
+          "hp_multiplier": 1.46,
+          "speed_multiplier": 1
+        }
+      ]
+    },
+    {
+      "groups": [
+        {
+          "enemy_id": "siege_beast",
+          "count": 5,
+          "spawn_interval": 0.83,
+          "hp_multiplier": 1.5,
+          "speed_multiplier": 1
+        }
+      ]
+    },
+    {
+      "groups": [
+        {
+          "enemy_id": "siege_beast",
+          "count": 5,
+          "spawn_interval": 0.83,
+          "hp_multiplier": 1.55,
+          "speed_multiplier": 1
+        },
+        {
+          "enemy_id": "brute",
+          "count": 7,
+          "spawn_interval": 0.75,
+          "hp_multiplier": 1.55,
+          "speed_multiplier": 1
+        },
+        {
+          "enemy_id": "runner",
+          "count": 14,
+          "spawn_interval": 0.35,
+          "hp_multiplier": 1.55,
+          "speed_multiplier": 1.13
+        }
+      ]
+    },
+    {
+      "groups": [
+        {
+          "enemy_id": "siege_beast",
+          "count": 5,
+          "spawn_interval": 0.83,
+          "hp_multiplier": 1.59,
+          "speed_multiplier": 1
+        },
+        {
+          "enemy_id": "armored",
+          "count": 7,
+          "spawn_interval": 0.64,
+          "hp_multiplier": 1.59,
+          "speed_multiplier": 1
+        },
+        {
+          "enemy_id": "brute",
+          "count": 7,
+          "spawn_interval": 0.75,
+          "hp_multiplier": 1.59,
+          "speed_multiplier": 1
+        }
+      ]
+    },
+    {
+      "groups": [
+        {
+          "enemy_id": "siege_beast",
+          "count": 5,
+          "spawn_interval": 0.83,
+          "hp_multiplier": 1.64,
+          "speed_multiplier": 1
+        },
+        {
+          "enemy_id": "runner",
+          "count": 14,
+          "spawn_interval": 0.35,
+          "hp_multiplier": 1.64,
+          "speed_multiplier": 1.13
+        },
+        {
+          "enemy_id": "boss",
+          "count": 1,
+          "spawn_interval": 0.92,
+          "hp_multiplier": 2.39,
+          "speed_multiplier": 1
+        }
+      ]
+    }
+  ]
+}

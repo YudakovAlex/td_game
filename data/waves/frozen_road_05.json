@@ -1,0 +1,147 @@
+{
+  "version": 1,
+  "level": "frozen_road_05",
+  "waves": [
+    {
+      "groups": [
+        {
+          "enemy_id": "grunt",
+          "count": 12,
+          "spawn_interval": 0.58,
+          "hp_multiplier": 1.14,
+          "speed_multiplier": 1
+        }
+      ]
+    },
+    {
+      "groups": [
+        {
+          "enemy_id": "runner",
+          "count": 10,
+          "spawn_interval": 0.36,
+          "hp_multiplier": 1.19,
+          "speed_multiplier": 1.09
+        }
+      ]
+    },
+    {
+      "groups": [
+        {
+          "enemy_id": "brute",
+          "count": 5,
+          "spawn_interval": 0.79,
+          "hp_multiplier": 1.23,
+          "speed_multiplier": 1
+        }
+      ]
+    },
+    {
+      "groups": [
+        {
+          "enemy_id": "brute",
+          "count": 5,
+          "spawn_interval": 0.79,
+          "hp_multiplier": 1.28,
+          "speed_multiplier": 1
+        },
+        {
+          "enemy_id": "runner",
+          "count": 11,
+          "spawn_interval": 0.36,
+          "hp_multiplier": 1.28,
+          "speed_multiplier": 1.09
+        }
+      ]
+    },
+    {
+      "groups": [
+        {
+          "enemy_id": "wraith",
+          "count": 7,
+          "spawn_interval": 0.53,
+          "hp_multiplier": 1.32,
+          "speed_multiplier": 1
+        }
+      ]
+    },
+    {
+      "groups": [
+        {
+          "enemy_id": "wraith",
+          "count": 7,
+          "spawn_interval": 0.53,
+          "hp_multiplier": 1.37,
+          "speed_multiplier": 1
+        },
+        {
+          "enemy_id": "runner",
+          "count": 12,
+          "spawn_interval": 0.36,
+          "hp_multiplier": 1.37,
+          "speed_multiplier": 1.1
+        }
+      ]
+    },
+    {
+      "groups": [
+        {
+          "enemy_id": "armored",
+          "count": 6,
+          "spawn_interval": 0.67,
+          "hp_multiplier": 1.41,
+          "speed_multiplier": 1
+        },
+        {
+          "enemy_id": "brute",
+          "count": 6,
+          "spawn_interval": 0.79,
+          "hp_multiplier": 1.41,
+          "speed_multiplier": 1
+        }
+      ]
+    },
+    {
+      "groups": [
+        {
+          "enemy_id": "wraith",
+          "count": 8,
+          "spawn_interval": 0.53,
+          "hp_multiplier": 1.46,
+          "speed_multiplier": 1
+        },
+        {
+          "enemy_id": "runner",
+          "count": 13,
+          "spawn_interval": 0.36,
+          "hp_multiplier": 1.46,
+          "speed_multiplier": 1.1
+        },
+        {
+          "enemy_id": "armored",
+          "count": 6,
+          "spawn_interval": 0.67,
+          "hp_multiplier": 1.46,
+          "speed_multiplier": 1
+        }
+      ]
+    },
+    {
+      "groups": [
+        {
+          "enemy_id": "wraith",
+          "count": 8,
+          "spawn_interval": 0.53,
+          "hp_multiplier": 1.5,
+          "speed_multiplier": 1
+        },
+        {
+          "enemy_id": "boss",
+          "count": 1,
+          "spawn_interval": 0.96,
+          "hp_multiplier": 2.03,
+          "speed_multiplier": 1
+        }
+      ]
+    }
+  ]
+}

@@ -73,11 +73,10 @@ test_grasslands_has_selected_mixed_waves :: proc(t: ^testing.T) {
 	defer unload_level_content(&g.levels)
 	defer unload_content(&g.content)
 	testing.expect(t, load_content(&g))
+	testing.expect(t, g.levels[0].waves[3].group_count == 2)
 	testing.expect(t, g.levels[0].waves[5].group_count == 2)
-	testing.expect(t, g.levels[0].waves[7].group_count == 2)
-	testing.expect(t, g.levels[0].waves[10].group_count == 2)
-	testing.expect(t, g.levels[0].waves[12].group_count == 2)
-	testing.expect(t, g.levels[1].waves[5].group_count == 1)
+	testing.expect(t, g.levels[0].waves[7].group_count == 3)
+	testing.expect(t, g.levels[9].waves[3].group_count == 1)
 }
 
 @(test)
@@ -88,9 +87,9 @@ test_wave_groups_clear_sequentially :: proc(t: ^testing.T) {
 	defer unload_content(&g.content)
 	testing.expect(t, load_content(&g))
 	g.current_level = 0
-	g.levels[0].wave_count = 15
+	g.levels[0].wave_count = 9
 	g.waves = g.levels[0].waves
-	g.wave_count = 15
+	g.wave_count = 9
 	g.current_wave = 5
 	g.wave_group_index = 0
 	g.wave_state = .Clearing

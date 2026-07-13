@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "level": "tempest_coast_02",
+  "name": "Tempest Coast 2 - Marsh Runners",
+  "starting_gold": 285,
+  "starting_lives": 18,
+  "routes": [
+    {
+      "points": [
+        {
+          "x": 20,
+          "y": 380
+        },
+        {
+          "x": 220,
+          "y": 380
+        },
+        {
+          "x": 220,
+          "y": 100
+        },
+        {
+          "x": 500,
+          "y": 100
+        },
+        {
+          "x": 500,
+          "y": 620
+        },
+        {
+          "x": 780,
+          "y": 620
+        },
+        {
+          "x": 780,
+          "y": 300
+        },
+        {
+          "x": 940,
+          "y": 300
+        }
+      ]
+    }
+  ]
+}

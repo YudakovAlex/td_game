@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "level": "stonefang_mountains_04",
+  "name": "Stonefang Mountains 4 - Mining Guard",
+  "starting_gold": 265,
+  "starting_lives": 19,
+  "routes": [
+    {
+      "points": [
+        {
+          "x": 20,
+          "y": 100
+        },
+        {
+          "x": 260,
+          "y": 100
+        },
+        {
+          "x": 260,
+          "y": 620
+        },
+        {
+          "x": 500,
+          "y": 620
+        },
+        {
+          "x": 500,
+          "y": 180
+        },
+        {
+          "x": 740,
+          "y": 180
+        },
+        {
+          "x": 740,
+          "y": 500
+        },
+        {
+          "x": 940,
+          "y": 500
+        }
+      ]
+    }
+  ]
+}

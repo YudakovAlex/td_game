@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "level": "grasslands_09",
+  "name": "Grasslands 9 - The Broken Standard",
+  "starting_gold": 240,
+  "starting_lives": 20,
+  "routes": [
+    {
+      "points": [
+        {
+          "x": 20,
+          "y": 380
+        },
+        {
+          "x": 220,
+          "y": 380
+        },
+        {
+          "x": 220,
+          "y": 100
+        },
+        {
+          "x": 500,
+          "y": 100
+        },
+        {
+          "x": 500,
+          "y": 620
+        },
+        {
+          "x": 780,
+          "y": 620
+        },
+        {
+          "x": 780,
+          "y": 300
+        },
+        {
+          "x": 940,
+          "y": 300
+        }
+      ]
+    }
+  ]
+}

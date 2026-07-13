@@ -18,24 +18,20 @@ test_content_files_load_current_definitions :: proc(t: ^testing.T) {
 	testing.expect(t, g.content.enemies[int(Enemy_Type.Siege_Beast)].physical_multiplier == 0.78)
 	testing.expect(t, g.content.enemies[int(Enemy_Type.Wraith)].asset == .Enemy_Wraith)
 	testing.expect(t, g.content.enemies[int(Enemy_Type.Siege_Beast)].asset == .Enemy_Siege_Beast)
-	testing.expect(t, g.level_count == 6)
-	testing.expect(t, g.levels[0].wave_count == 15)
-	testing.expect(t, g.levels[0].waves[5].group_count == 2)
-	testing.expect(t, g.levels[0].waves[5].groups[0].enemy_type == .Runner)
-	testing.expect(t, g.levels[0].name == "Grasslands")
+	testing.expect(t, g.level_count == 99)
+	testing.expect(t, g.levels[0].wave_count == 9)
+	testing.expect(t, g.levels[0].waves[8].groups[0].enemy_type == .Grunt)
+	testing.expect(t, g.levels[0].waves[8].groups[1].enemy_type == .Boss)
+	testing.expect(t, g.levels[0].name == "Grasslands 1 - First Bend")
 	testing.expect(t, g.levels[0].starting_gold == 200)
 	testing.expect(t, g.levels[0].route_count == 1)
 	testing.expect(t, g.levels[0].routes[0].point_count == 8)
-	testing.expect(t, g.levels[1].route_count == 2)
-	testing.expect(t, g.levels[1].routes[0].point_count == 8)
-	testing.expect(t, g.levels[1].routes[1].point_count == 8)
-	testing.expect(t, g.levels[2].route_count == 1)
-	testing.expect(t, g.levels[2].routes[0].point_count == 10)
-	testing.expect(t, g.levels[3].name == "Ruined Outskirts")
-	testing.expect(t, g.levels[3].wave_count == 20)
-	testing.expect(t, g.levels[3].route_count == 1)
-	for route_index := 0; route_index < g.levels[3].route_count; route_index += 1 {
-		route := &g.levels[3].routes[route_index]
+	testing.expect(t, g.levels[10].route_count == 2)
+	testing.expect(t, g.levels[27].name == "Ruined City 1 - Ruined Outskirts")
+	testing.expect(t, g.levels[27].wave_count == 9)
+	testing.expect(t, g.levels[27].route_count == 1)
+	for route_index := 0; route_index < g.levels[27].route_count; route_index += 1 {
+		route := &g.levels[27].routes[route_index]
 		for point_index := 0; point_index < route.point_count; point_index += 1 {
 			point := route.points[point_index]
 			x_center := f32(int(point.x)/TILE_SIZE*TILE_SIZE + TILE_SIZE/2)
@@ -43,12 +39,10 @@ test_content_files_load_current_definitions :: proc(t: ^testing.T) {
 			testing.expect(t, point.x == x_center && point.y == y_center)
 		}
 	}
-	testing.expect(t, g.levels[4].name == "Ruined Market")
-	testing.expect(t, g.levels[4].wave_count == 20)
-	testing.expect(t, g.levels[4].route_count == 2)
-	testing.expect(t, g.levels[5].name == "Ruined Keep")
-	testing.expect(t, g.levels[5].wave_count == 20)
-	testing.expect(t, g.levels[5].routes[0].point_count == 6)
+	testing.expect(t, g.levels[31].name == "Ruined City 5 - Ruined Market")
+	testing.expect(t, g.levels[31].route_count == 2)
+	testing.expect(t, g.levels[35].name == "Ruined City 9 - The Hollow Castellan")
+	testing.expect(t, g.levels[98].name == "Crownspire and the First Gate 9 - The Hollow King")
 }
 
 @(test)
@@ -59,7 +53,7 @@ test_ruined_city_wave_introduces_new_enemy_roles :: proc(t: ^testing.T) {
 	defer unload_content(&g.content)
 	testing.expect(t, load_content(&g))
 
-	for level_index := 3; level_index < 6; level_index += 1 {
+	for level_index := 27; level_index < 36; level_index += 1 {
 		level := &g.levels[level_index]
 		wraith_seen := false
 		siege_beast_seen := false
@@ -74,7 +68,7 @@ test_ruined_city_wave_introduces_new_enemy_roles :: proc(t: ^testing.T) {
 		}
 		testing.expect(t, wraith_seen)
 		testing.expect(t, siege_beast_seen)
-		testing.expect(t, level.waves[level.wave_count-1].groups[0].enemy_type == .Boss)
+		testing.expect(t, level.waves[level.wave_count-1].groups[level.waves[level.wave_count-1].group_count-1].enemy_type == .Boss)
 	}
 }
 
@@ -87,7 +81,7 @@ test_grasslands_content_curve :: proc(t: ^testing.T) {
 	testing.expect(t, load_content(&g))
 
 	grasslands := &g.levels[0]
-	testing.expect(t, grasslands.wave_count == 15)
+	testing.expect(t, grasslands.wave_count == 9)
 
 	// The opening waves introduce the basic enemy roles in sequence.
 	testing.expect(t, grasslands.waves[0].groups[0].enemy_type == .Grunt)
@@ -95,19 +89,16 @@ test_grasslands_content_curve :: proc(t: ^testing.T) {
 	testing.expect(t, grasslands.waves[4].groups[0].enemy_type == .Brute)
 
 	// Armored enemies arrive only after the basic roles are established.
-	for wave_index := 0; wave_index < 10; wave_index += 1 {
+	for wave_index := 0; wave_index < 6; wave_index += 1 {
 		wave := grasslands.waves[wave_index]
 		for group_index := 0; group_index < wave.group_count; group_index += 1 {
 			testing.expect(t, wave.groups[group_index].enemy_type != .Armored)
 		}
 	}
-	testing.expect(t, grasslands.waves[10].groups[0].enemy_type == .Armored)
+	testing.expect(t, grasslands.waves[6].groups[0].enemy_type == .Armored)
 
 	// Boss waves remain explicit milestones in the level curve.
-	testing.expect(t, grasslands.waves[9].group_count == 1)
-	testing.expect(t, grasslands.waves[9].groups[0].enemy_type == .Boss)
-	testing.expect(t, grasslands.waves[14].group_count == 1)
-	testing.expect(t, grasslands.waves[14].groups[0].enemy_type == .Boss)
+	testing.expect(t, grasslands.waves[8].groups[1].enemy_type == .Boss)
 }
 
 @(test)
@@ -119,9 +110,9 @@ test_grasslands_mixed_wave_roles :: proc(t: ^testing.T) {
 	testing.expect(t, load_content(&g))
 
 	grasslands := &g.levels[0]
-	expected_first := [4]Enemy_Type{.Runner, .Brute, .Armored, .Runner}
-	expected_second := [4]Enemy_Type{.Grunt, .Runner, .Grunt, .Armored}
-	mixed_wave_indices := [4]int{5, 7, 10, 12}
+	expected_first := [2]Enemy_Type{.Runner, .Brute}
+	expected_second := [2]Enemy_Type{.Grunt, .Runner}
+	mixed_wave_indices := [2]int{3, 5}
 
 	for i in 0..<len(mixed_wave_indices) {
 		wave := grasslands.waves[mixed_wave_indices[i]]

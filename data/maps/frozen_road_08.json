@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "level": "frozen_road_08",
+  "name": "Frozen Road 8 - Long Mixed March",
+  "starting_gold": 255,
+  "starting_lives": 20,
+  "routes": [
+    {
+      "points": [
+        {
+          "x": 20,
+          "y": 380
+        },
+        {
+          "x": 140,
+          "y": 380
+        },
+        {
+          "x": 140,
+          "y": 180
+        },
+        {
+          "x": 380,
+          "y": 180
+        },
+        {
+          "x": 380,
+          "y": 580
+        },
+        {
+          "x": 620,
+          "y": 580
+        },
+        {
+          "x": 620,
+          "y": 340
+        },
+        {
+          "x": 940,
+          "y": 340
+        }
+      ]
+    }
+  ]
+}

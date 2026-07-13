@@ -7,7 +7,7 @@ PC. Its intended feel is an authored, old-school TD campaign: readable maps,
 deliberate tower placement, recognizable enemy roles, and waves that reward
 adaptation without requiring a permanent progression system.
 
-The project is currently a playable six-level campaign slice. The immediate
+The project is currently a playable 99-level campaign. The immediate
 design goal is to make that slice coherent, legible, and well balanced before
 adding more systems or content. New features should support one of three
 outcomes:
@@ -91,7 +91,7 @@ through at supported window sizes and on a normal desktop runtime.
 
 ### Near-term success criterion
 
-The next release-quality milestone is a polished six-level run in which:
+The next release-quality milestone is a polished full-campaign run in which:
 
 - each level is visually identifiable;
 - the HUD is readable and never overlaps or hides important state;
@@ -156,7 +156,7 @@ path generation is not a goal.
 
 ### Campaign progression
 
-The six current maps form the first campaign arc:
+The original six-map slice formed the first campaign arc:
 
 | Level | Identity and teaching role |
 | --- | --- |
@@ -183,7 +183,7 @@ full production, each terrain set should define:
   beats;
 - reusable data and art conventions that do not duplicate game logic.
 
-The six-level campaign must first establish the content and balance standards
+The 99-level campaign must establish the content and balance standards
 that make this expansion sustainable.
 
 ## 6. Towers
@@ -288,7 +288,7 @@ The economy should create recurring choices:
 - favor a safe, efficient setup or a higher-scoring low-leak run.
 
 Do not add mana, interest, permanent currencies, or tower unlock currencies
-until the gold-and-lives economy has been balanced across all six levels.
+until the gold-and-lives economy has been balanced across all 99 levels.
 
 ### Complexity levels
 
@@ -447,7 +447,7 @@ The backlog is the priority order for design and implementation:
 
 ### Phase 2 — Balance and authored variety
 
-8. Playtest and rebalance the six-level campaign, especially the Ruined City
+8. Playtest and rebalance the 99-level campaign, especially the Ruined City
    levels and Flame/Armored and Wraith/Siege Beast matchups.
 9. Define and implement complexity tiers with documented effects.
 10. Add more convoluted and distinctive route layouts where they create fair

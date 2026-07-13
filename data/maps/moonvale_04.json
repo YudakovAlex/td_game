@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "level": "moonvale_04",
+  "name": "Moonvale 4 - Short Lane Runners",
+  "starting_gold": 305,
+  "starting_lives": 18,
+  "routes": [
+    {
+      "points": [
+        {
+          "x": 20,
+          "y": 340
+        },
+        {
+          "x": 300,
+          "y": 340
+        },
+        {
+          "x": 300,
+          "y": 140
+        },
+        {
+          "x": 660,
+          "y": 140
+        },
+        {
+          "x": 660,
+          "y": 580
+        },
+        {
+          "x": 940,
+          "y": 580
+        }
+      ]
+    }
+  ]
+}

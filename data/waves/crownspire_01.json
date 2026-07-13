@@ -1,0 +1,161 @@
+{
+  "version": 1,
+  "level": "crownspire_01",
+  "waves": [
+    {
+      "groups": [
+        {
+          "enemy_id": "grunt",
+          "count": 10,
+          "spawn_interval": 0.6,
+          "hp_multiplier": 1,
+          "speed_multiplier": 1
+        }
+      ]
+    },
+    {
+      "groups": [
+        {
+          "enemy_id": "runner",
+          "count": 8,
+          "spawn_interval": 0.38,
+          "hp_multiplier": 1.04,
+          "speed_multiplier": 1.06
+        }
+      ]
+    },
+    {
+      "groups": [
+        {
+          "enemy_id": "armored",
+          "count": 4,
+          "spawn_interval": 0.7,
+          "hp_multiplier": 1.09,
+          "speed_multiplier": 1
+        },
+        {
+          "enemy_id": "wraith",
+          "count": 6,
+          "spawn_interval": 0.55,
+          "hp_multiplier": 1.09,
+          "speed_multiplier": 1
+        }
+      ]
+    },
+    {
+      "groups": [
+        {
+          "enemy_id": "brute",
+          "count": 5,
+          "spawn_interval": 0.82,
+          "hp_multiplier": 1.14,
+          "speed_multiplier": 1
+        }
+      ]
+    },
+    {
+      "groups": [
+        {
+          "enemy_id": "siege_beast",
+          "count": 4,
+          "spawn_interval": 0.9,
+          "hp_multiplier": 1.18,
+          "speed_multiplier": 1
+        }
+      ]
+    },
+    {
+      "groups": [
+        {
+          "enemy_id": "grunt",
+          "count": 13,
+          "spawn_interval": 0.6,
+          "hp_multiplier": 1.23,
+          "speed_multiplier": 1
+        },
+        {
+          "enemy_id": "runner",
+          "count": 10,
+          "spawn_interval": 0.38,
+          "hp_multiplier": 1.23,
+          "speed_multiplier": 1.07
+        },
+        {
+          "enemy_id": "brute",
+          "count": 5,
+          "spawn_interval": 0.82,
+          "hp_multiplier": 1.23,
+          "speed_multiplier": 1
+        }
+      ]
+    },
+    {
+      "groups": [
+        {
+          "enemy_id": "wraith",
+          "count": 7,
+          "spawn_interval": 0.55,
+          "hp_multiplier": 1.27,
+          "speed_multiplier": 1
+        },
+        {
+          "enemy_id": "boss",
+          "count": 1,
+          "spawn_interval": 1,
+          "hp_multiplier": 1.59,
+          "speed_multiplier": 1
+        }
+      ]
+    },
+    {
+      "groups": [
+        {
+          "enemy_id": "armored",
+          "count": 6,
+          "spawn_interval": 0.7,
+          "hp_multiplier": 1.31,
+          "speed_multiplier": 1
+        },
+        {
+          "enemy_id": "wraith",
+          "count": 7,
+          "spawn_interval": 0.55,
+          "hp_multiplier": 1.31,
+          "speed_multiplier": 1
+        },
+        {
+          "enemy_id": "siege_beast",
+          "count": 4,
+          "spawn_interval": 0.9,
+          "hp_multiplier": 1.31,
+          "speed_multiplier": 1
+        }
+      ]
+    },
+    {
+      "groups": [
+        {
+          "enemy_id": "grunt",
+          "count": 14,
+          "spawn_interval": 0.6,
+          "hp_multiplier": 1.36,
+          "speed_multiplier": 1
+        },
+        {
+          "enemy_id": "wraith",
+          "count": 7,
+          "spawn_interval": 0.55,
+          "hp_multiplier": 1.36,
+          "speed_multiplier": 1
+        },
+        {
+          "enemy_id": "boss",
+          "count": 1,
+          "spawn_interval": 1,
+          "hp_multiplier": 1.67,
+          "speed_multiplier": 1
+        }
+      ]
+    }
+  ]
+}

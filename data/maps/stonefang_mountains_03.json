@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "level": "stonefang_mountains_03",
+  "name": "Stonefang Mountains 3 - Bottleneck Brutes",
+  "starting_gold": 260,
+  "starting_lives": 19,
+  "routes": [
+    {
+      "points": [
+        {
+          "x": 20,
+          "y": 340
+        },
+        {
+          "x": 300,
+          "y": 340
+        },
+        {
+          "x": 300,
+          "y": 140
+        },
+        {
+          "x": 660,
+          "y": 140
+        },
+        {
+          "x": 660,
+          "y": 580
+        },
+        {
+          "x": 940,
+          "y": 580
+        }
+      ]
+    }
+  ]
+}

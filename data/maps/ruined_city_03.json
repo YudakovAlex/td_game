@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "level": "ruined_city_03",
+  "name": "Ruined City 3 - Stolen Wraiths",
+  "starting_gold": 240,
+  "starting_lives": 20,
+  "routes": [
+    {
+      "points": [
+        {
+          "x": 20,
+          "y": 380
+        },
+        {
+          "x": 220,
+          "y": 380
+        },
+        {
+          "x": 220,
+          "y": 100
+        },
+        {
+          "x": 500,
+          "y": 100
+        },
+        {
+          "x": 500,
+          "y": 620
+        },
+        {
+          "x": 780,
+          "y": 620
+        },
+        {
+          "x": 780,
+          "y": 300
+        },
+        {
+          "x": 940,
+          "y": 300
+        }
+      ]
+    }
+  ]
+}

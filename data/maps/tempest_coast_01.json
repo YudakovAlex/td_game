@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "level": "tempest_coast_01",
+  "name": "Tempest Coast 1 - Cliff Road",
+  "starting_gold": 280,
+  "starting_lives": 18,
+  "routes": [
+    {
+      "points": [
+        {
+          "x": 20,
+          "y": 540
+        },
+        {
+          "x": 180,
+          "y": 540
+        },
+        {
+          "x": 180,
+          "y": 220
+        },
+        {
+          "x": 460,
+          "y": 220
+        },
+        {
+          "x": 460,
+          "y": 620
+        },
+        {
+          "x": 740,
+          "y": 620
+        },
+        {
+          "x": 740,
+          "y": 380
+        },
+        {
+          "x": 940,
+          "y": 380
+        }
+      ]
+    }
+  ]
+}

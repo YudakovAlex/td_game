@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "level": "ashen_barrens_01",
+  "name": "Ashen Barrens 1 - Open Ash",
+  "starting_gold": 260,
+  "starting_lives": 19,
+  "routes": [
+    {
+      "points": [
+        {
+          "x": 20,
+          "y": 340
+        },
+        {
+          "x": 300,
+          "y": 340
+        },
+        {
+          "x": 300,
+          "y": 140
+        },
+        {
+          "x": 660,
+          "y": 140
+        },
+        {
+          "x": 660,
+          "y": 580
+        },
+        {
+          "x": 940,
+          "y": 580
+        }
+      ]
+    }
+  ]
+}

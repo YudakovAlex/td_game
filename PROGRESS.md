@@ -1,10 +1,10 @@
 # Rune Siege TD — Progress and Current State
 
-Last updated: July 11, 2026
+Last updated: July 12, 2026
 
 ## Project status
 
-Rune Siege TD is a working single-player tower-defense prototype built in Odin with Raylib. The core loop and the Cycle 3 visual/content expansion are implemented. The project now sits between the design document's **Milestone 2: Real TD Mechanics** and **Milestone 3: Vertical Slice Level**.
+Rune Siege TD is a working single-player tower-defense game built in Odin with Raylib. The core loop, authored terrain packs, and complete 99-level campaign are implemented.
 
 The game currently compiles successfully with:
 
@@ -15,9 +15,8 @@ odin build src
 
 ## Playable content
 
-- Six sequential 24×18 levels: Grasslands, dual-route Forest Pass, fast-enemy-focused Frozen Road, and the three-map Ruined City region of Ruined Outskirts, Ruined Market, and Ruined Keep.
-- Grasslands has 15 waves; Forest Pass and Frozen Road have 20 waves each.
-- Each Ruined City level has 20 hand-authored waves with new enemy introductions, mixed groups, and a final boss wave.
+- Ninety-nine sequential 24×18 levels across eleven terrain chapters, with nine levels and nine waves per chapter.
+- Every chapter follows its terrain design beats, introduces the intended enemy roles in order, and ends with a named boss represented by the current generic Boss family.
 - Four buildable tower families:
   - Arrow: reliable physical single-target damage.
   - Cannon: physical splash damage.
@@ -63,7 +62,7 @@ The implementation remains intentionally small and data-oriented:
 - `towers.odin`: placement, upgrades, targeting, firing, and tower rendering.
 - `enemies.odin`: movement, damage/resistances, slow/burn state, and enemy rendering.
 - `projectiles.odin`: homing projectiles, direct/splash hits, and combat effect creation.
-- `waves.odin`: bounded level/route definitions, six wave sets, level reset, and spawning state machine.
+- `waves.odin`: bounded level/route definitions, campaign wave sets, level reset, and spawning state machine.
 - `assets.odin`: sprite-atlas lifecycle and asset-ID lookup.
 - `effects.odin`: bounded transient visual effects.
 - `ui.odin`: virtual-resolution rendering and the in-game HUD.
@@ -84,8 +83,8 @@ The game renders to a fixed 1280×720 target and letterboxes it into a resizable
 ## Known gaps and risks
 
 - A complete interactive playthrough and visual review at all target window sizes is still required. Runtime graphics and audio could not be exercised in this environment because no X11 display or audio device is available.
-- Wave balance is provisional; Grasslands waves 11–15, the Flame/Armored matchup, and all Ruined City waves need playtesting.
-- Waves support up to three sequential enemy groups; Grasslands uses mixed groups on waves 6, 8, 11, and 13 while Forest Pass and Frozen Road retain single-group definitions.
+- Wave balance is provisional across the expanded campaign and needs interactive playtesting.
+- Waves support up to three sequential enemy groups; the authored campaign uses that limit for mixed-role defenses.
 - Result screens show deterministic scores and best scores; completed-level best score and best remaining lives are persisted in a versioned user-data text file.
 - No music/settings, level-select menus, or difficulty selection exist yet. Tower, enemy, wave, and level map definitions load from versioned JSON files in `data/`; campaign order remains fixed in code.
 - Towers support only one targeting policy: enemy furthest along the path.
@@ -96,10 +95,10 @@ The game renders to a fixed 1280×720 target and letterboxes it into a resizable
 
 Playtest and polish the expanded campaign before adding new systems:
 
-1. Playtest and balance the three Ruined City levels, especially Wraith/Siege Beast matchups.
-2. Playtest the JSON-backed definitions and keep their schemas stable while balancing.
-3. Add new mechanics only after the six-level campaign's economy and wave pacing are stable.
+1. Playtest and balance all eleven chapter arcs, especially late Wraith/Siege Beast matchups.
+2. Connect the authored terrain packs to map rendering when terrain-specific visuals are ready for runtime selection.
+3. Add new mechanics only after the 99-level campaign's economy and wave pacing are stable.
 
-The immediate release criterion is a polished, balanced six-level run with mixed enemy roles, a visible score, persisted best results, and restrained feedback audio.
+The immediate release criterion is a polished, balanced 99-level run with mixed enemy roles, a visible score, persisted best results, and restrained feedback audio.
 
-The original Grasslands content still satisfies its intended role progression and matchup contracts: Runner appears before Brute, Armored appears after the opening role introductions, mixed waves retain their sequential group order, and both Grasslands boss waves remain explicit milestones. The Ruined City values are initial balance targets; a complete interactive playthrough and visual review remain the next validation step when a graphical/audio runtime is available.
+The campaign content follows the terrain tables in `DESIGN_TERRAINS.md`; a complete interactive playthrough and visual review remain the next validation step when a graphical/audio runtime is available.
