@@ -110,3 +110,7 @@ in code or are not yet implemented. Results are saved in the platform user
 data directory rather than in the project folder.
 
 See [DESIGN.md](DESIGN.md) for the broader game design direction, [PROGRESS.md](PROGRESS.md) for the current implementation status, [BACKLOG.md](BACKLOG.md) for open visual and content work, and [assets/ART_GUIDE.md](assets/ART_GUIDE.md) for artwork replacement instructions.
+
+The complete authored terrain pack is cataloged in
+[DESIGN_ASSETS.md](DESIGN_ASSETS.md), with one reusable asset directory for
+each of the eleven terrain chapters.
