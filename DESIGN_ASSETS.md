@@ -10,9 +10,10 @@ exports plus its original 4×4 source sheet.
 - `sheet.png` is the 1254×1254 RGB source/reference sheet and is not a
   runtime tile.
 - Terrain packs live under `assets/terrain/<terrain-slug>/`.
-- The current executable still uses the shared `assets/sprite_atlas.png` and
-  its primitive fallbacks. These packs are the complete authored terrain set
-  ready for map-specific selection when terrain rendering is connected.
+- The current executable uses the Grasslands pack for the first nine campaign
+  maps and retains the shared `assets/sprite_atlas.png` plus primitive
+  fallbacks for the remaining terrain chapters. The other packs remain ready
+  for later map-specific selection.
 - Road artwork is authored vertically; the map renderer can rotate
   `road_straight.png` and `road_corner.png` for the route direction.
 - Landmark exports are opaque terrain composites so they can be placed on a
@@ -56,6 +57,10 @@ Every pack contains these files:
 
 Base, roads, spawn, and exit use warm flowered grass, ochre dirt, a blue
 crystal marker, and a red bannered marker respectively.
+
+Grasslands is the first runtime-connected terrain pack. Its nine maps use
+explicit tile decorations from the pack; landmarks are cosmetic, while
+`crossing.png` and `road_edge.png` replace selected straight route tiles.
 
 ### 2. Forest Pass — `assets/terrain/forest_pass/`
 

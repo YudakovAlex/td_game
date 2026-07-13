@@ -49,5 +49,13 @@
         }
       ]
     }
+  ],
+  "decorations": [
+    { "asset": "standing_stones", "x": 2, "y": 13 },
+    { "asset": "hay_cart", "x": 16, "y": 9 },
+    { "asset": "hearth", "x": 21, "y": 13 },
+    { "asset": "accent", "x": 5, "y": 2 },
+    { "asset": "crossing", "x": 8, "y": 8 },
+    { "asset": "road_edge", "x": 8, "y": 7 }
   ]
 }

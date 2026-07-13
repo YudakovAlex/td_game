@@ -24,6 +24,7 @@ MAX_EFFECTS     :: 256
 MAX_LEVELS      :: 99
 MAX_ROUTES      :: 2
 MAX_PATH_POINTS :: 12
+MAX_DECORATIONS :: 32
 
 NEXT_WAVE_DELAY :: f32(5)
 
@@ -47,6 +48,11 @@ Tile_Type :: enum {
 	Path,
 	Spawn,
 	Exit,
+}
+
+Terrain_Type :: enum {
+	Fallback,
+	Grasslands,
 }
 
 Tower_Type :: enum {
@@ -89,6 +95,26 @@ Asset_Id :: enum {
 	Count,
 }
 
+Grasslands_Asset_Id :: enum {
+	Base,
+	Road_Straight,
+	Road_Corner,
+	Spawn,
+	Exit,
+	Farm,
+	Fence,
+	Standing_Stones,
+	Hay_Cart,
+	Well,
+	Small_Bridge,
+	Watchtower,
+	Hearth,
+	Accent,
+	Crossing,
+	Road_Edge,
+	Count,
+}
+
 Effect_Type :: enum { Spark, Explosion, Frost_Burst, Flame_Burst, Burn_Ember, Portal }
 
 Sound_Id :: enum {
@@ -114,6 +140,12 @@ Viewport :: struct {
 Tile :: struct {
 	kind:        Tile_Type,
 	connections: u8,
+}
+
+Map_Decoration :: struct {
+	asset: Grasslands_Asset_Id,
+	tile_x: int,
+	tile_y: int,
 }
 
 Tower_Def :: struct {
@@ -173,10 +205,13 @@ Path_Route :: struct {
 
 Level_Def :: struct {
 	name: string,
+	terrain: Terrain_Type,
 	starting_gold: int,
 	starting_lives: int,
 	routes: [MAX_ROUTES]Path_Route,
 	route_count: int,
+	decorations: [MAX_DECORATIONS]Map_Decoration,
+	decoration_count: int,
 	waves: [MAX_WAVES]Wave_Def,
 	wave_count: int,
 }
@@ -265,8 +300,9 @@ Sounds :: struct {
 }
 
 Assets :: struct {
-	atlas:  rl.Texture2D,
-	sounds: Sounds,
+	atlas:      rl.Texture2D,
+	grasslands: [int(Grasslands_Asset_Id.Count)]rl.Texture2D,
+	sounds:     Sounds,
 }
 
 Game :: struct {

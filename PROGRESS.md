@@ -34,6 +34,7 @@ odin build src
 
 - Original low-resolution painted fantasy sprite atlas for terrain, towers, enemies, projectiles, and HUD icons.
 - Centralized asset loading and unloading with primitive fallbacks if the atlas is absent.
+- Grasslands terrain pack connected to the first nine maps, including directional roads, endpoint markers, and explicit cosmetic landmark placement.
 - Textured terrain, deterministic grass/rock decoration, distinct spawn and exit tiles, shadows, enemy scale differences, health bars, status tints, and damage flashes.
 - Tower foundations, directional aiming, recoil, level badges, selected range overlays, and placement ghosts.
 - Placement feedback distinguishes valid, invalid, occupied, and unaffordable tiles.
@@ -63,7 +64,7 @@ The implementation remains intentionally small and data-oriented:
 - `enemies.odin`: movement, damage/resistances, slow/burn state, and enemy rendering.
 - `projectiles.odin`: homing projectiles, direct/splash hits, and combat effect creation.
 - `waves.odin`: bounded level/route definitions, campaign wave sets, level reset, and spawning state machine.
-- `assets.odin`: sprite-atlas lifecycle and asset-ID lookup.
+- `assets.odin`: sprite-atlas and Grasslands terrain lifecycle with asset-ID lookup.
 - `effects.odin`: bounded transient visual effects.
 - `ui.odin`: virtual-resolution rendering and the in-game HUD.
 - `content.odin`: versioned JSON loading and validation for towers, enemies, maps, and waves.
@@ -73,7 +74,7 @@ The game renders to a fixed 1280×720 target and letterboxes it into a resizable
 ## Validation completed
 
 - Odin static check passes.
-- Odin test suite passes with 37 tests, including route-connectivity rendering cases, Ruined Outskirts traversal, wave-status presentation states, Grasslands wave-curve, Ruined City content, campaign continuation, save compatibility, and tower/enemy matchup regression coverage.
+- Odin test suite passes with 41 tests, including route-connectivity rendering cases, Grasslands terrain decoration validation, Ruined Outskirts traversal, wave-status presentation states, Grasslands wave-curve, Ruined City content, campaign continuation, save compatibility, and tower/enemy matchup regression coverage.
 - Native executable build passes.
 - A native launch was attempted, but the current environment could not open its X11 display or initialize audio; no interactive playthrough was completed here.
 - The committed sprite atlas is a valid 1536×1280 RGBA PNG with dedicated Wraith, Siege Beast, and turn-road cells.
@@ -96,8 +97,7 @@ The game renders to a fixed 1280×720 target and letterboxes it into a resizable
 Playtest and polish the expanded campaign before adding new systems:
 
 1. Playtest and balance all eleven chapter arcs, especially late Wraith/Siege Beast matchups.
-2. Connect the authored terrain packs to map rendering when terrain-specific visuals are ready for runtime selection.
-3. Add new mechanics only after the 99-level campaign's economy and wave pacing are stable.
+2. Add new mechanics only after the 99-level campaign's economy and wave pacing are stable.
 
 The immediate release criterion is a polished, balanced 99-level run with mixed enemy roles, a visible score, persisted best results, and restrained feedback audio.
 

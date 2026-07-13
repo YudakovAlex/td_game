@@ -12,6 +12,23 @@ ATLAS_ROWS    :: 5
 // an assets directory or on the process working directory.
 SPRITE_ATLAS_PNG :: #load("../assets/sprite_atlas.png")
 
+GRASSLANDS_BASE_PNG          :: #load("../assets/terrain/grasslands/base.png")
+GRASSLANDS_ROAD_STRAIGHT_PNG :: #load("../assets/terrain/grasslands/road_straight.png")
+GRASSLANDS_ROAD_CORNER_PNG   :: #load("../assets/terrain/grasslands/road_corner.png")
+GRASSLANDS_SPAWN_PNG         :: #load("../assets/terrain/grasslands/spawn.png")
+GRASSLANDS_EXIT_PNG          :: #load("../assets/terrain/grasslands/exit.png")
+GRASSLANDS_FARM_PNG          :: #load("../assets/terrain/grasslands/landmark_01.png")
+GRASSLANDS_FENCE_PNG         :: #load("../assets/terrain/grasslands/landmark_02.png")
+GRASSLANDS_STONES_PNG        :: #load("../assets/terrain/grasslands/landmark_03.png")
+GRASSLANDS_HAY_CART_PNG      :: #load("../assets/terrain/grasslands/landmark_04.png")
+GRASSLANDS_WELL_PNG          :: #load("../assets/terrain/grasslands/landmark_05.png")
+GRASSLANDS_SMALL_BRIDGE_PNG  :: #load("../assets/terrain/grasslands/landmark_06.png")
+GRASSLANDS_WATCHTOWER_PNG    :: #load("../assets/terrain/grasslands/landmark_07.png")
+GRASSLANDS_HEARTH_PNG        :: #load("../assets/terrain/grasslands/hearth.png")
+GRASSLANDS_ACCENT_PNG        :: #load("../assets/terrain/grasslands/accent.png")
+GRASSLANDS_CROSSING_PNG      :: #load("../assets/terrain/grasslands/crossing.png")
+GRASSLANDS_ROAD_EDGE_PNG     :: #load("../assets/terrain/grasslands/road_edge.png")
+
 asset_path :: proc(id: Asset_Id) -> string {
 	switch id {
 	case .Grass: return "assets/terrain/grass.png"
@@ -58,6 +75,37 @@ load_assets :: proc(a: ^Assets) {
 
 	a.atlas = rl.LoadTextureFromImage(image)
 	if rl.IsTextureValid(a.atlas) { rl.SetTextureFilter(a.atlas, .BILINEAR) }
+
+	a.grasslands[int(Grasslands_Asset_Id.Base)] = load_embedded_texture(GRASSLANDS_BASE_PNG)
+	a.grasslands[int(Grasslands_Asset_Id.Road_Straight)] = load_embedded_texture(GRASSLANDS_ROAD_STRAIGHT_PNG)
+	a.grasslands[int(Grasslands_Asset_Id.Road_Corner)] = load_embedded_texture(GRASSLANDS_ROAD_CORNER_PNG)
+	a.grasslands[int(Grasslands_Asset_Id.Spawn)] = load_embedded_texture(GRASSLANDS_SPAWN_PNG)
+	a.grasslands[int(Grasslands_Asset_Id.Exit)] = load_embedded_texture(GRASSLANDS_EXIT_PNG)
+	a.grasslands[int(Grasslands_Asset_Id.Farm)] = load_embedded_texture(GRASSLANDS_FARM_PNG)
+	a.grasslands[int(Grasslands_Asset_Id.Fence)] = load_embedded_texture(GRASSLANDS_FENCE_PNG)
+	a.grasslands[int(Grasslands_Asset_Id.Standing_Stones)] = load_embedded_texture(GRASSLANDS_STONES_PNG)
+	a.grasslands[int(Grasslands_Asset_Id.Hay_Cart)] = load_embedded_texture(GRASSLANDS_HAY_CART_PNG)
+	a.grasslands[int(Grasslands_Asset_Id.Well)] = load_embedded_texture(GRASSLANDS_WELL_PNG)
+	a.grasslands[int(Grasslands_Asset_Id.Small_Bridge)] = load_embedded_texture(GRASSLANDS_SMALL_BRIDGE_PNG)
+	a.grasslands[int(Grasslands_Asset_Id.Watchtower)] = load_embedded_texture(GRASSLANDS_WATCHTOWER_PNG)
+	a.grasslands[int(Grasslands_Asset_Id.Hearth)] = load_embedded_texture(GRASSLANDS_HEARTH_PNG)
+	a.grasslands[int(Grasslands_Asset_Id.Accent)] = load_embedded_texture(GRASSLANDS_ACCENT_PNG)
+	a.grasslands[int(Grasslands_Asset_Id.Crossing)] = load_embedded_texture(GRASSLANDS_CROSSING_PNG)
+	a.grasslands[int(Grasslands_Asset_Id.Road_Edge)] = load_embedded_texture(GRASSLANDS_ROAD_EDGE_PNG)
+}
+
+load_embedded_texture :: proc(data: []u8) -> rl.Texture2D {
+	image := rl.LoadImageFromMemory(
+		fmt.ctprintf(".png"),
+		raw_data(data),
+		i32(len(data)),
+	)
+	if !rl.IsImageValid(image) { return rl.Texture2D{} }
+	defer rl.UnloadImage(image)
+
+	texture := rl.LoadTextureFromImage(image)
+	if rl.IsTextureValid(texture) { rl.SetTextureFilter(texture, .BILINEAR) }
+	return texture
 }
 
 SOUND_SAMPLE_RATE :: 44100
@@ -116,6 +164,9 @@ unload_sounds :: proc(s: ^Sounds) {
 unload_assets :: proc(a: ^Assets) {
 	unload_sounds(&a.sounds)
 	if rl.IsTextureValid(a.atlas) { rl.UnloadTexture(a.atlas) }
+	for i := 0; i < int(Grasslands_Asset_Id.Count); i += 1 {
+		if rl.IsTextureValid(a.grasslands[i]) { rl.UnloadTexture(a.grasslands[i]) }
+	}
 }
 
 draw_asset :: proc(a: ^Assets, id: Asset_Id, center: Vec2, size: Vec2, rotation: f32, tint: rl.Color) -> bool {
@@ -126,8 +177,21 @@ draw_asset :: proc(a: ^Assets, id: Asset_Id, center: Vec2, size: Vec2, rotation:
 	cell_h := f32(texture.height)/ATLAS_ROWS
 	index := int(id)
 	source := rl.Rectangle{f32(index%ATLAS_COLUMNS)*cell_w, f32(index/ATLAS_COLUMNS)*cell_h, cell_w, cell_h}
+	draw_texture(texture, source, center, size, rotation, tint)
+	return true
+}
+
+draw_texture :: proc(texture: rl.Texture2D, source: rl.Rectangle, center: Vec2, size: Vec2, rotation: f32, tint: rl.Color) {
 	dest := rl.Rectangle{center.x, center.y, size.x, size.y}
 	rl.DrawTexturePro(texture, source, dest, vec2(size.x/2, size.y/2), rotation, tint)
+}
+
+draw_grasslands_asset :: proc(a: ^Assets, id: Grasslands_Asset_Id, center: Vec2, size: Vec2, rotation: f32, tint: rl.Color) -> bool {
+	if id >= .Count { return false }
+	texture := a.grasslands[int(id)]
+	if !rl.IsTextureValid(texture) { return false }
+	source := rl.Rectangle{0, 0, f32(texture.width), f32(texture.height)}
+	draw_texture(texture, source, center, size, rotation, tint)
 	return true
 }
 

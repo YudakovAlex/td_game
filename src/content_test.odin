@@ -133,6 +133,37 @@ test_grasslands_mixed_wave_roles :: proc(t: ^testing.T) {
 }
 
 @(test)
+test_grasslands_decorations_load_and_cover_pack :: proc(t: ^testing.T) {
+	g := new(Game)
+	defer free(g)
+	g^ = Game{}
+	init_levels(g)
+	defer unload_level_content(&g.levels)
+	defer unload_content(&g.content)
+	testing.expect(t, load_content(g))
+
+	used: [int(Grasslands_Asset_Id.Count)]bool
+	used[int(Grasslands_Asset_Id.Base)] = true
+	used[int(Grasslands_Asset_Id.Road_Straight)] = true
+	used[int(Grasslands_Asset_Id.Road_Corner)] = true
+	used[int(Grasslands_Asset_Id.Spawn)] = true
+	used[int(Grasslands_Asset_Id.Exit)] = true
+
+	for level_index := 0; level_index < 9; level_index += 1 {
+		level := &g.levels[level_index]
+		testing.expect(t, level.terrain == .Grasslands)
+		testing.expect(t, level.decoration_count > 0)
+		for decoration_index := 0; decoration_index < level.decoration_count; decoration_index += 1 {
+			used[int(level.decorations[decoration_index].asset)] = true
+		}
+	}
+
+	for asset_index := 0; asset_index < int(Grasslands_Asset_Id.Count); asset_index += 1 {
+		testing.expect(t, used[asset_index])
+	}
+}
+
+@(test)
 test_tower_and_armored_matchups_remain_distinct :: proc(t: ^testing.T) {
 	g := new(Game)
 	defer free(g)
@@ -186,6 +217,35 @@ test_map_parser_rejects_invalid_metadata_and_routes :: proc(t: ^testing.T) {
 
 	diagonal := strings_replace(valid, `{"x":60,"y":20}`, `{"x":60,"y":40}`)
 	ok, _ = parse_map(diagonal, "test", &level)
+	testing.expect(t, !ok)
+}
+
+@(test)
+test_map_parser_rejects_invalid_grasslands_decorations :: proc(t: ^testing.T) {
+	valid := `{"version":1,"level":"grasslands_test","name":"Test","starting_gold":1,"starting_lives":1,"routes":[{"points":[{"x":20,"y":20},{"x":100,"y":20}]}],"decorations":[{"asset":"farm","x":0,"y":1},{"asset":"road_edge","x":1,"y":0}]}`
+	level := Level_Def{}
+	ok, _ := parse_map(valid, "grasslands_test", &level)
+	testing.expect(t, ok)
+	delete(level.name)
+
+	unknown := strings_replace(valid, `"asset":"farm"`, `"asset":"unknown"`)
+	ok, _ = parse_map(unknown, "grasslands_test", &level)
+	testing.expect(t, !ok)
+
+	out_of_bounds := strings_replace(valid, `"x":0,"y":1`, `"x":24,"y":1`)
+	ok, _ = parse_map(out_of_bounds, "grasslands_test", &level)
+	testing.expect(t, !ok)
+
+	duplicate := strings_replace(valid, `{"asset":"road_edge","x":1,"y":0}`, `{"asset":"accent","x":0,"y":1}`)
+	ok, _ = parse_map(duplicate, "grasslands_test", &level)
+	testing.expect(t, !ok)
+
+	on_route := strings_replace(valid, `"asset":"farm","x":0,"y":1`, `"asset":"farm","x":1,"y":0`)
+	ok, _ = parse_map(on_route, "grasslands_test", &level)
+	testing.expect(t, !ok)
+
+	corner := `{"version":1,"level":"grasslands_test","name":"Test","starting_gold":1,"starting_lives":1,"routes":[{"points":[{"x":20,"y":20},{"x":100,"y":20},{"x":100,"y":100}]}],"decorations":[{"asset":"crossing","x":2,"y":0}]}`
+	ok, _ = parse_map(corner, "grasslands_test", &level)
 	testing.expect(t, !ok)
 }
 

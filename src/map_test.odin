@@ -72,6 +72,21 @@ test_corner_road_asset_rotations :: proc(t: ^testing.T) {
 }
 
 @(test)
+test_grasslands_road_asset_rotations :: proc(t: ^testing.T) {
+	asset, rotation := grasslands_road_asset_for_connections(ROUTE_NORTH|ROUTE_SOUTH)
+	testing.expect(t, asset == .Road_Straight && rotation == 0)
+
+	asset, rotation = grasslands_road_asset_for_connections(ROUTE_EAST|ROUTE_WEST)
+	testing.expect(t, asset == .Road_Straight && rotation == 90)
+
+	asset, rotation = grasslands_road_asset_for_connections(ROUTE_SOUTH|ROUTE_EAST)
+	testing.expect(t, asset == .Road_Corner && rotation == 0)
+
+	asset, rotation = grasslands_road_asset_for_connections(ROUTE_NORTH|ROUTE_EAST)
+	testing.expect(t, asset == .Road_Corner && rotation == 270)
+}
+
+@(test)
 test_ruined_outskirts_route_stays_on_authored_segments :: proc(t: ^testing.T) {
 	route := Path_Route{}
 	route.points[0] = vec2(20, 380)

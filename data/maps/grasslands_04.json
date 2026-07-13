@@ -33,5 +33,12 @@
         }
       ]
     }
+  ],
+  "decorations": [
+    { "asset": "watchtower", "x": 3, "y": 11 },
+    { "asset": "fence", "x": 10, "y": 11 },
+    { "asset": "hearth", "x": 21, "y": 11 },
+    { "asset": "accent", "x": 20, "y": 4 },
+    { "asset": "road_edge", "x": 16, "y": 8 }
   ]
 }

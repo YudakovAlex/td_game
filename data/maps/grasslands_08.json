@@ -41,5 +41,13 @@
         }
       ]
     }
+  ],
+  "decorations": [
+    { "asset": "standing_stones", "x": 2, "y": 3 },
+    { "asset": "small_bridge", "x": 13, "y": 3 },
+    { "asset": "watchtower", "x": 21, "y": 12 },
+    { "asset": "hearth", "x": 21, "y": 5 },
+    { "asset": "accent", "x": 7, "y": 16 },
+    { "asset": "road_edge", "x": 18, "y": 12 }
   ]
 }

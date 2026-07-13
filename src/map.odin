@@ -25,9 +25,70 @@ road_asset_for_connections :: proc(connections: u8) -> (Asset_Id, f32) {
 	return .Path, 0
 }
 
+grasslands_road_asset_for_connections :: proc(connections: u8) -> (Grasslands_Asset_Id, f32) {
+	switch connections {
+	case ROUTE_NORTH | ROUTE_SOUTH:
+		return .Road_Straight, 0
+	case ROUTE_EAST | ROUTE_WEST:
+		return .Road_Straight, 90
+	case ROUTE_SOUTH | ROUTE_EAST:
+		return .Road_Corner, 0
+	case ROUTE_SOUTH | ROUTE_WEST:
+		return .Road_Corner, 90
+	case ROUTE_NORTH | ROUTE_WEST:
+		return .Road_Corner, 180
+	case ROUTE_NORTH | ROUTE_EAST:
+		return .Road_Corner, 270
+	}
+	return .Road_Straight, 0
+}
+
+grasslands_decoration_at :: proc(level: ^Level_Def, tile_x, tile_y: int) -> (Map_Decoration, bool) {
+	for i := 0; i < level.decoration_count; i += 1 {
+		decoration := level.decorations[i]
+		if decoration.tile_x == tile_x && decoration.tile_y == tile_y {
+			return decoration, true
+		}
+	}
+	return Map_Decoration{}, false
+}
+
 road_color_for_level :: proc(level_name: string) -> rl.Color {
 	if level_name == "Ruined Outskirts" { return rl.Color{92,75,66,255} }
 	return rl.BROWN
+}
+
+route_connections_for_level :: proc(level: ^Level_Def) -> [MAP_H][MAP_W]u8 {
+	connections := [MAP_H][MAP_W]u8{}
+	for route_index := 0; route_index < level.route_count; route_index += 1 {
+		route := &level.routes[route_index]
+		for i := 0; i < route.point_count-1; i += 1 {
+			a := route.points[i]
+			b := route.points[i+1]
+			ax, ay := int(a.x)/TILE_SIZE, int(a.y)/TILE_SIZE
+			bx, by := int(b.x)/TILE_SIZE, int(b.y)/TILE_SIZE
+			if ax == bx {
+				min_y, max_y := ay, by
+				if min_y > max_y { min_y, max_y = max_y, min_y }
+				for y := min_y; y <= max_y; y += 1 {
+					if ax >= 0 && ax < MAP_W && y >= 0 && y < MAP_H {
+						if y > min_y { connections[y][ax] |= ROUTE_NORTH }
+						if y < max_y { connections[y][ax] |= ROUTE_SOUTH }
+					}
+				}
+			} else if ay == by {
+				min_x, max_x := ax, bx
+				if min_x > max_x { min_x, max_x = max_x, min_x }
+				for x := min_x; x <= max_x; x += 1 {
+					if x >= 0 && x < MAP_W && ay >= 0 && ay < MAP_H {
+						if x < max_x { connections[ay][x] |= ROUTE_EAST }
+						if x > min_x { connections[ay][x] |= ROUTE_WEST }
+					}
+				}
+			}
+		}
+	}
+	return connections
 }
 
 draw_road_connectors :: proc(center: Vec2, connections: u8, color: rl.Color) {
@@ -92,7 +153,53 @@ init_map :: proc(g: ^Game) {
 	for i := 0; i < level.route_count; i += 1 { mark_route_tiles(g, &level.routes[i]) }
 }
 
+draw_grasslands_map :: proc(g: ^Game) {
+	level := &g.levels[g.current_level]
+	path_color := rl.Color{155,118,69,255}
+	for y := 0; y < MAP_H; y += 1 {
+		for x := 0; x < MAP_W; x += 1 {
+			tile := g.tiles[y][x]
+			color := rl.Color{120,170,100,255}
+			switch tile.kind {
+			case .Buildable: color = rl.Color{120,170,100,255}
+			case .Path: color = rl.Color{165,130,80,255}
+			case .Spawn: color = rl.Color{80,100,220,255}
+			case .Exit: color = rl.Color{220,80,80,255}
+			case .Blocked: color = rl.DARKGRAY
+			}
+			rl.DrawRectangle(i32(x*TILE_SIZE), i32(y*TILE_SIZE), TILE_SIZE, TILE_SIZE, color)
+
+			decoration, has_decoration := grasslands_decoration_at(level, x, y)
+			asset := Grasslands_Asset_Id.Base
+			rotation: f32 = 0
+			if tile.kind == .Path {
+				asset, rotation = grasslands_road_asset_for_connections(tile.connections)
+			}
+			if tile.kind == .Spawn { asset = .Spawn }
+			if tile.kind == .Exit { asset = .Exit }
+			if has_decoration && grasslands_asset_is_route_variant(decoration.asset) {
+				asset = decoration.asset
+				if tile.connections == ROUTE_EAST|ROUTE_WEST { rotation = 90 }
+			}
+
+			if tile.kind == .Path || tile.kind == .Spawn || tile.kind == .Exit {
+				draw_road_connectors(tile_center(x,y), tile.connections, path_color)
+			}
+			draw_grasslands_asset(&g.assets, asset, tile_center(x,y), vec2(TILE_SIZE,TILE_SIZE), rotation, rl.WHITE)
+
+			if has_decoration && grasslands_asset_is_landmark(decoration.asset) {
+				draw_grasslands_asset(&g.assets, decoration.asset, tile_center(x,y), vec2(TILE_SIZE,TILE_SIZE), 0, rl.WHITE)
+			}
+			rl.DrawRectangleLines(i32(x*TILE_SIZE), i32(y*TILE_SIZE), TILE_SIZE, TILE_SIZE, rl.Color{0,0,0,35})
+		}
+	}
+}
+
 draw_map :: proc(g: ^Game) {
+	if g.levels[g.current_level].terrain == .Grasslands {
+		draw_grasslands_map(g)
+		return
+	}
 	ruin_style := g.levels[g.current_level].name == "Ruined Outskirts"
 	path_color := road_color_for_level(g.levels[g.current_level].name)
 	for y := 0; y < MAP_H; y += 1 {
@@ -159,6 +266,9 @@ draw_build_preview :: proc(g: ^Game) {
 }
 
 draw_path :: proc(g: ^Game) {
+	if g.levels[g.current_level].terrain == .Grasslands {
+		return
+	}
 	level := &g.levels[g.current_level]
 	path_color := road_color_for_level(level.name)
 	for route_index := 0; route_index < level.route_count; route_index += 1 {

@@ -41,5 +41,13 @@
         }
       ]
     }
+  ],
+  "decorations": [
+    { "asset": "farm", "x": 2, "y": 14 },
+    { "asset": "hay_cart", "x": 14, "y": 14 },
+    { "asset": "well", "x": 20, "y": 5 },
+    { "asset": "hearth", "x": 22, "y": 14 },
+    { "asset": "accent", "x": 2, "y": 3 },
+    { "asset": "crossing", "x": 18, "y": 7 }
   ]
 }

@@ -82,6 +82,12 @@ Raw_Map_Route :: struct {
 	points: []Raw_Map_Point `json:"points"`,
 }
 
+Raw_Map_Decoration :: struct {
+	asset: string `json:"asset"`,
+	x:     int    `json:"x"`,
+	y:     int    `json:"y"`,
+}
+
 Raw_Map_File :: struct {
 	version:        int             `json:"version"`,
 	level:          string          `json:"level"`,
@@ -89,6 +95,7 @@ Raw_Map_File :: struct {
 	starting_gold:  int             `json:"starting_gold"`,
 	starting_lives: int             `json:"starting_lives"`,
 	routes:         []Raw_Map_Route `json:"routes"`,
+	decorations:    []Raw_Map_Decoration `json:"decorations"`,
 }
 
 clone_content_string :: proc(value: string) -> string {
@@ -189,6 +196,40 @@ enemy_asset_for_type :: proc(kind: Enemy_Type) -> Asset_Id {
 	case .Siege_Beast: return .Enemy_Siege_Beast
 	}
 	return .Count
+}
+
+grasslands_asset_from_name :: proc(name: string) -> (Grasslands_Asset_Id, bool) {
+	switch name {
+	case "base":           return .Base, true
+	case "road_straight":  return .Road_Straight, true
+	case "road_corner":    return .Road_Corner, true
+	case "spawn":          return .Spawn, true
+	case "exit":           return .Exit, true
+	case "farm":           return .Farm, true
+	case "fence":          return .Fence, true
+	case "standing_stones": return .Standing_Stones, true
+	case "hay_cart":       return .Hay_Cart, true
+	case "well":           return .Well, true
+	case "small_bridge":   return .Small_Bridge, true
+	case "watchtower":     return .Watchtower, true
+	case "hearth":         return .Hearth, true
+	case "accent":         return .Accent, true
+	case "crossing":       return .Crossing, true
+	case "road_edge":      return .Road_Edge, true
+	}
+	return .Count, false
+}
+
+grasslands_asset_is_landmark :: proc(asset: Grasslands_Asset_Id) -> bool {
+	return asset >= .Farm && asset <= .Watchtower || asset == .Hearth || asset == .Accent
+}
+
+grasslands_asset_is_route_variant :: proc(asset: Grasslands_Asset_Id) -> bool {
+	return asset == .Crossing || asset == .Road_Edge
+}
+
+grasslands_level_id :: proc(level_id: string) -> bool {
+	return strings.has_prefix(level_id, "grasslands_")
 }
 
 color_from_raw :: proc(color: [4]u8) -> rl.Color {
@@ -340,6 +381,12 @@ parse_map :: proc(contents: string, expected_level: string, level: ^Level_Def) -
 	if len(raw.routes) <= 0 || len(raw.routes) > MAX_ROUTES {
 		return false, "route count is outside the supported capacity"
 	}
+	if len(raw.decorations) > MAX_DECORATIONS {
+		return false, "decoration count is outside the supported capacity"
+	}
+	if len(raw.decorations) > 0 && !grasslands_level_id(expected_level) {
+		return false, "only Grasslands maps may define decorations"
+	}
 
 	for raw_route, route_index in raw.routes {
 		if len(raw_route.points) < 2 || len(raw_route.points) > MAX_PATH_POINTS {
@@ -371,10 +418,13 @@ parse_map :: proc(contents: string, expected_level: string, level: ^Level_Def) -
 	}
 
 	parsed := Level_Def{
-		name = clone_content_string(raw.name),
+		terrain = Terrain_Type.Fallback,
 		starting_gold = raw.starting_gold,
 		starting_lives = raw.starting_lives,
 		route_count = len(raw.routes),
+	}
+	if grasslands_level_id(expected_level) {
+		parsed.terrain = .Grasslands
 	}
 	for raw_route, route_index in raw.routes {
 		route := &parsed.routes[route_index]
@@ -383,6 +433,44 @@ parse_map :: proc(contents: string, expected_level: string, level: ^Level_Def) -
 			route.points[point_index] = vec2(raw_point.x, raw_point.y)
 		}
 	}
+
+	connections := route_connections_for_level(&parsed)
+	occupied: [MAP_H][MAP_W]bool
+	for raw_decoration, decoration_index in raw.decorations {
+		asset, asset_ok := grasslands_asset_from_name(raw_decoration.asset)
+		if !asset_ok {
+			return false, fmt.tprintf("decoration %d references an unknown Grasslands asset: %s", decoration_index+1, raw_decoration.asset)
+		}
+		if !grasslands_asset_is_landmark(asset) && !grasslands_asset_is_route_variant(asset) {
+			return false, fmt.tprintf("decoration %d uses a non-decorative Grasslands asset: %s", decoration_index+1, raw_decoration.asset)
+		}
+		if raw_decoration.x < 0 || raw_decoration.x >= MAP_W ||
+			raw_decoration.y < 0 || raw_decoration.y >= MAP_H {
+			return false, fmt.tprintf("decoration %d is outside the map bounds", decoration_index+1)
+		}
+		if occupied[raw_decoration.y][raw_decoration.x] {
+			return false, fmt.tprintf("decoration %d overlaps another decoration", decoration_index+1)
+		}
+		occupied[raw_decoration.y][raw_decoration.x] = true
+
+		connection := connections[raw_decoration.y][raw_decoration.x]
+		if grasslands_asset_is_landmark(asset) && connection != 0 {
+			return false, fmt.tprintf("decoration %d must be placed off the route", decoration_index+1)
+		}
+		if grasslands_asset_is_route_variant(asset) &&
+			connection != ROUTE_NORTH|ROUTE_SOUTH && connection != ROUTE_EAST|ROUTE_WEST {
+			return false, fmt.tprintf("decoration %d must be placed on a straight route tile", decoration_index+1)
+		}
+
+		parsed.decorations[parsed.decoration_count] = Map_Decoration{
+			asset = asset,
+			tile_x = raw_decoration.x,
+			tile_y = raw_decoration.y,
+		}
+		parsed.decoration_count += 1
+	}
+
+	parsed.name = clone_content_string(raw.name)
 
 	level^ = parsed
 	return true, ""

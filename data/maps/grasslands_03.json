@@ -41,5 +41,12 @@
         }
       ]
     }
+  ],
+  "decorations": [
+    { "asset": "well", "x": 2, "y": 13 },
+    { "asset": "small_bridge", "x": 18, "y": 5 },
+    { "asset": "hearth", "x": 20, "y": 12 },
+    { "asset": "accent", "x": 12, "y": 2 },
+    { "asset": "crossing", "x": 9, "y": 10 }
   ]
 }
