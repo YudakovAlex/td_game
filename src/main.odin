@@ -33,14 +33,15 @@ main :: proc() {
 
 	rl.SetTargetFPS(60)
 
-	game, ok := init_game()
-	if !ok { return }
+	game := new(Game)
+	defer free(game)
+	if !init_game(game) { return }
 	defer unload_content(&game.content)
 	defer unload_level_content(&game.levels)
 	defer unload_assets(&game.assets)
 
 	for !rl.WindowShouldClose() && !game.quit_requested {
-		update_game(&game, rl.GetFrameTime())
-		draw_game(&game)
+		update_game(game, rl.GetFrameTime())
+		draw_game(game)
 	}
 }

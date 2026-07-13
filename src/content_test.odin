@@ -5,11 +5,13 @@ import "core:strings"
 
 @(test)
 test_content_files_load_current_definitions :: proc(t: ^testing.T) {
-	g := Game{}
-	init_levels(&g)
+	g := new(Game)
+	defer free(g)
+	g^ = Game{}
+	init_levels(g)
 	defer unload_level_content(&g.levels)
 	defer unload_content(&g.content)
-	testing.expect(t, load_content(&g))
+	testing.expect(t, load_content(g))
 	testing.expect(t, g.content.towers[int(Tower_Type.Arrow)].cost == 50)
 	testing.expect(t, g.content.towers[int(Tower_Type.Flame)].burn_damage == 5)
 	testing.expect(t, g.content.enemies[int(Enemy_Type.Armored)].physical_multiplier == 0.65)
@@ -47,11 +49,13 @@ test_content_files_load_current_definitions :: proc(t: ^testing.T) {
 
 @(test)
 test_ruined_city_wave_introduces_new_enemy_roles :: proc(t: ^testing.T) {
-	g := Game{}
-	init_levels(&g)
+	g := new(Game)
+	defer free(g)
+	g^ = Game{}
+	init_levels(g)
 	defer unload_level_content(&g.levels)
 	defer unload_content(&g.content)
-	testing.expect(t, load_content(&g))
+	testing.expect(t, load_content(g))
 
 	for level_index := 27; level_index < 36; level_index += 1 {
 		level := &g.levels[level_index]
@@ -74,11 +78,13 @@ test_ruined_city_wave_introduces_new_enemy_roles :: proc(t: ^testing.T) {
 
 @(test)
 test_grasslands_content_curve :: proc(t: ^testing.T) {
-	g := Game{}
-	init_levels(&g)
+	g := new(Game)
+	defer free(g)
+	g^ = Game{}
+	init_levels(g)
 	defer unload_level_content(&g.levels)
 	defer unload_content(&g.content)
-	testing.expect(t, load_content(&g))
+	testing.expect(t, load_content(g))
 
 	grasslands := &g.levels[0]
 	testing.expect(t, grasslands.wave_count == 9)
@@ -103,11 +109,13 @@ test_grasslands_content_curve :: proc(t: ^testing.T) {
 
 @(test)
 test_grasslands_mixed_wave_roles :: proc(t: ^testing.T) {
-	g := Game{}
-	init_levels(&g)
+	g := new(Game)
+	defer free(g)
+	g^ = Game{}
+	init_levels(g)
 	defer unload_level_content(&g.levels)
 	defer unload_content(&g.content)
-	testing.expect(t, load_content(&g))
+	testing.expect(t, load_content(g))
 
 	grasslands := &g.levels[0]
 	expected_first := [2]Enemy_Type{.Runner, .Brute}
@@ -126,11 +134,13 @@ test_grasslands_mixed_wave_roles :: proc(t: ^testing.T) {
 
 @(test)
 test_tower_and_armored_matchups_remain_distinct :: proc(t: ^testing.T) {
-	g := Game{}
-	init_levels(&g)
+	g := new(Game)
+	defer free(g)
+	g^ = Game{}
+	init_levels(g)
 	defer unload_level_content(&g.levels)
 	defer unload_content(&g.content)
-	testing.expect(t, load_content(&g))
+	testing.expect(t, load_content(g))
 
 	arrow := g.content.towers[int(Tower_Type.Arrow)]
 	cannon := g.content.towers[int(Tower_Type.Cannon)]

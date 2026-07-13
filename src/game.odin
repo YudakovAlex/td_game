@@ -425,20 +425,20 @@ point_in_rect :: proc(p: Vec2, x, y, w, h: int) -> bool {
 		p.y < f32(y+h)
 }
 
-init_game :: proc() -> (Game, bool) {
-	g := Game{}
-	init_levels(&g)
-	if !load_content(&g) {
+init_game :: proc(g: ^Game) -> bool {
+	g^ = Game{}
+	init_levels(g)
+	if !load_content(g) {
 		unload_content(&g.content)
 		unload_level_content(&g.levels)
-		return g, false
+		return false
 	}
 	g.save = load_results(g.level_count)
 	g.current_level = 0
-	load_level(&g, g.current_level)
+	load_level(g, g.current_level)
 	load_assets(&g.assets)
 
-	return g, true
+	return true
 }
 
 play_game_sound :: proc(g: ^Game, id: Sound_Id) {

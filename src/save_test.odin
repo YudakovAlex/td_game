@@ -4,12 +4,14 @@ import "core:testing"
 
 @(test)
 test_score_calculation :: proc(t: ^testing.T) {
-	g := Game{}
+	g := new(Game)
+	defer free(g)
+	g^ = Game{}
 	g.wave_count = 10
 	g.current_wave = 3
 	g.score_gold_earned = 47
 	g.lives = 12
-	testing.expect(t, calculate_score(&g) == 947)
+	testing.expect(t, calculate_score(g) == 947)
 }
 
 @(test)
@@ -68,11 +70,13 @@ test_new_level_result_serializes_with_existing_save_format :: proc(t: ^testing.T
 
 @(test)
 test_grasslands_has_selected_mixed_waves :: proc(t: ^testing.T) {
-	g := Game{}
-	init_levels(&g)
+	g := new(Game)
+	defer free(g)
+	g^ = Game{}
+	init_levels(g)
 	defer unload_level_content(&g.levels)
 	defer unload_content(&g.content)
-	testing.expect(t, load_content(&g))
+	testing.expect(t, load_content(g))
 	testing.expect(t, g.levels[0].waves[3].group_count == 2)
 	testing.expect(t, g.levels[0].waves[5].group_count == 2)
 	testing.expect(t, g.levels[0].waves[7].group_count == 3)
@@ -81,11 +85,13 @@ test_grasslands_has_selected_mixed_waves :: proc(t: ^testing.T) {
 
 @(test)
 test_wave_groups_clear_sequentially :: proc(t: ^testing.T) {
-	g := Game{}
-	init_levels(&g)
+	g := new(Game)
+	defer free(g)
+	g^ = Game{}
+	init_levels(g)
 	defer unload_level_content(&g.levels)
 	defer unload_content(&g.content)
-	testing.expect(t, load_content(&g))
+	testing.expect(t, load_content(g))
 	g.current_level = 0
 	g.levels[0].wave_count = 9
 	g.waves = g.levels[0].waves
@@ -95,14 +101,14 @@ test_wave_groups_clear_sequentially :: proc(t: ^testing.T) {
 	g.wave_state = .Clearing
 	g.enemy_count = 0
 
-	update_wave(&g, 0, 0)
+	update_wave(g, 0, 0)
 	testing.expect(t, g.wave_state == .Spawning)
 	testing.expect(t, g.wave_group_index == 1)
 	testing.expect(t, g.current_wave == 5)
 
 	g.wave_spawned_count = g.waves[5].groups[1].count
 	g.wave_state = .Clearing
-	update_wave(&g, 0, 0)
+	update_wave(g, 0, 0)
 	testing.expect(t, g.wave_state == .Waiting)
 	testing.expect(t, g.current_wave == 6)
 }
