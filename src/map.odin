@@ -190,7 +190,6 @@ draw_grasslands_map :: proc(g: ^Game) {
 			if has_decoration && grasslands_asset_is_landmark(decoration.asset) {
 				draw_grasslands_asset(&g.assets, decoration.asset, tile_center(x,y), vec2(TILE_SIZE,TILE_SIZE), 0, rl.WHITE)
 			}
-			rl.DrawRectangleLines(i32(x*TILE_SIZE), i32(y*TILE_SIZE), TILE_SIZE, TILE_SIZE, rl.Color{0,0,0,35})
 		}
 	}
 }
@@ -240,7 +239,6 @@ draw_map :: proc(g: ^Game) {
 			} else if tile.kind == .Buildable && h == 11 {
 				rl.DrawPoly(v_add(tile_center(x,y),vec2(-12,11)),5,4,0,rl.Color{92,88,78,190})
 			}
-			rl.DrawRectangleLines(i32(x*TILE_SIZE),i32(y*TILE_SIZE),TILE_SIZE,TILE_SIZE,rl.Color{0,0,0,35})
 		}
 	}
 }
